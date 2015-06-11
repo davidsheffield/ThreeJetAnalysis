@@ -44,6 +44,7 @@ private:
     virtual void endJob() override;
     int GetCollections(const edm::Event&);
     int JetCuts(const TLorentzVector);
+    int Cuts();
 
     //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
     //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
@@ -53,11 +54,21 @@ private:
      *			              edm::EventSetup const&) override;*/
 
     // ----------member data ---------------------------
+    double scale;
+    double cut_Ht;
+    double cut_JetMaxEta;
+    double cut_JetMinPt;
+    int cut_JetMinN;
+    int cut_JetMaxN;
     edm::EDGetTokenT<std::vector<float>> token_jetPt;
     edm::EDGetTokenT<std::vector<float>> token_jetEta;
     edm::EDGetTokenT<std::vector<float>> token_jetPhi;
     edm::EDGetTokenT<std::vector<float>> token_jetE;
     edm::EDGetTokenT<std::vector<float>> token_jetMass;
 
+    double rawHt;
+    int nJets;
     std::vector<TLorentzVector> jets;
+
+    TH1D *h_PassSel;
 };

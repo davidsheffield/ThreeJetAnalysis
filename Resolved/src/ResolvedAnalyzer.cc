@@ -17,6 +17,12 @@ using namespace std;
 using namespace edm;
 
 ResolvedAnalyzer::ResolvedAnalyzer(const edm::ParameterSet& iConfig):
+    scale(iConfig.getParameter<double>("scale")),
+    cut_Ht(iConfig.getParameter<double>("cutHt")),
+    cut_JetMaxEta(iConfig.getParameter<double>("cutJetMaxEta")),
+    cut_JetMinPt(iConfig.getParameter<double>("cutJetMinPt")),
+    cut_JetMinN(iConfig.getParameter<int>("cutJetMinN")),
+    cut_JetMaxN(iConfig.getParameter<int>("cutJetMaxN")),
     token_jetPt(consumes<vector<float>>(
 		    iConfig.getParameter<InputTag>("jetPt"))),
     token_jetEta(consumes<vector<float>>(
@@ -29,7 +35,6 @@ ResolvedAnalyzer::ResolvedAnalyzer(const edm::ParameterSet& iConfig):
 		      iConfig.getParameter<InputTag>("jetMass")))
 {
     //now do what ever initialization is needed
-    edm::Service<TFileService> fs;
 }
 
 
@@ -53,6 +58,11 @@ ResolvedAnalyzer::analyze(const edm::Event& iEvent,
     if (getCollectionsResult)
 	return;
 
+    int passSel = Cuts();
+    h_PassSel->Fill(passSel);
+    if (passSel)
+	return;
+
     jets.clear();
     return;
 }
@@ -61,6 +71,10 @@ ResolvedAnalyzer::analyze(const edm::Event& iEvent,
 // ------- method called once each job just before starting event loop  -------
 void ResolvedAnalyzer::beginJob()
 {
+    edm::Service<TFileService> fs;
+
+    h_PassSel = fs->make<TH1D>("h_PassSel", "Event selection failures", 4,
+			       -0.5, 3.5);
 }
 
 // ------- method called once each job just after ending the event loop  ------
@@ -115,13 +129,17 @@ int ResolvedAnalyzer::GetCollections(const edm::Event& iEvent)
 	return 1;
     }
 
+    rawHt = 0;
     for (unsigned i=0; i<jetPt->size(); ++i) {
+	rawHt += (*jetPt)[i];
+
 	TLorentzVector tmpJet;
 	tmpJet.SetPtEtaPhiE((*jetPt)[i], (*jetEta)[i], (*jetPhi)[i],
 			    (*jetE)[i]);
-	if(!JetCuts(tmpJet))
+	if (!JetCuts(tmpJet))
 	    jets.push_back(tmpJet);
     }
+    nJets = jets.size();
 
     return 0;
 }
@@ -130,7 +148,28 @@ int ResolvedAnalyzer::JetCuts(const TLorentzVector jet_)
 {
     // Returns >0 if jet fails cuts
     // Returns  0 is jet passes cuts
-    return false;
+    if (fabs(jet_.Eta()) > cut_JetMaxEta)
+	return 1;
+    if (jet_.Pt() < jet_.Pt())
+	return 2;
+    return 0;
+}
+
+
+int ResolvedAnalyzer::Cuts()
+{
+    // Returns >0 if event fails cuts
+    // Returns  0 is event passes cuts
+    int passSel_ = 0;
+
+    if (rawHt < cut_Ht)
+	passSel_ |= 0x1;
+    if (nJets < cut_JetMinN)
+	passSel_ |= 0x2;
+    if (cut_JetMaxN >= 0 && nJets > cut_JetMaxN)
+	passSel_ |= 0x2;
+
+    return passSel_;
 }
 
 
