@@ -59,9 +59,18 @@ ResolvedAnalyzer::analyze(const edm::Event& iEvent,
 	return;
 
     int passSel = Cuts();
-    h_PassSel->Fill(passSel);
+    h_PassSel->Fill(passSel, scale);
     if (passSel)
 	return;
+
+    h_rawHt->Fill(rawHt, scale);
+    h_Ht->Fill(Ht, scale);
+    h_nJets->Fill(nJets, scale);
+    for (int i=0; i<size_h_jetPt; ++i) {
+	if (i + 1 > nJets)
+	    break;
+	h_jetPt[i]->Fill(jets[0].Pt());
+    }
 
     jets.clear();
     return;
@@ -75,6 +84,15 @@ void ResolvedAnalyzer::beginJob()
 
     h_PassSel = fs->make<TH1D>("h_PassSel", "Event selection failures", 4,
 			       -0.5, 3.5);
+    h_rawHt = fs->make<TH1D>("h_rawHt", "H_{T} of all jets", 200, 0.0, 1000.0);
+    h_Ht = fs->make<TH1D>("h_Ht", "H_{T} of jets that make cuts", 200,
+			  0.0, 1000.0);
+    h_nJets = fs->make<TH1D>("h_nJets", "Number of jets that make cuts", 11,
+			     -0.5, 10.5);
+    for (int i=0; i<size_h_jetPt; ++i) {
+	h_jetPt[i] = fs->make<TH1D>("h_jetPt", "p_{T} of jet ", 200,
+				    0.0, 1000.0);
+    }
 }
 
 // ------- method called once each job just after ending the event loop  ------
@@ -130,14 +148,17 @@ int ResolvedAnalyzer::GetCollections(const edm::Event& iEvent)
     }
 
     rawHt = 0;
+    Ht = 0;
     for (unsigned i=0; i<jetPt->size(); ++i) {
 	rawHt += (*jetPt)[i];
 
 	TLorentzVector tmpJet;
 	tmpJet.SetPtEtaPhiE((*jetPt)[i], (*jetEta)[i], (*jetPhi)[i],
 			    (*jetE)[i]);
-	if (!JetCuts(tmpJet))
+	if (!JetCuts(tmpJet)) {
 	    jets.push_back(tmpJet);
+	    Ht += (*jetPt)[i];
+	}
     }
     nJets = jets.size();
 

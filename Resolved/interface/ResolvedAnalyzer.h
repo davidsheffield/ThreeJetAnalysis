@@ -67,8 +67,14 @@ private:
     edm::EDGetTokenT<std::vector<float>> token_jetMass;
 
     double rawHt;
+    double Ht;
     int nJets;
     std::vector<TLorentzVector> jets;
 
     TH1D *h_PassSel;
+    TH1D *h_rawHt;
+    TH1D *h_Ht;
+    TH1D *h_nJets;
+    static const int size_h_jetPt = 10;
+    TH1D *h_jetPt[size_h_jetPt];
 };
