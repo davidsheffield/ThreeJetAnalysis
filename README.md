@@ -1,4 +1,5 @@
-# GluinoGluinoToJets Code
+GluinoGluinoToJets Code
+=======================
 
 Author: David G. Sheffield (Rutgers)
 
