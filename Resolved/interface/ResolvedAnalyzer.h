@@ -13,6 +13,8 @@
 
 // System include files
 #include <memory>
+#include <iostream>
+#include <vector>
 
 // CMSSW include files
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -22,6 +24,9 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
+// Root include files
+#include "TLorentzVector.h"
 
 // User include files
 
@@ -37,6 +42,8 @@ private:
     virtual void beginJob() override;
     virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
     virtual void endJob() override;
+    int GetCollections(const edm::Event&);
+    int JetCuts(const TLorentzVector);
 
     //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
     //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
@@ -46,4 +53,11 @@ private:
      *			              edm::EventSetup const&) override;*/
 
     // ----------member data ---------------------------
+    edm::EDGetTokenT<std::vector<float>> token_jetPt;
+    edm::EDGetTokenT<std::vector<float>> token_jetEta;
+    edm::EDGetTokenT<std::vector<float>> token_jetPhi;
+    edm::EDGetTokenT<std::vector<float>> token_jetE;
+    edm::EDGetTokenT<std::vector<float>> token_jetMass;
+
+    std::vector<TLorentzVector> jets;
 };

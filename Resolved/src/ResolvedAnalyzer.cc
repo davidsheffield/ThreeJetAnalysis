@@ -13,8 +13,20 @@
 
 #include "ThreeJetAnalysis/Resolved/interface/ResolvedAnalyzer.h"
 
-ResolvedAnalyzer::ResolvedAnalyzer(const edm::ParameterSet& iConfig)
+using namespace std;
+using namespace edm;
 
+ResolvedAnalyzer::ResolvedAnalyzer(const edm::ParameterSet& iConfig):
+    token_jetPt(consumes<vector<float>>(
+		    iConfig.getParameter<InputTag>("jetPt"))),
+    token_jetEta(consumes<vector<float>>(
+		     iConfig.getParameter<InputTag>("jetEta"))),
+    token_jetPhi(consumes<vector<float>>(
+		     iConfig.getParameter<InputTag>("jetPhi"))),
+    token_jetE(consumes<vector<float>>(
+		   iConfig.getParameter<InputTag>("jetE"))),
+    token_jetMass(consumes<vector<float>>(
+		      iConfig.getParameter<InputTag>("jetMass")))
 {
     //now do what ever initialization is needed
     edm::Service<TFileService> fs;
@@ -37,17 +49,12 @@ ResolvedAnalyzer::analyze(const edm::Event& iEvent,
 {
     using namespace edm;
 
+    int getCollectionsResult = GetCollections(iEvent);
+    if (getCollectionsResult)
+	return;
 
-
-#ifdef THIS_IS_AN_EVENT_EXAMPLE
-    Handle<ExampleData> pIn;
-    iEvent.getByLabel("example",pIn);
-#endif
-
-#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-    ESHandle<SetupData> pSetup;
-    iSetup.get<SetupRecord>().get(pSetup);
-#endif
+    jets.clear();
+    return;
 }
 
 
@@ -60,6 +67,72 @@ void ResolvedAnalyzer::beginJob()
 void ResolvedAnalyzer::endJob()
 {
 }
+
+
+int ResolvedAnalyzer::GetCollections(const edm::Event& iEvent)
+{
+    // Get collections from ntuple
+    // Returns nonzero if there is a problem getting a collection
+
+    // Get jet variables
+    Handle<std::vector<float>> jetPt;
+    iEvent.getByToken(token_jetPt, jetPt);
+    if (!jetPt.isValid()) {
+	throw edm::Exception(edm::errors::ProductNotFound)
+	    << "Could not find jetPt." << endl;
+	return 1;
+    }
+
+    Handle<std::vector<float>> jetEta;
+    iEvent.getByToken(token_jetEta, jetEta);
+    if (!jetEta.isValid()) {
+	throw edm::Exception(edm::errors::ProductNotFound)
+	    << "Could not find jetEta." << endl;
+	return 1;
+    }
+
+    Handle<std::vector<float>> jetPhi;
+    iEvent.getByToken(token_jetPhi, jetPhi);
+    if (!jetPhi.isValid()) {
+	throw edm::Exception(edm::errors::ProductNotFound)
+	    << "Could not find jetPhi." << endl;
+	return 1;
+    }
+
+    Handle<std::vector<float>> jetE;
+    iEvent.getByToken(token_jetE, jetE);
+    if (!jetE.isValid()) {
+	throw edm::Exception(edm::errors::ProductNotFound)
+	    << "Could not find jetE." << endl;
+	return 1;
+    }
+
+    Handle<std::vector<float>> jetMass;
+    iEvent.getByToken(token_jetMass, jetMass);
+    if (!jetMass.isValid()) {
+	throw edm::Exception(edm::errors::ProductNotFound)
+	    << "Could not find jetMass." << endl;
+	return 1;
+    }
+
+    for (unsigned i=0; i<jetPt->size(); ++i) {
+	TLorentzVector tmpJet;
+	tmpJet.SetPtEtaPhiE((*jetPt)[i], (*jetEta)[i], (*jetPhi)[i],
+			    (*jetE)[i]);
+	if(!JetCuts(tmpJet))
+	    jets.push_back(tmpJet);
+    }
+
+    return 0;
+}
+
+int ResolvedAnalyzer::JetCuts(const TLorentzVector jet_)
+{
+    // Returns >0 if jet fails cuts
+    // Returns  0 is jet passes cuts
+    return false;
+}
+
 
 // ------------ method called when starting to processes a run  ------------
 /*
