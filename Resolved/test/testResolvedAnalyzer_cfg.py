@@ -15,4 +15,8 @@ readFiles = cms.untracked.vstring(FileUtils.loadListFromFile('files.list'))
 process.source = cms.Source("PoolSource", fileNames=readFiles)
 print readFiles
 
+process.TFileService = cms.Service("TFileService",
+                                   fileName = cms.string('test.root')
+                                   )
+
 process.p = cms.Path(process.resolvedanalyzer)

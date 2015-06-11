@@ -16,8 +16,8 @@
 ResolvedAnalyzer::ResolvedAnalyzer(const edm::ParameterSet& iConfig)
 
 {
-   //now do what ever initialization is needed
-
+    //now do what ever initialization is needed
+    edm::Service<TFileService> fs;
 }
 
 
