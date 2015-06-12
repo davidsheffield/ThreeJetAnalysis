@@ -29,6 +29,7 @@
 #include "TLorentzVector.h"
 
 // User include files
+#include "ThreeJetAnalysis/Utilities/interface/TH1DInitializer.h"
 
 class ResolvedAnalyzer : public edm::EDAnalyzer {
 public:
