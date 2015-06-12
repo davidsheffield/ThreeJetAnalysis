@@ -89,9 +89,11 @@ void ResolvedAnalyzer::beginJob()
     h_Ht = TH1DInitializer(fs, "h_Ht", "H_{T} of jets that pass cuts", 200,
 			   0.0, 1000.0, "H_{T} [GeV]", "events");
     h_nJets = TH1DInitializer(fs, "h_nJets", "Number of jets that make cuts",
-			      21, -0.5, 20.5, "number of jets", "events");
+			      26, -0.5, 25.5, "number of jets", "events");
+    TFileDirectory dir_jetPts = fs->mkdir("jetPts");
     for (int i=0; i<size_h_jetPt; ++i) {
-	h_jetPt[i] = TH1DInitializer(fs, "h_jet" + to_string(i+1) + "_Pt",
+	h_jetPt[i] = TH1DInitializer(&dir_jetPts,
+				     "h_jet" + to_string(i+1) + "_Pt",
 				     "p_{T} of jet " + to_string(i+1), 200,
 				     0.0, 1000.0, "p_{T} [GeV]", "events");
     }

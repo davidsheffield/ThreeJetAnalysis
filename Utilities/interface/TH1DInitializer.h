@@ -19,5 +19,7 @@
 
 TH1D* TH1DInitializer(edm::Service<TFileService>, TString, TString, Int_t,
 		      Double_t, Double_t, TString, TString);
+TH1D* TH1DInitializer(TFileDirectory*, TString, TString, Int_t,
+		      Double_t, Double_t, TString, TString);
 
 #endif

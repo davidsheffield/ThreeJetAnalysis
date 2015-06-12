@@ -21,3 +21,14 @@ TH1D* TH1DInitializer(edm::Service<TFileService> fs, TString name,
 
     return histogram;
 }
+
+TH1D* TH1DInitializer(TFileDirectory *dir, TString name,
+		      TString title, Int_t nbinsx, Double_t xlow, Double_t xup,
+		      TString xaxis_title, TString yaxis_title)
+{
+    TH1D *histogram = dir->make<TH1D>(name, title, nbinsx, xlow, xup);
+    histogram->GetXaxis()->SetTitle(xaxis_title);
+    histogram->GetYaxis()->SetTitle(yaxis_title);
+
+    return histogram;
+}
