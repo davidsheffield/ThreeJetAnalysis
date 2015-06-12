@@ -30,6 +30,7 @@
 
 // User include files
 #include "ThreeJetAnalysis/Utilities/interface/TH1DInitializer.h"
+#include "ThreeJetAnalysis/Utilities/interface/TH2DInitializer.h"
 
 class ResolvedAnalyzer : public edm::EDAnalyzer {
 public:
@@ -78,4 +79,8 @@ private:
     TH1D *h_nJets;
     static const int size_h_jetPt = 10;
     TH1D *h_jetPt[size_h_jetPt];
+    TH1D *h_Mass;
+    TH2D *h_M_vs_Pt;
+    static const int size_h_M_DeltaCut = 31;
+    TH1D *h_M_DeltaCut[size_h_M_DeltaCut];
 };

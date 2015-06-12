@@ -72,6 +72,26 @@ ResolvedAnalyzer::analyze(const edm::Event& iEvent,
 	h_jetPt[i]->Fill(jets[0].Pt());
     }
 
+    for (int i=0; i<nJets-2; ++i) {
+	for (int j=i+1; j<nJets-1; ++j) {
+	    for (int k=j+1; k<nJets; ++k){
+		TLorentzVector tripletVec = jets[i] + jets[j] + jets[k];
+		double mass = tripletVec.M();
+		double scalarPt = jets[i].Pt() + jets[j].Pt() + jets[k].Pt();
+
+		h_Mass->Fill(mass, scale);
+		h_M_vs_Pt->Fill(scalarPt, mass, scale);
+
+		for(int l=0; l<size_h_M_DeltaCut; ++l){
+		    double delta = 10.0*static_cast<double>(l);
+		    if (mass < scalarPt - delta)
+			h_M_DeltaCut[l]->Fill(mass, scale);
+		}
+
+	    }
+	}
+    }
+
     jets.clear();
     return;
 }
@@ -82,21 +102,40 @@ void ResolvedAnalyzer::beginJob()
 {
     edm::Service<TFileService> fs;
 
-    h_PassSel = TH1DInitializer(fs, "h_PassSel", "Event selection failures", 4,
-				-0.5, 3.5, "failures", "events");
-    h_rawHt = TH1DInitializer(fs, "h_rawHt", "H_{T} of all jets", 200,
-			      0.0, 1000.0, "H_{T} [GeV]", "events");
-    h_Ht = TH1DInitializer(fs, "h_Ht", "H_{T} of jets that pass cuts", 200,
-			   0.0, 1000.0, "H_{T} [GeV]", "events");
+    h_PassSel = TH1DInitializer(fs, "h_PassSel", "Event selection failures",
+				4, -0.5, 3.5, "failures", "events");
+    h_rawHt = TH1DInitializer(fs, "h_rawHt", "H_{T} of all jets",
+			      200, 0.0, 1000.0, "H_{T} [GeV]", "events");
+    h_Ht = TH1DInitializer(fs, "h_Ht", "H_{T} of jets that pass cuts",
+			   200, 0.0, 1000.0, "H_{T} [GeV]", "events");
     h_nJets = TH1DInitializer(fs, "h_nJets", "Number of jets that make cuts",
 			      26, -0.5, 25.5, "number of jets", "events");
     TFileDirectory dir_jetPts = fs->mkdir("jetPts");
     for (int i=0; i<size_h_jetPt; ++i) {
 	h_jetPt[i] = TH1DInitializer(&dir_jetPts,
 				     "h_jet" + to_string(i+1) + "_Pt",
-				     "p_{T} of jet " + to_string(i+1), 200,
-				     0.0, 1000.0, "p_{T} [GeV]", "events");
+				     "p_{T} of jet " + to_string(i+1),
+				     200, 0.0, 1000.0, "p_{T} [GeV]", "events");
     }
+
+    h_Mass = TH1DInitializer(fs, "h_Mass", "Mass spectrum of triplets",
+			     200, 0.0, 1000.0,
+			     "#Sigma|p_{T}| [GeV]", "triplets");
+    h_M_vs_Pt = TH2DInitializer(fs, "h_M_vs_Pt",
+				"Mass vs. #Sigma|p_{T}| of triplets",
+				200, 0.0, 1000.0, 200, 0.0, 1000.0,
+				"#Sigma|p_{T}| [GeV]", "M_{jjj} [GeV]");
+    TFileDirectory dir_deltaCuts = fs->mkdir("Delta_Cuts");
+    for (int i=0; i<size_h_M_DeltaCut; ++i) {
+	int delta = 10*i;
+	h_M_DeltaCut[i] = TH1DInitializer(&dir_deltaCuts,
+					  "h_M_DeltaCut_" + to_string(delta),
+					  "Mass for #Delta = "
+					  + to_string(delta),
+					  200, 0.0, 1000.0,
+					  "M_{jjj} [GeV]", "triplets");
+    }
+
 }
 
 // ------- method called once each job just after ending the event loop  ------
