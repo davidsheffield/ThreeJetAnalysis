@@ -82,16 +82,18 @@ void ResolvedAnalyzer::beginJob()
 {
     edm::Service<TFileService> fs;
 
-    h_PassSel = fs->make<TH1D>("h_PassSel", "Event selection failures", 4,
-			       -0.5, 3.5);
-    h_rawHt = fs->make<TH1D>("h_rawHt", "H_{T} of all jets", 200, 0.0, 1000.0);
-    h_Ht = fs->make<TH1D>("h_Ht", "H_{T} of jets that make cuts", 200,
-			  0.0, 1000.0);
-    h_nJets = fs->make<TH1D>("h_nJets", "Number of jets that make cuts", 11,
-			     -0.5, 10.5);
+    h_PassSel = TH1DInitializer(fs, "h_PassSel", "Event selection failures", 4,
+				-0.5, 3.5, "failures", "events");
+    h_rawHt = TH1DInitializer(fs, "h_rawHt", "H_{T} of all jets", 200,
+			      0.0, 1000.0, "H_{T} [GeV]", "events");
+    h_Ht = TH1DInitializer(fs, "h_Ht", "H_{T} of jets that pass cuts", 200,
+			   0.0, 1000.0, "H_{T} [GeV]", "events");
+    h_nJets = TH1DInitializer(fs, "h_nJets", "Number of jets that make cuts",
+			      21, -0.5, 20.5, "number of jets", "events");
     for (int i=0; i<size_h_jetPt; ++i) {
-	h_jetPt[i] = fs->make<TH1D>("h_jetPt", "p_{T} of jet ", 200,
-				    0.0, 1000.0);
+	h_jetPt[i] = TH1DInitializer(fs, "h_jet" + to_string(i+1) + "_Pt",
+				     "p_{T} of jet " + to_string(i+1), 200,
+				     0.0, 1000.0, "p_{T} [GeV]", "events");
     }
 }
 

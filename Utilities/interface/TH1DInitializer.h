@@ -18,6 +18,6 @@
 #include "TH1D.h"
 
 TH1D* TH1DInitializer(edm::Service<TFileService>, TString, TString, Int_t,
-		      Double_t, Double_t, TString, TString, Color_t);
+		      Double_t, Double_t, TString, TString);
 
 #endif

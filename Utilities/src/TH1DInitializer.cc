@@ -13,12 +13,11 @@
 
 TH1D* TH1DInitializer(edm::Service<TFileService> fs, TString name,
 		      TString title, Int_t nbinsx, Double_t xlow, Double_t xup,
-		      TString xaxis_title, TString yaxis_title, Color_t color)
+		      TString xaxis_title, TString yaxis_title)
 {
     TH1D *histogram = fs->make<TH1D>(name, title, nbinsx, xlow, xup);
     histogram->GetXaxis()->SetTitle(xaxis_title);
     histogram->GetYaxis()->SetTitle(yaxis_title);
-    histogram->SetLineColor(color);
 
     return histogram;
 }
