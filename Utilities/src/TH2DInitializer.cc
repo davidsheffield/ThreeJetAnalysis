@@ -11,10 +11,12 @@
 
 #include "ThreeJetAnalysis/Utilities/interface/TH2DInitializer.h"
 
-TH2D* TH2DInitializer(edm::Service<TFileService> fs, TString name,
-		      TString title, Int_t nbinsx, Double_t xlow, Double_t xup,
-		      Int_t nbinsy, Double_t ylow, Double_t yup,
-		      TString xaxis_title, TString yaxis_title)
+TH2D* TH2DInitializer(edm::Service<TFileService> fs, const TString name,
+		      const TString title, const Int_t nbinsx,
+		      const Double_t xlow, const Double_t xup,
+		      const Int_t nbinsy, const Double_t ylow,
+		      const Double_t yup, const TString xaxis_title,
+		      const TString yaxis_title)
 {
     TH2D *histogram = fs->make<TH2D>(name, title, nbinsx, xlow, xup, nbinsy,
 				     ylow, yup);
@@ -24,10 +26,12 @@ TH2D* TH2DInitializer(edm::Service<TFileService> fs, TString name,
     return histogram;
 }
 
-TH2D* TH2DInitializer(TFileDirectory *dir, TString name,
-		      TString title, Int_t nbinsx, Double_t xlow, Double_t xup,
-		      Int_t nbinsy, Double_t ylow, Double_t yup,
-		      TString xaxis_title, TString yaxis_title)
+TH2D* TH2DInitializer(TFileDirectory *dir, const TString name,
+		      const TString title, const Int_t nbinsx,
+		      const Double_t xlow, const Double_t xup,
+		      const Int_t nbinsy, const Double_t ylow,
+		      const Double_t yup, const TString xaxis_title,
+		      const TString yaxis_title)
 {
     TH2D *histogram = dir->make<TH2D>(name, title, nbinsx, xlow, xup, nbinsy,
 				      ylow, yup);

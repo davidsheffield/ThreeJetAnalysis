@@ -17,9 +17,11 @@
 
 #include "TH1D.h"
 
-TH1D* TH1DInitializer(edm::Service<TFileService>, TString, TString, Int_t,
-		      Double_t, Double_t, TString, TString);
-TH1D* TH1DInitializer(TFileDirectory*, TString, TString, Int_t,
-		      Double_t, Double_t, TString, TString);
+TH1D* TH1DInitializer(edm::Service<TFileService>, const TString, const TString,
+		      const Int_t, const Double_t, const Double_t,
+		      const TString, const TString);
+TH1D* TH1DInitializer(TFileDirectory*, const TString, const TString,
+		      const Int_t, const Double_t, const Double_t,
+		      const TString, const TString);
 
 #endif

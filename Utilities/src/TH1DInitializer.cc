@@ -11,9 +11,10 @@
 
 #include "ThreeJetAnalysis/Utilities/interface/TH1DInitializer.h"
 
-TH1D* TH1DInitializer(edm::Service<TFileService> fs, TString name,
-		      TString title, Int_t nbinsx, Double_t xlow, Double_t xup,
-		      TString xaxis_title, TString yaxis_title)
+TH1D* TH1DInitializer(edm::Service<TFileService> fs, const TString name,
+		      const TString title, const Int_t nbinsx,
+		      const Double_t xlow, const Double_t xup,
+		      const TString xaxis_title, const TString yaxis_title)
 {
     TH1D *histogram = fs->make<TH1D>(name, title, nbinsx, xlow, xup);
     histogram->GetXaxis()->SetTitle(xaxis_title);
@@ -22,9 +23,10 @@ TH1D* TH1DInitializer(edm::Service<TFileService> fs, TString name,
     return histogram;
 }
 
-TH1D* TH1DInitializer(TFileDirectory *dir, TString name,
-		      TString title, Int_t nbinsx, Double_t xlow, Double_t xup,
-		      TString xaxis_title, TString yaxis_title)
+TH1D* TH1DInitializer(TFileDirectory *dir, const TString name,
+		      const TString title, const Int_t nbinsx,
+		      const Double_t xlow, const Double_t xup,
+		      const TString xaxis_title, const TString yaxis_title)
 {
     TH1D *histogram = dir->make<TH1D>(name, title, nbinsx, xlow, xup);
     histogram->GetXaxis()->SetTitle(xaxis_title);

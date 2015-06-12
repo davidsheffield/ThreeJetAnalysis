@@ -17,11 +17,13 @@
 
 #include "TH2D.h"
 
-TH2D* TH2DInitializer(edm::Service<TFileService>, TString, TString, Int_t,
-		      Double_t, Double_t, Int_t, Double_t, Double_t, TString,
-		      TString);
-TH2D* TH2DInitializer(TFileDirectory*, TString, TString, Int_t,
-		      Double_t, Double_t, Int_t, Double_t, Double_t, TString,
-		      TString);
+TH2D* TH2DInitializer(edm::Service<TFileService>, const TString, const TString,
+		      const Int_t, const Double_t, const Double_t, const Int_t,
+		      const Double_t, const Double_t, const TString,
+		      const TString);
+TH2D* TH2DInitializer(TFileDirectory*, const TString, const TString,
+		      const Int_t, const Double_t, const Double_t, const Int_t,
+		      const Double_t, const Double_t, const TString,
+		      const TString);
 
 #endif
