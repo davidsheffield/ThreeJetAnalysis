@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Configuration/GenProduction/python/ThirteenTeV/Hadronizer_TuneCUETP8M1_13TeV_generic_LHE_pythia8_cff.py --filein INPUT.root --fileout file:OUTPUT.root --mc --eventcontent RAWSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1 --datatier GEN-SIM --inputCommands keep *,drop LHEXMLStringProduct_*_*_* --conditions MCRUN2_71_V1::All --beamspot Realistic50ns13TeVCollision --step GEN,SIM --magField 38T_PostLS1 --python_filename step1_GEN-SIM_cfg.py --no_exec -n 100
+# with command line options: Configuration/GenProduction/python/ThirteenTeV/Hadronizer_TuneCUETP8M1_13TeV_generic_LHE_pythia8_cff.py --filein INPUT.lhe --fileout file:OUTPUT.root --mc --eventcontent RAWSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1 --datatier GEN-SIM --inputCommands keep *,drop LHEXMLStringProduct_*_*_* --conditions MCRUN2_71_V1::All --beamspot Realistic50ns13TeVCollision --step GEN,SIM --magField 38T_PostLS1 --python_filename step1_GEN-SIM_cfg.py --no_exec -n 100
 # Conditions for RunIISummer15GS
 import FWCore.ParameterSet.Config as cms
 
@@ -29,13 +29,8 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 # Input source
-process.source = cms.Source("PoolSource",
-    secondaryFileNames = cms.untracked.vstring(),
-    fileNames = cms.untracked.vstring('INPUT'),
-    inputCommands = cms.untracked.vstring('keep *', 
-        'drop LHEXMLStringProduct_*_*_*', 
-        'drop LHEXMLStringProduct_*_*_*'),
-    dropDescendantsOfDroppedBranches = cms.untracked.bool(False)
+process.source = cms.Source("LHESource",
+    fileNames = cms.untracked.vstring('INPUT.lhe')
 )
 
 process.options = cms.untracked.PSet(
@@ -55,7 +50,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.RAWSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('file:OUTPUT'),
+    fileName = cms.untracked.string('file:OUTPUT.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM')
