@@ -31,10 +31,11 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DataFormats/Scouting/interface/ScoutingPFJet.h"
+#include "DataFormats/Scouting/interface/ScoutingParticle.h"
+#include "DataFormats/Scouting/interface/ScoutingVertex.h"
 
 // Root include files
 #include "TLorentzVector.h"
-#include "TH1D.h"
 
 // User include files
 #include "ThreeJetAnalysis/Utilities/interface/TH1DInitializer.h"
@@ -59,10 +60,56 @@ private:
 
     // ----------member data ---------------------------
     edm::EDGetTokenT<ScoutingPFJetCollection> token_jets;
+    edm::EDGetTokenT<ScoutingParticleCollection> token_candidates;
+    edm::EDGetTokenT<ScoutingVertexCollection> token_vertices;
+    edm::EDGetTokenT<double> token_MetPt;
+    edm::EDGetTokenT<double> token_MetPhi;
+    edm::EDGetTokenT<double> token_rho;
 
     TH1D *h_nJets;
     TH1D *h_pt;
     TH1D *h_eta;
     TH1D *h_phi;
     TH1D *h_Ht;
+    TH1D *h_mass;
+    TH1D *h_area;
+    TH2D *h_pt_ith_jet;
+    TH1D *h_nCandidates_per_jet;
+
+    TH1D *h_chargedHadronEnergy;
+    TH1D *h_neutralHadronEnergy;
+    TH1D *h_photonEnergy;
+    TH1D *h_electronEnergy;
+    TH1D *h_muonEnergy;
+    TH1D *h_HFHadronEnergy;
+    TH1D *h_HFEMEnergy;
+    TH1D *h_chargedHadronMultiplicity;
+    TH1D *h_neutralHadronMultiplicity;
+    TH1D *h_photonMultiplicity;
+    TH1D *h_electronMultiplicity;
+    TH1D *h_muonMultiplicity;
+    TH1D *h_HFHadronMultiplicity;
+    TH1D *h_HFEMMultiplicity;
+    TH1D *h_HOEnergy;
+    TH1D *h_csv;
+    TH1D *h_mvaDiscriminator;
+
+    TH1D *h_nCandidates;
+    TH1D *h_cand_pt;
+    TH1D *h_cand_eta;
+    TH1D *h_cand_phi;
+    TH1D *h_cand_mass;
+    TH1D *h_cand_pdgId;
+    TH1D *h_cand_dR;
+    TH1D *h_cand_outofrange;
+
+    TH1D *h_nVertices;
+    TH1D *h_vert_x;
+    TH1D *h_vert_y;
+    TH1D *h_vert_z;
+    TH1D *h_vert_zError;
+
+    TH1D *h_MetPt;
+    TH1D *h_MetPhi;
+    TH1D *h_rho;
 };
