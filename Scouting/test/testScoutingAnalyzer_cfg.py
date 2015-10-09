@@ -5,7 +5,7 @@ process = cms.Process('ScoutingAnalysis')
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
 process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(-1))
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10000)
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
 
 process.load('ThreeJetAnalysis.Scouting.scoutinganalyzer_cfi')

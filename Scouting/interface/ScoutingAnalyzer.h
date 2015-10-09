@@ -15,6 +15,7 @@
 #include <memory>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 // CMSSW include files
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -66,6 +67,8 @@ private:
     int cut_JetMinN;
     int cut_JetMaxN;
     edm::EDGetTokenT<ScoutingPFJetCollection> token_jets;
+    edm::EDGetTokenT<ScoutingParticleCollection> token_candidates;;
+    edm::EDGetTokenT<ScoutingVertexCollection> token_vertices;
 
     double rawHt;
     double Ht;
@@ -82,4 +85,6 @@ private:
     TH2D *h_M_vs_Pt;
     static const int size_h_M_DeltaCut = 31;
     TH1D *h_M_DeltaCut[size_h_M_DeltaCut];
+    TH1D *h_jet_vertices;
+    TH1D *h_candidate_vertices;
 };

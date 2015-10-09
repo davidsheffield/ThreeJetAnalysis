@@ -24,7 +24,12 @@ ScoutingAnalyzer::ScoutingAnalyzer(const edm::ParameterSet& iConfig):
     cut_JetMinN(iConfig.getParameter<int>("cutJetMinN")),
     cut_JetMaxN(iConfig.getParameter<int>("cutJetMaxN")),
     token_jets(consumes<ScoutingPFJetCollection>(
-		    iConfig.getParameter<InputTag>("jet_collection")))
+                   iConfig.getParameter<InputTag>("jet_collection"))),
+    token_candidates(consumes<ScoutingParticleCollection>(
+                         iConfig.getParameter<InputTag>(
+                             "candidate_collection"))),
+    token_vertices(consumes<ScoutingVertexCollection>(
+                       iConfig.getParameter<InputTag>("vertex_collection")))
 {
     //now do what ever initialization is needed
     edm::Service<TFileService> fs;
@@ -62,6 +67,16 @@ ScoutingAnalyzer::ScoutingAnalyzer(const edm::ParameterSet& iConfig):
 					  200, 0.0, 1000.0,
 					  "M_{jjj} [GeV]", "triplets");
     }
+
+    h_jet_vertices = TH1DInitializer(fs, "h_jet_vertices",
+                                     "Primary vertex of jets",
+                                     51, -1.5, 49.5,
+                                     "primary vertex index", "jets");
+    h_candidate_vertices = TH1DInitializer(fs, "h_candidate_vertices",
+                                           "Primary vertex of PF candidates",
+                                           51, -1.5, 49.5,
+                                           "primary vertex index",
+                                           "candidates");
 }
 
 
@@ -96,7 +111,7 @@ ScoutingAnalyzer::analyze(const edm::Event& iEvent,
     for (int i=0; i<size_h_jetPt; ++i) {
 	if (i + 1 > nJets)
 	    break;
-	h_jetPt[i]->Fill(jets[0].Pt());
+	h_jetPt[i]->Fill(jets[i].Pt());
     }
 
     for (int i=0; i<nJets-2; ++i) {
@@ -140,7 +155,7 @@ int ScoutingAnalyzer::GetCollections(const edm::Event& iEvent)
     // Get collections from ntuple
     // Returns nonzero if there is a problem getting a collection
 
-    // Get jet variables
+    // Get jet collection
     Handle<ScoutingPFJetCollection> handle_jets;
     iEvent.getByToken(token_jets, handle_jets);
     if (!handle_jets.isValid()) {
@@ -149,6 +164,30 @@ int ScoutingAnalyzer::GetCollections(const edm::Event& iEvent)
 	return 1;
     }
 
+    // Get candidate collection
+    Handle<ScoutingParticleCollection> handle_candidates;
+    iEvent.getByToken(token_candidates, handle_candidates);
+    if (!handle_candidates.isValid()) {
+	throw edm::Exception(edm::errors::ProductNotFound)
+	    << "Could not find scouting candidate collection." << endl;
+	return 1;
+    }
+    ScoutingParticleCollection candidates = *handle_candidates;
+
+    // Get jet collection
+    Handle<ScoutingVertexCollection> handle_vertices;
+    iEvent.getByToken(token_vertices, handle_vertices);
+    if (!handle_vertices.isValid()) {
+	throw edm::Exception(edm::errors::ProductNotFound)
+	    << "Could not find scouting vertex collection." << endl;
+	return 1;
+    }
+    ScoutingVertexCollection vertices = *handle_vertices;
+
+    /*cout << candidates.size() << " " << vertices.size() << " "
+         << vertices[0].x() << " " << vertices[0].y() << " " << vertices[0].z()
+         << endl;*/
+
     rawHt = 0;
     Ht = 0;
     for (auto &jet: *handle_jets) {
@@ -156,7 +195,32 @@ int ScoutingAnalyzer::GetCollections(const edm::Event& iEvent)
 
 	TLorentzVector tmpJet;
 	tmpJet.SetPtEtaPhiM(jet.pt(), jet.eta(), jet.phi(), jet.m());
-	if (!JetCuts(tmpJet)) {
+
+        vector<int> index_vector;
+        for (auto index: jet.constituents()) {
+            index_vector.push_back(candidates[index].vertex());
+        }
+        sort(index_vector.begin(), index_vector.end());
+        int mode = -1;
+        int count_mode = 0;
+        int count_current = 0;
+        int last = -1;
+        for (auto i: index_vector) {
+            h_candidate_vertices->Fill(i);
+            if (i == -1)
+                continue;
+            if (i != last)
+                count_current = 0;
+            ++count_current;
+            if (count_current > count_mode) {
+                mode = i;
+                count_mode = count_current;
+            }
+            last = i;
+        }
+        h_jet_vertices->Fill(mode);
+
+	if (!JetCuts(tmpJet) && mode == 0) {
 	    jets.push_back(tmpJet);
 	    Ht += jet.pt();
 	}
