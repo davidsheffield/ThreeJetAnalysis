@@ -236,7 +236,7 @@ int ScoutingAnalyzer::JetCuts(const TLorentzVector jet_)
     // Returns  0 is jet passes cuts
     if (fabs(jet_.Eta()) > cut_JetMaxEta)
 	return 1;
-    if (jet_.Pt() < jet_.Pt())
+    if (jet_.Pt() < cut_JetMinPt)
 	return 2;
     return 0;
 }
