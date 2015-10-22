@@ -7,5 +7,7 @@ monitorscouting = cms.EDAnalyzer(
     vertex_collection    = cms.InputTag('hltScoutingPFPacker'),
     MetPt                = cms.InputTag('hltScoutingPFPacker:pfMetPt'),
     MetPhi               = cms.InputTag('hltScoutingPFPacker:pfMetPhi'),
-    rho                  = cms.InputTag('hltScoutingPFPacker:rho')
+    rho                  = cms.InputTag('hltScoutingPFPacker:rho'),
+    muon_collection      = cms.InputTag('hltScoutingMuonPacker'),
+    dimuon               = cms.bool(False)
 )

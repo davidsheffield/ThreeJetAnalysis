@@ -34,7 +34,10 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
                        iConfig.getParameter<InputTag>("vertex_collection"))),
     token_MetPt(consumes<double>(iConfig.getParameter<InputTag>("MetPt"))),
     token_MetPhi(consumes<double>(iConfig.getParameter<InputTag>("MetPhi"))),
-    token_rho(consumes<double>(iConfig.getParameter<InputTag>("rho")))
+    token_rho(consumes<double>(iConfig.getParameter<InputTag>("rho"))),
+    token_muons(consumes<ScoutingMuonCollection>(
+                    iConfig.getParameter<InputTag>("muon_collection"))),
+    dimuon(iConfig.getParameter<bool>("dimuon"))
 {
     //now do what ever initialization is needed
     edm::Service<TFileService> fs;
@@ -43,6 +46,10 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
     TFileDirectory Candidate = fs->mkdir("Caniddate");
     TFileDirectory Vertex = fs->mkdir("Vertex");
     TFileDirectory MET = fs->mkdir("MET");
+    TFileDirectory Muon;
+    if (dimuon) {
+        Muon = fs->mkdir("Muon");
+    }
 
     // Event and jet histograms
     h_nJets = TH1DInitializer(&EventAndJets, "h_nJets", "PF Scouting jets",
@@ -171,6 +178,73 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
                               100, -3.1416, 3.1416, "phi", "events");
     h_rho = TH1DInitializer(&MET, "h_rho", "PF Scouting jets",
                               200, 0.0, 30.0, "rho", "events");
+
+    if (dimuon) {
+        // Muon
+        h_muon_num = TH1DInitializer(&Muon, "h_muon_num", "PF Scouting Muons",
+                                     10, -0.5, 9.5, "number of muons",
+                                     "events");
+        h_muon_pt = TH1DInitializer(&Muon, "h_muon_pt", "PF Scouting Muons",
+                                    500, 0.0, 500.0, "p_{T} [GeV]", "muons");
+        h_muon_eta = TH1DInitializer(&Muon, "h_muon_eta", "PF Scouting Muons",
+                                     100, -2.4, 2.4, "#eta", "muons");
+        h_muon_phi = TH1DInitializer(&Muon, "h_muon_phi", "PF Scouting Muons",
+                                  100, -3.1416, 3.1416, "#phi", "muons");
+        h_muon_mass = TH1DInitializer(&Muon, "h_muon_mass", "PF Scouting Muons",
+                                  200, -1.0, 1.0, "mass [MeV]", "muons");
+        h_muon_ecalIso = TH1DInitializer(&Muon, "h_muon_ecalIso",
+                                         "PF Scouting Muons",
+                                         251, -1.0, 250.0, "ECAL Iso",
+                                         "muons");
+        h_muon_hcalIso = TH1DInitializer(&Muon, "h_muon_hcalIso",
+                                         "PF Scouting Muons",
+                                         251, -1.0, 250.0, "HCAL Iso",
+                                         "muons");
+        h_muon_trackIso = TH1DInitializer(&Muon, "h_muon_trackIso",
+                                          "PF Scouting Muons", 152, -1, 75.0,
+                                          "track Iso", "muons");
+        h_muon_chi2 = TH1DInitializer(&Muon, "h_muon_chi2", "PF Scouting Muons",
+                                      200, 0.0, 400.0, "#chi^2", "muons");
+        h_muon_ndof = TH1DInitializer(&Muon, "h_muon_ndof", "PF Scouting Muons",
+                                      200, -0.5, 99.5, "ndof", "muons");
+        h_muon_charge = TH1DInitializer(&Muon, "h_muon_charge",
+                                        "PF Scouting Muons", 3, -1.5, 1.5,
+                                        "charge", "muons");
+        h_muon_dxy = TH1DInitializer(&Muon, "h_muon_dxy", "PF Scouting Muons",
+                                     200, -30.0, 30.0, "dxy [cm]", "muons");
+        h_muon_dz = TH1DInitializer(&Muon, "h_muon_dz", "PF Scouting Muons",
+                                    200, -50.0, 50.0, "dz [cm]", "muons");
+        h_muon_nValidMuonHits = TH1DInitializer(&Muon, "h_muon_nValidMuonHits",
+                                                "PF Scouting Muons",
+                                                60, -0.5, 59.5,
+                                                "valid muon hits", "muons");
+        h_muon_nValidPixelHits = TH1DInitializer(&Muon,
+                                                 "h_muon_nValidPixelHits",
+                                                 "PF Scouting Muons",
+                                                 10, -0.5, 9.5,
+                                                 "valid pixel hits", "muons");
+        h_muon_nMatchedStations = TH1DInitializer(&Muon,
+                                                  "h_muon_nMatchedStations",
+                                                  "PF Scouting Muons",
+                                                  50, -0.5, 49.5,
+                                                  "matched stations", "muons");
+        h_muon_nTrackerLayersWithMeasurement = TH1DInitializer(
+            &Muon, "h_muon_nTrackerLayersWithMeasurement", "PF Scouting Muons",
+            30, -0.5, 29.5, "tracker layers with measurement", "muons");
+        h_muon_type = TH1DInitializer(&Muon, "h_muon_type", "PF Scouting Muons",
+                                      4, -0.5, 3.5, "type", "muons");
+        h_muon_isGlobalMuon = TH1DInitializer(&Muon, "h_muon_isGlobalMuon",
+                                              "PF Scouting Muons", 2, -0.5, 1.5,
+                                              "isGlobalMuon", "muons");
+        h_muon_isTrackerMuon = TH1DInitializer(&Muon, "h_muon_isTrackerMuon",
+                                               "PF Scouting Muons",
+                                               2, -0.5, 1.5, "isTrackermuon",
+                                               "muons");
+        h_dimuon_mass = TH1DInitializer(&Muon, "h_dmuon_mass",
+                                        "PF Scouting Muons", 500, 0.3, 300.0,
+                                        "M_{#mu^{+}#mu^{-}} [GeV]", "events",
+                                        true);
+    }
 }
 
 
@@ -315,6 +389,55 @@ MonitorScouting::analyze(const edm::Event& iEvent,
     h_MetPt->Fill(*MetPt);
     h_MetPhi->Fill(*MetPhi);
     h_rho->Fill(*rho);
+
+    if (dimuon) {
+        // Get muons
+        Handle<ScoutingMuonCollection> muons;
+        iEvent.getByToken(token_muons, muons);
+        if (!muons.isValid()) {
+            throw edm::Exception(edm::errors::ProductNotFound)
+                << "Could not find muon collection." << endl;
+            return;
+        }
+
+        h_muon_num->Fill(muons->size());
+        for (auto &muon: *muons) {
+            h_muon_pt->Fill(muon.pt());
+            h_muon_eta->Fill(muon.eta());
+            h_muon_phi->Fill(muon.phi());
+            h_muon_mass->Fill(muon.m()*1000.0);
+            h_muon_ecalIso->Fill(muon.ecalIso());
+            h_muon_hcalIso->Fill(muon.hcalIso());
+            h_muon_trackIso->Fill(muon.trackIso());
+            h_muon_chi2->Fill(muon.chi2());
+            h_muon_ndof->Fill(muon.ndof());
+            h_muon_charge->Fill(muon.charge());
+            h_muon_dxy->Fill(muon.dxy());
+            h_muon_dz->Fill(muon.dz());
+            h_muon_nValidMuonHits->Fill(muon.nValidMuonHits());
+            h_muon_nValidPixelHits->Fill(muon.nValidPixelHits());
+            h_muon_nMatchedStations->Fill(muon.nMatchedStations());
+            h_muon_nTrackerLayersWithMeasurement->Fill(
+                muon.nTrackerLayersWithMeasurement());
+            h_muon_type->Fill(muon.type());
+            h_muon_isGlobalMuon->Fill(muon.isGlobalMuon());
+            h_muon_isTrackerMuon->Fill(muon.isTrackerMuon());
+        }
+
+        if (muons->size() == 2) {
+            int charge_product = 1.0;
+            TLorentzVector dimuon_vector;
+            for (auto &muon: *muons) {
+                charge_product *= muon.charge();
+                TLorentzVector tmp_vector;
+                tmp_vector.SetPtEtaPhiM(muon.pt(), muon.eta(), muon.phi(),
+                                        muon.m());
+                dimuon_vector += tmp_vector;
+            }
+            if (charge_product < 0)
+                h_dimuon_mass->Fill(dimuon_vector.M());
+        }
+    }
 
     return;
 }

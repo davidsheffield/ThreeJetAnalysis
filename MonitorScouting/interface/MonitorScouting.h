@@ -33,6 +33,7 @@
 #include "DataFormats/Scouting/interface/ScoutingPFJet.h"
 #include "DataFormats/Scouting/interface/ScoutingParticle.h"
 #include "DataFormats/Scouting/interface/ScoutingVertex.h"
+#include "DataFormats/Scouting/interface/ScoutingMuon.h"
 
 // Root include files
 #include "TLorentzVector.h"
@@ -65,6 +66,9 @@ private:
     edm::EDGetTokenT<double> token_MetPt;
     edm::EDGetTokenT<double> token_MetPhi;
     edm::EDGetTokenT<double> token_rho;
+    edm::EDGetTokenT<ScoutingMuonCollection> token_muons;
+
+    bool dimuon;
 
     TH1D *h_nJets;
     TH1D *h_pt;
@@ -112,4 +116,26 @@ private:
     TH1D *h_MetPt;
     TH1D *h_MetPhi;
     TH1D *h_rho;
+
+    TH1D *h_muon_num;
+    TH1D *h_muon_pt;
+    TH1D *h_muon_eta;
+    TH1D *h_muon_phi;
+    TH1D *h_muon_mass;
+    TH1D *h_muon_ecalIso;
+    TH1D *h_muon_hcalIso;
+    TH1D *h_muon_trackIso;
+    TH1D *h_muon_chi2;
+    TH1D *h_muon_ndof;
+    TH1D *h_muon_charge;
+    TH1D *h_muon_dxy;
+    TH1D *h_muon_dz;
+    TH1D *h_muon_nValidMuonHits;
+    TH1D *h_muon_nValidPixelHits;
+    TH1D *h_muon_nMatchedStations;
+    TH1D *h_muon_nTrackerLayersWithMeasurement;
+    TH1D *h_muon_type;
+    TH1D *h_muon_isGlobalMuon;
+    TH1D *h_muon_isTrackerMuon;
+    TH1D *h_dimuon_mass;
 };
