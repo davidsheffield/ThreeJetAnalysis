@@ -37,6 +37,10 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
     token_rho(consumes<double>(iConfig.getParameter<InputTag>("rho"))),
     token_muons(consumes<ScoutingMuonCollection>(
                     iConfig.getParameter<InputTag>("muon_collection"))),
+    token_electrons(consumes<ScoutingElectronCollection>(
+                        iConfig.getParameter<InputTag>("electron_collection"))),
+    token_photons(consumes<ScoutingPhotonCollection>(
+                      iConfig.getParameter<InputTag>("photon_collection"))),
     dimuon(iConfig.getParameter<bool>("dimuon"))
 {
     //now do what ever initialization is needed
@@ -47,8 +51,12 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
     TFileDirectory Vertex = fs->mkdir("Vertex");
     TFileDirectory MET = fs->mkdir("MET");
     TFileDirectory Muon;
+    TFileDirectory Electron;
+    TFileDirectory Photon;
     if (dimuon) {
         Muon = fs->mkdir("Muon");
+        Electron = fs->mkdir("Electron");
+        Photon = fs->mkdir("Photon");
     }
 
     // Event and jet histograms
@@ -191,7 +199,7 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
         h_muon_phi = TH1DInitializer(&Muon, "h_muon_phi", "PF Scouting Muons",
                                   100, -3.1416, 3.1416, "#phi", "muons");
         h_muon_mass = TH1DInitializer(&Muon, "h_muon_mass", "PF Scouting Muons",
-                                  200, -1.0, 1.0, "mass [MeV]", "muons");
+                                  200, -1.0, 150.0, "mass [MeV]", "muons");
         h_muon_ecalIso = TH1DInitializer(&Muon, "h_muon_ecalIso",
                                          "PF Scouting Muons",
                                          251, -1.0, 250.0, "ECAL Iso",
@@ -241,9 +249,108 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
                                                2, -0.5, 1.5, "isTrackermuon",
                                                "muons");
         h_dimuon_mass = TH1DInitializer(&Muon, "h_dmuon_mass",
-                                        "PF Scouting Muons", 500, 0.3, 300.0,
-                                        "M_{#mu^{+}#mu^{-}} [GeV]", "events",
-                                        true);
+                                        "PF Scouting Muons", 300, 0.0, 300.0,
+                                        "M_{#mu^{+}#mu^{-}} [GeV]", "events");
+
+        // Electron
+        h_electron_num = TH1DInitializer(&Electron, "h_electron_num",
+                                         "PF Scouting Muons", 10, -0.5, 9.5,
+                                         "number of electrons", "events");
+        h_electron_pt = TH1DInitializer(&Electron, "h_electron_pt",
+                                        "PF Scouting Muons", 500, 0.0, 500.0,
+                                        "p_{T} [GeV]", "electrons");
+        h_electron_eta = TH1DInitializer(&Electron, "h_electron_eta",
+                                         "PF Scouting Muons", 100, -2.5, 2.5,
+                                         "#eta", "electrons");
+        h_electron_phi = TH1DInitializer(&Electron, "h_electron_phi",
+                                         "PF Scouting Muons",
+                                         100, -3.1416, 3.1416, "#phi",
+                                         "electrons");
+        h_electron_mass = TH1DInitializer(&Electron, "h_electron_mass",
+                                          "PF Scouting Muons", 200, -1.0, 1.0,
+                                          "mass [MeV]", "electrons");
+        h_electron_d0 = TH1DInitializer(&Electron, "h_electron_d0",
+                                        "PF Scouting Muons", 200, -30.0, 30.0,
+                                        "d0 [cm]", "electrons");
+        h_electron_dz = TH1DInitializer(&Electron, "h_electron_dz",
+                                        "PF Scouting Muons", 200, -50.0, 50.0,
+                                        "dz [cm]", "electrons");
+        h_electron_dEtaIn = TH1DInitializer(&Electron, "h_electron_dEtaIn",
+                                            "PF Scouting Muons",
+                                            200, 0.0, 30.0, "dEtaIn",
+                                            "electrons");
+        h_electron_dPhiIn = TH1DInitializer(&Electron, "h_electron_dPhiIn",
+                                            "PF Scouting Muons",
+                                            200, 0.0, 10.0, "dPhiIn",
+                                            "electrons");
+        h_electron_sigmaIetaIeta = TH1DInitializer(&Electron,
+                                                   "h_electron_sigmaIetaIeta",
+                                                   "PF Scouting Muons",
+                                                   200, -1.0, 1.0,
+                                                   "sigmaIetaIeta",
+                                                   "electrons");
+        h_electron_hOverE = TH1DInitializer(&Electron, "h_electron_hOverE",
+                                            "PF Scouting Muons", 200, 0.0, 2.0,
+                                            "H/E", "electrons");
+        h_electron_ooEMOop = TH1DInitializer(&Electron, "h_electron_ooEMOop",
+                                             "PF Scouting Muons",
+                                             200, -0.5, 1.5, "1/E - 1/p",
+                                             "electrons");
+        h_electron_missingHits = TH1DInitializer(&Electron,
+                                                 "h_electron_missingHits",
+                                                 "PF Scouting Muons",
+                                                 15, -0.5, 14.5,
+                                                 "missing hits", "electrons");
+        h_electron_charge = TH1DInitializer(&Electron, "h_electron_charge",
+                                            "PF Scouting Muons", 3, -1.5, 1.5,
+                                            "charge", "electrons");
+        h_electron_ecalIso = TH1DInitializer(&Electron, "h_electron_ecalIso",
+                                             "PF Scouting Muons",
+                                             251, -1.0, 250.0, "ECAL Iso",
+                                             "electrons");
+        h_electron_hcalIso = TH1DInitializer(&Electron, "h_electron_hcalIso",
+                                             "PF Scouting Muons",
+                                             251, -1.0, 250.0, "HCAL Iso",
+                                             "electrons");
+        h_electron_trackIso = TH1DInitializer(&Electron, "h_electron_trackIso",
+                                              "PF Scouting Muons",
+                                              152, -1, 75.0, "track Iso",
+                                              "electrons");
+
+        // Photon
+        h_photon_num = TH1DInitializer(&Photon, "h_photon_num",
+                                       "PF Scouting Muons", 10, -0.5, 9.5,
+                                       "number of photons", "events");
+        h_photon_pt = TH1DInitializer(&Photon, "h_photon_pt",
+                                      "PF Scouting Muons", 500, 0.0, 500.0,
+                                      "p_{T} [GeV]", "photons");
+        h_photon_eta = TH1DInitializer(&Photon, "h_photon_eta",
+                                       "PF Scouting Muons", 100, -2.5, 2.5,
+                                       "#eta", "photons");
+        h_photon_phi = TH1DInitializer(&Photon, "h_photon_phi",
+                                       "PF Scouting Muons",
+                                       100, -3.1416, 3.1416, "#phi",
+                                       "photons");
+        h_photon_mass = TH1DInitializer(&Photon, "h_photon_mass",
+                                        "PF Scouting Muons", 200, -1.0, 1.0,
+                                        "mass [MeV]", "photons");
+        h_photon_sigmaIetaIeta = TH1DInitializer(&Photon,
+                                                 "h_photon_sigmaIetaIeta",
+                                                 "PF Scouting Muons",
+                                                 200, -1.0, 1.0,
+                                                 "sigmaIetaIeta",
+                                                 "photons");
+        h_photon_hOverE = TH1DInitializer(&Photon, "h_photon_hOverE",
+                                          "PF Scouting Muons", 200, 0.0, 2.0,
+                                          "H/E", "photons");
+        h_photon_ecalIso = TH1DInitializer(&Photon, "h_photon_ecalIso",
+                                           "PF Scouting Muons",
+                                           251, -1.0, 250.0, "ECAL Iso",
+                                           "photons");
+        h_photon_hcalIso = TH1DInitializer(&Photon, "h_photon_hcalIso",
+                                           "PF Scouting Muons",
+                                           251, -1.0, 250.0, "HCAL Iso",
+                                           "photons");
     }
 }
 
@@ -400,6 +507,24 @@ MonitorScouting::analyze(const edm::Event& iEvent,
             return;
         }
 
+        // Get electrons
+        Handle<ScoutingElectronCollection> electrons;
+        iEvent.getByToken(token_electrons, electrons);
+        if (!electrons.isValid()) {
+            throw edm::Exception(edm::errors::ProductNotFound)
+                << "Could not find electron collection." << endl;
+            return;
+        }
+
+        // Get photons
+        Handle<ScoutingPhotonCollection> photons;
+        iEvent.getByToken(token_photons, photons);
+        if (!photons.isValid()) {
+            throw edm::Exception(edm::errors::ProductNotFound)
+                << "Could not find photon collection." << endl;
+            return;
+        }
+
         h_muon_num->Fill(muons->size());
         for (auto &muon: *muons) {
             h_muon_pt->Fill(muon.pt());
@@ -436,6 +561,38 @@ MonitorScouting::analyze(const edm::Event& iEvent,
             }
             if (charge_product < 0)
                 h_dimuon_mass->Fill(dimuon_vector.M());
+        }
+
+        h_electron_num->Fill(electrons->size());
+        for (auto &electron: *electrons) {
+            h_electron_pt->Fill(electron.pt());
+            h_electron_eta->Fill(electron.eta());
+            h_electron_phi->Fill(electron.phi());
+            h_electron_mass->Fill(electron.m()*1000.0);
+            h_electron_d0->Fill(electron.d0());
+            h_electron_dz->Fill(electron.dz());
+            h_electron_dEtaIn->Fill(electron.dEtaIn());
+            h_electron_dPhiIn->Fill(electron.dPhiIn());
+            h_electron_sigmaIetaIeta->Fill(electron.sigmaIetaIeta());
+            h_electron_hOverE->Fill(electron.hOverE());
+            h_electron_ooEMOop->Fill(electron.ooEMOop());
+            h_electron_missingHits->Fill(electron.missingHits());
+            h_electron_charge->Fill(electron.charge());
+            h_electron_ecalIso->Fill(electron.ecalIso());
+            h_electron_hcalIso->Fill(electron.hcalIso());
+            h_electron_trackIso->Fill(electron.trackIso());
+        }
+
+        h_photon_num->Fill(photons->size());
+        for (auto &photon: *photons) {
+            h_photon_pt->Fill(photon.pt());
+            h_photon_eta->Fill(photon.eta());
+            h_photon_phi->Fill(photon.phi());
+            h_photon_mass->Fill(photon.m()*1000.0);
+            h_photon_sigmaIetaIeta->Fill(photon.sigmaIetaIeta());
+            h_photon_hOverE->Fill(photon.hOverE());
+            h_photon_ecalIso->Fill(photon.ecalIso());
+            h_photon_hcalIso->Fill(photon.hcalIso());
         }
     }
 

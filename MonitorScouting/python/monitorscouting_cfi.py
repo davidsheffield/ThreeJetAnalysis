@@ -9,5 +9,7 @@ monitorscouting = cms.EDAnalyzer(
     MetPhi               = cms.InputTag('hltScoutingPFPacker:pfMetPhi'),
     rho                  = cms.InputTag('hltScoutingPFPacker:rho'),
     muon_collection      = cms.InputTag('hltScoutingMuonPacker'),
+    electron_collection  = cms.InputTag('hltScoutingEgammaPacker'),
+    photon_collection    = cms.InputTag('hltScoutingEgammaPacker'),
     dimuon               = cms.bool(False)
 )

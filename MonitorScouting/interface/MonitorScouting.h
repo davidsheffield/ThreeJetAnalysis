@@ -34,6 +34,8 @@
 #include "DataFormats/Scouting/interface/ScoutingParticle.h"
 #include "DataFormats/Scouting/interface/ScoutingVertex.h"
 #include "DataFormats/Scouting/interface/ScoutingMuon.h"
+#include "DataFormats/Scouting/interface/ScoutingElectron.h"
+#include "DataFormats/Scouting/interface/ScoutingPhoton.h"
 
 // Root include files
 #include "TLorentzVector.h"
@@ -67,6 +69,8 @@ private:
     edm::EDGetTokenT<double> token_MetPhi;
     edm::EDGetTokenT<double> token_rho;
     edm::EDGetTokenT<ScoutingMuonCollection> token_muons;
+    edm::EDGetTokenT<ScoutingElectronCollection> token_electrons;
+    edm::EDGetTokenT<ScoutingPhotonCollection> token_photons;
 
     bool dimuon;
 
@@ -138,4 +142,32 @@ private:
     TH1D *h_muon_isGlobalMuon;
     TH1D *h_muon_isTrackerMuon;
     TH1D *h_dimuon_mass;
+
+    TH1D *h_electron_num;
+    TH1D *h_electron_pt;
+    TH1D *h_electron_eta;
+    TH1D *h_electron_phi;
+    TH1D *h_electron_mass;
+    TH1D *h_electron_d0;
+    TH1D *h_electron_dz;
+    TH1D *h_electron_dEtaIn;
+    TH1D *h_electron_dPhiIn;
+    TH1D *h_electron_sigmaIetaIeta;
+    TH1D *h_electron_hOverE;
+    TH1D *h_electron_ooEMOop;
+    TH1D *h_electron_missingHits;
+    TH1D *h_electron_charge;
+    TH1D *h_electron_ecalIso;
+    TH1D *h_electron_hcalIso;
+    TH1D *h_electron_trackIso;
+
+    TH1D *h_photon_num;
+    TH1D *h_photon_pt;
+    TH1D *h_photon_eta;
+    TH1D *h_photon_phi;
+    TH1D *h_photon_mass;
+    TH1D *h_photon_sigmaIetaIeta;
+    TH1D *h_photon_hOverE;
+    TH1D *h_photon_ecalIso;
+    TH1D *h_photon_hcalIso;
 };
