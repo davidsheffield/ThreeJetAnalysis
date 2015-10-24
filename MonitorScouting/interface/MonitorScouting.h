@@ -141,7 +141,9 @@ private:
     TH1D *h_muon_type;
     TH1D *h_muon_isGlobalMuon;
     TH1D *h_muon_isTrackerMuon;
-    TH1D *h_dimuon_mass;
+    TH1D *h_dimuon_mass_twoMuons;
+    TH1D *h_dimuon_mass_allMuons;
+    TH1D *h_dimuon_mass_allButTwoMuons;
 
     TH1D *h_electron_num;
     TH1D *h_electron_pt;
@@ -171,3 +173,5 @@ private:
     TH1D *h_photon_ecalIso;
     TH1D *h_photon_hcalIso;
 };
+
+void normalizeHistogram(TH1D*);

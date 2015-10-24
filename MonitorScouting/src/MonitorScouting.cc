@@ -248,9 +248,22 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
                                                "PF Scouting Muons",
                                                2, -0.5, 1.5, "isTrackermuon",
                                                "muons");
-        h_dimuon_mass = TH1DInitializer(&Muon, "h_dmuon_mass",
-                                        "PF Scouting Muons", 300, 0.0, 300.0,
-                                        "M_{#mu^{+}#mu^{-}} [GeV]", "events");
+        h_dimuon_mass_twoMuons = TH1DInitializer(&Muon,
+                                                 "h_dimuon_mass_twoMuons",
+                                                 "PF Scouting Muons",
+                                                 1000, 0.0, 1000.0,
+                                                 "M_{#mu^{+}#mu^{-}} [GeV]",
+                                                 "events");
+        h_dimuon_mass_allMuons = TH1DInitializer(&Muon,
+                                                 "h_dimuon_mass_allMuons",
+                                                 "PF Scouting Muons",
+                                                 1000, 0.3, 2000.0,
+                                                 "M_{#mu^{+}#mu^{-}} [GeV]",
+                                                 "events / 1 GeV", true);
+        h_dimuon_mass_allButTwoMuons = TH1DInitializer(
+            &Muon, "h_dimuon_mass_allButTwoMuons", "PF Scouting Muons",
+            1000, 0.3, 2000.0, "M_{#mu^{+}#mu^{-}} [GeV]", "events / 1 GeV",
+            true);
 
         // Electron
         h_electron_num = TH1DInitializer(&Electron, "h_electron_num",
@@ -525,6 +538,9 @@ MonitorScouting::analyze(const edm::Event& iEvent,
             return;
         }
 
+        vector<TLorentzVector> muon_plus;
+        vector<TLorentzVector> muon_minus;
+
         h_muon_num->Fill(muons->size());
         for (auto &muon: *muons) {
             h_muon_pt->Fill(muon.pt());
@@ -547,6 +563,14 @@ MonitorScouting::analyze(const edm::Event& iEvent,
             h_muon_type->Fill(muon.type());
             h_muon_isGlobalMuon->Fill(muon.isGlobalMuon());
             h_muon_isTrackerMuon->Fill(muon.isTrackerMuon());
+
+            TLorentzVector tmp_vector;
+            tmp_vector.SetPtEtaPhiM(muon.pt(), muon.eta(), muon.phi(),
+                                    muon.m());
+            if (muon.charge() > 0)
+                muon_plus.push_back(tmp_vector);
+            else
+                muon_minus.push_back(tmp_vector);
         }
 
         if (muons->size() == 2) {
@@ -560,7 +584,18 @@ MonitorScouting::analyze(const edm::Event& iEvent,
                 dimuon_vector += tmp_vector;
             }
             if (charge_product < 0)
-                h_dimuon_mass->Fill(dimuon_vector.M());
+                h_dimuon_mass_twoMuons->Fill(dimuon_vector.M());
+        }
+
+        if (muon_plus.size() > 0 && muon_minus.size() > 0) {
+            for (unsigned int i=0; i<muon_plus.size(); ++i) {
+                for (unsigned int j=0; j<muon_minus.size(); ++j) {
+                    TLorentzVector dimuon_vector = muon_plus[i] + muon_minus[j];
+                    h_dimuon_mass_allMuons->Fill(dimuon_vector.M());
+                    if (muons->size() != 2)
+                        h_dimuon_mass_allButTwoMuons->Fill(dimuon_vector.M());
+                }
+            }
         }
 
         h_electron_num->Fill(electrons->size());
@@ -608,6 +643,8 @@ void MonitorScouting::beginJob()
 // ------- method called once each job just after ending the event loop  -------
 void MonitorScouting::endJob()
 {
+    normalizeHistogram(h_dimuon_mass_allMuons);
+    normalizeHistogram(h_dimuon_mass_allButTwoMuons);
 }
 
 
@@ -618,6 +655,19 @@ void MonitorScouting::fillDescriptions(edm::ConfigurationDescriptions& descripti
   edm::ParameterSetDescription desc;
   desc.setUnknown();
   descriptions.addDefault(desc);
+}
+
+void normalizeHistogram(TH1D *hist)
+{
+    int nbins = hist->GetNbinsX();
+    for (int i=1; i<nbins+1; ++i) {
+        double content = hist->GetBinContent(i);
+        double error = hist->GetBinError(i);
+        double width = hist->GetXaxis()->GetBinWidth(i);
+        hist->SetBinContent(i, content/width);
+        hist->SetBinError(i, error/width);
+    }
+    return;
 }
 
 //define this as a plug-in
