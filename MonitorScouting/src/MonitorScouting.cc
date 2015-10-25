@@ -643,8 +643,10 @@ void MonitorScouting::beginJob()
 // ------- method called once each job just after ending the event loop  -------
 void MonitorScouting::endJob()
 {
-    normalizeHistogram(h_dimuon_mass_allMuons);
-    normalizeHistogram(h_dimuon_mass_allButTwoMuons);
+    if (dimuon) {
+        normalizeHistogram(h_dimuon_mass_allMuons);
+        normalizeHistogram(h_dimuon_mass_allButTwoMuons);
+    }
 }
 
 
