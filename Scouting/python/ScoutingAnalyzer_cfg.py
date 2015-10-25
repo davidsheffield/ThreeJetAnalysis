@@ -14,6 +14,11 @@ options.register('reportEvery',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
                  "Number of events to process before reporting progress.")
+options.register('monitor',
+                 False, # default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Make monitoring histograms")
 options.parseArguments()
 
 process.maxEvents = cms.untracked.PSet(
@@ -34,4 +39,8 @@ process.TFileService = cms.Service(
     fileName = cms.string(options.outputFile)
 )
 
-process.p = cms.Path(process.scoutinganalyzer)
+if options.monitor:
+    process.load('ThreeJetAnalysis.MonitorScouting.monitorscouting_cfi')
+    process.p = cms.Path(process.scoutinganalyzer*process.monitorscouting)
+else:
+    process.p = cms.Path(process.scoutinganalyzer)
