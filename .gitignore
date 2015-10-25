@@ -4,3 +4,5 @@ __init__.py
 *.so
 \#*\#
 *.root
+crab.log
+jobs/
