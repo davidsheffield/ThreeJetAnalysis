@@ -160,6 +160,7 @@ private:
     TH1D *h_electron_ecalIso;
     TH1D *h_electron_hcalIso;
     TH1D *h_electron_trackIso;
+    TH1D *h_dielectron_mass;
 
     TH1D *h_photon_num;
     TH1D *h_photon_pt;
@@ -170,6 +171,7 @@ private:
     TH1D *h_photon_hOverE;
     TH1D *h_photon_ecalIso;
     TH1D *h_photon_hcalIso;
+    TH1D *h_diphoton_mass;
 };
 
 void normalizeHistogram(TH1D*);

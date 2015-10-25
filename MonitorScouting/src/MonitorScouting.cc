@@ -302,6 +302,10 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
     h_electron_trackIso = TH1DInitializer(&Electron, "h_electron_trackIso",
                                           "PF Scouting Muons", 152, -1, 75.0,
                                           "track Iso", "electrons");
+    h_dielectron_mass = TH1DInitializer(&Electron, "h_dielectron_mass",
+                                        "PF Scouting Muons", 1000, 0.3, 2000.0,
+                                        "M_{ee} [GeV]",
+                                        "events / 1 GeV", true);
 
     // Photon
     h_photon_num = TH1DInitializer(&Photon, "h_photon_num", "PF Scouting Muons",
@@ -329,6 +333,10 @@ MonitorScouting::MonitorScouting(const edm::ParameterSet& iConfig):
     h_photon_hcalIso = TH1DInitializer(&Photon, "h_photon_hcalIso",
                                        "PF Scouting Muons", 251, -1.0, 250.0,
                                        "HCAL Iso", "photons");
+    h_diphoton_mass = TH1DInitializer(&Photon, "h_diphoton_mass",
+                                      "PF Scouting Muons", 1000, 0.3, 2000.0,
+                                      "M_{#gamma#gamma} [GeV]",
+                                      "events / 1 GeV", true);
 }
 
 
@@ -563,6 +571,7 @@ MonitorScouting::analyze(const edm::Event& iEvent,
             }
         }
 
+        vector<TLorentzVector> electron_vector;
         h_electron_num->Fill(electrons->size());
         for (auto &electron: *electrons) {
             h_electron_pt->Fill(electron.pt());
@@ -581,8 +590,24 @@ MonitorScouting::analyze(const edm::Event& iEvent,
             h_electron_ecalIso->Fill(electron.ecalIso());
             h_electron_hcalIso->Fill(electron.hcalIso());
             h_electron_trackIso->Fill(electron.trackIso());
+
+            TLorentzVector tmp_vector;
+            tmp_vector.SetPtEtaPhiM(electron.pt(), electron.eta(),
+                                    electron.phi(), electron.m());
+            electron_vector.push_back(tmp_vector);
         }
 
+        if (electron_vector.size() > 1) {
+            for (unsigned int i=0; i<electron_vector.size()-1; ++i) {
+                for (unsigned int j=i+1; j<electron_vector.size(); ++j) {
+                    TLorentzVector dielectron_vector = electron_vector[i]
+                                                     + electron_vector[j];
+                    h_dielectron_mass->Fill(dielectron_vector.M());
+                }
+            }
+        }
+
+        vector<TLorentzVector> photon_vector;
         h_photon_num->Fill(photons->size());
         for (auto &photon: *photons) {
             h_photon_pt->Fill(photon.pt());
@@ -593,6 +618,21 @@ MonitorScouting::analyze(const edm::Event& iEvent,
             h_photon_hOverE->Fill(photon.hOverE());
             h_photon_ecalIso->Fill(photon.ecalIso());
             h_photon_hcalIso->Fill(photon.hcalIso());
+
+            TLorentzVector tmp_vector;
+            tmp_vector.SetPtEtaPhiM(photon.pt(), photon.eta(), photon.phi(),
+                                    photon.m());
+            photon_vector.push_back(tmp_vector);
+        }
+
+        if (photon_vector.size() > 1) {
+            for (unsigned int i=0; i<photon_vector.size()-1; ++i) {
+                for (unsigned int j=i+1; j<photon_vector.size(); ++j) {
+                    TLorentzVector diphoton_vector = photon_vector[i]
+                                                   + photon_vector[j];
+                    h_diphoton_mass->Fill(diphoton_vector.M());
+                }
+            }
         }
     }
 
