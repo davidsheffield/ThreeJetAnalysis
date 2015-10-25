@@ -14,11 +14,6 @@ options.register('reportEvery',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
                  "Number of events to process before reporting progress.")
-options.register('muon',
-                 False, # default value
-                 VarParsing.VarParsing.multiplicity.singleton,
-                 VarParsing.VarParsing.varType.bool,
-                 "Is a scouting muon dataset.")
 options.parseArguments()
 
 process.maxEvents = cms.untracked.PSet(
@@ -38,7 +33,5 @@ process.TFileService = cms.Service(
     "TFileService",
     fileName = cms.string(options.outputFile)
 )
-
-process.monitorscouting.dimuon = cms.bool(options.muon)
 
 process.p = cms.Path(process.monitorscouting)

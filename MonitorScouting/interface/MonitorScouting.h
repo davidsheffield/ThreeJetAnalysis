@@ -72,8 +72,6 @@ private:
     edm::EDGetTokenT<ScoutingElectronCollection> token_electrons;
     edm::EDGetTokenT<ScoutingPhotonCollection> token_photons;
 
-    bool dimuon;
-
     TH1D *h_nJets;
     TH1D *h_pt;
     TH1D *h_eta;
