@@ -101,10 +101,12 @@ DiPhotonNtuplizer::DiPhotonNtuplizer(const edm::ParameterSet& iConfig):
     tree->Branch("electron2_trackIso", &electron2_trackIso);
 
     tree->Branch("muon_num", &muon_num, "muon_num/I");
+    tree->Branch("dimuon_mass", &dimuon_mass);
     tree->Branch("muon_pt", &muon_pt);
     tree->Branch("muon_eta", &muon_eta);
     tree->Branch("muon_phi", &muon_phi);
     tree->Branch("muon_m", &muon_m);
+    tree->Branch("muon_charge", &muon_charge);
 
     tree->Branch("HT", &Ht, "HT/F");
     tree->Branch("jet_num", &jet_num, "jet_num/I");
@@ -205,10 +207,12 @@ DiPhotonNtuplizer::analyze(const edm::Event& iEvent,
     electron2_trackIso.clear();
 
     muon_num = 0;
+    dimuon_mass.clear();
     muon_pt.clear();
     muon_eta.clear();
     muon_phi.clear();
     muon_m.clear();
+    muon_charge.clear();
 
     Ht = 0.0;
     jet_num = 0;
@@ -364,12 +368,31 @@ DiPhotonNtuplizer::analyze(const edm::Event& iEvent,
         }
     }
 
+    vector<TLorentzVector> muon_plus;
+    vector<TLorentzVector> muon_minus;
     muon_num = muons->size();
     for (auto &muon: *muons) {
         muon_pt.push_back(muon.pt());
         muon_eta.push_back(muon.eta());
         muon_phi.push_back(muon.phi());
         muon_m.push_back(muon.m());
+        muon_charge.push_back(muon.charge());
+
+        TLorentzVector tmp_vector;
+        tmp_vector.SetPtEtaPhiM(muon.pt(), muon.eta(), muon.phi(), muon.m());
+        if (muon.charge() > 0)
+            muon_plus.push_back(tmp_vector);
+        else
+            muon_minus.push_back(tmp_vector);
+    }
+
+    if (muon_plus.size() > 0 && muon_minus.size() > 0) {
+        for (unsigned int i=0; i<muon_plus.size(); ++i) {
+            for (unsigned int j=0; j<muon_minus.size(); ++j) {
+                TLorentzVector dimuon_vector = muon_plus[i] + muon_minus[j];
+                dimuon_mass.push_back(dimuon_vector.M());
+            }
+        }
     }
 
     jet_num = jets->size();

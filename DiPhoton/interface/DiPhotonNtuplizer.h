@@ -133,10 +133,12 @@ private:
     std::vector<float> electron2_trackIso;
 
     int muon_num;
+    std::vector<float> dimuon_mass;
     std::vector<float> muon_pt;
     std::vector<float> muon_eta;
     std::vector<float> muon_phi;
     std::vector<float> muon_m;
+    std::vector<int> muon_charge;
 
     float Ht;
     int jet_num;
