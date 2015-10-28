@@ -1,4 +1,4 @@
-#include "ThreeJetAnalysis/DiPhoton/interface/MakeHistograms.h"
+#include "ThreeJetAnalysis/DiPhoton/bin/MakeHistograms.h"
 
 using namespace std;
 
@@ -52,14 +52,29 @@ void MakeHistograms::Loop()
     Long64_t nentries = fChain->GetEntries();
     cout << "Running over " << nentries << " events" << endl;
 
+    last_Run = -1;
+    last_Lumi = -1;
+    cout << "{";
     Long64_t nbytes = 0, nb = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++) {
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);   nbytes += nb;
         // if (Cut(ientry) < 0) continue;
-        if (jentry % 100000 == 0)
-            cout << "Processing event " << jentry << endl;
+        //if (jentry % 1000000 == 0)
+        //  cout << "Processing event " << jentry << endl;
+
+        if (Run != last_Run) {
+            cout << last_Lumi << "]]," << endl;
+            cout << " \"" << Run << "\": [[" << Lumi << ",";
+            last_Run = Run;
+            last_Lumi = Lumi;
+        } else if (Lumi > last_Lumi+1) {
+            cout << last_Lumi << "], [" << Lumi << ",";
+            last_Lumi = Lumi;
+        } else if (Lumi == last_Lumi+1) {
+            last_Lumi = Lumi;
+        }
 
         for (unsigned int i=0; i<diphoton_mass->size(); ++i){
             float mass = (*diphoton_mass)[i];
@@ -108,13 +123,15 @@ void MakeHistograms::Loop()
 
         for (unsigned int i=0; i<dimuon_mass->size(); ++i){
             float mass = (*dimuon_mass)[i];
-            if (mass < 10.0) {
+            if (mass < 9.996) {
                 h_dimuon_mass_low->Fill(mass);
             } else {
                 h_dimuon_mass_high->Fill(mass);
             }
         }
     }
+    cout << last_Lumi << "]]" << endl;;
+    cout << "}" << endl;
 }
 
 Int_t MakeHistograms::GetEntry(Long64_t entry)
@@ -421,10 +438,10 @@ void MakeHistograms::InitializeHistograms()
     h_pt_up_2 = TH1DInitialize("h_pt_up_2", "Scouting PF HT",
                                200, 0.0, 10000.0, "p_{T} [GeV]", "");
     h_dimuon_mass_low = TH1DInitialize("h_dimuon_mass_low", "Scouting PF HT",
-                                       200, 0.0, 10.0,
+                                       500, 0.0, 10.0,
                                        "M_{#mu^{+}#mu^{-}} [GeV]", "events");
     h_dimuon_mass_high = TH1DInitialize("h_dimuon_mass_high", "Scouting PF HT",
-                                        200, 10.0, 1000.0,
+                                        995, 10.0, 2000.0,
                                         "M_{#mu^{+}#mu^{-}} [GeV]", "events");
 
     return;

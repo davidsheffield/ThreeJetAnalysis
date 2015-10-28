@@ -214,6 +214,9 @@ public :
     TH1D *h_pt_up_2;
     TH1D *h_dimuon_mass_low;
     TH1D *h_dimuon_mass_high;
+
+    int last_Run;
+    int last_Lumi;
 };
 
 TH1D* TH1DInitialize(const TString, const TString, const Int_t, const Double_t,
