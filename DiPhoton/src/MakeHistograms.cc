@@ -105,6 +105,15 @@ void MakeHistograms::Loop()
                 h_diphoton_mass_barrel_eta->Fill(mass*1000.0);
             }
         }
+
+        for (unsigned int i=0; i<dimuon_mass->size(); ++i){
+            float mass = (*dimuon_mass)[i];
+            if (mass < 10.0) {
+                h_dimuon_mass_low->Fill(mass);
+            } else {
+                h_dimuon_mass_high->Fill(mass);
+            }
+        }
     }
 }
 
@@ -186,10 +195,12 @@ void MakeHistograms::Init(TTree *tree)
     electron2_ecalIso = 0;
     electron2_hcalIso = 0;
     electron2_trackIso = 0;
+    dimuon_mass = 0;
     muon_pt = 0;
     muon_eta = 0;
     muon_phi = 0;
     muon_m = 0;
+    muon_charge = 0;
     jet_pt = 0;
     jet_eta = 0;
     jet_phi = 0;
@@ -256,10 +267,12 @@ void MakeHistograms::Init(TTree *tree)
     fChain->SetBranchAddress("electron2_hcalIso", &electron2_hcalIso, &b_electron2_hcalIso);
     fChain->SetBranchAddress("electron2_trackIso", &electron2_trackIso, &b_electron2_trackIso);
     fChain->SetBranchAddress("muon_num", &muon_num, &b_muon_num);
+    fChain->SetBranchAddress("dimuon_mass", &dimuon_mass, &b_dimuon_mass);
     fChain->SetBranchAddress("muon_pt", &muon_pt, &b_muon_pt);
     fChain->SetBranchAddress("muon_eta", &muon_eta, &b_muon_eta);
     fChain->SetBranchAddress("muon_phi", &muon_phi, &b_muon_phi);
     fChain->SetBranchAddress("muon_m", &muon_m, &b_muon_m);
+    fChain->SetBranchAddress("muon_charge", &muon_charge, &b_muon_charge);
     fChain->SetBranchAddress("HT", &HT, &b_HT);
     fChain->SetBranchAddress("jet_num", &jet_num, &b_jet_num);
     fChain->SetBranchAddress("jet_pt", &jet_pt, &b_jet_pt);
@@ -337,6 +350,8 @@ void MakeHistograms::Make(TString file_name)
     h_pt_low_2->Write();
     h_pt_up_1->Write();
     h_pt_up_2->Write();
+    h_dimuon_mass_low->Write();
+    h_dimuon_mass_high->Write();
     file->Close();
 
     return;
@@ -405,6 +420,12 @@ void MakeHistograms::InitializeHistograms()
                                 200, 0.0, 10000.0, "p_{T} [GeV]", "");
     h_pt_up_2 = TH1DInitialize("h_pt_up_2", "Scouting PF HT",
                                200, 0.0, 10000.0, "p_{T} [GeV]", "");
+    h_dimuon_mass_low = TH1DInitialize("h_dimuon_mass_low", "Scouting PF HT",
+                                       200, 0.0, 10.0,
+                                       "M_{#mu^{+}#mu^{-}} [GeV]", "events");
+    h_dimuon_mass_high = TH1DInitialize("h_dimuon_mass_high", "Scouting PF HT",
+                                        200, 10.0, 1000.0,
+                                        "M_{#mu^{+}#mu^{-}} [GeV]", "events");
 
     return;
 }

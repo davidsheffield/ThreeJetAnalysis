@@ -78,10 +78,12 @@ public :
     std::vector<float>   *electron2_hcalIso;
     std::vector<float>   *electron2_trackIso;
     Int_t           muon_num;
+    std::vector<float>   *dimuon_mass;
     std::vector<float>   *muon_pt;
     std::vector<float>   *muon_eta;
     std::vector<float>   *muon_phi;
     std::vector<float>   *muon_m;
+    std::vector<float>   *muon_charge;
     Float_t         HT;
     Int_t           jet_num;
     std::vector<float>   *jet_pt;
@@ -152,10 +154,12 @@ public :
     TBranch        *b_electron2_hcalIso;   //!
     TBranch        *b_electron2_trackIso;   //!
     TBranch        *b_muon_num;   //!
+    TBranch        *b_dimuon_mass;   //!
     TBranch        *b_muon_pt;   //!
     TBranch        *b_muon_eta;   //!
     TBranch        *b_muon_phi;   //!
     TBranch        *b_muon_m;   //!
+    TBranch        *b_muon_charge;   //!
     TBranch        *b_HT;   //!
     TBranch        *b_jet_num;   //!
     TBranch        *b_jet_pt;   //!
@@ -208,6 +212,8 @@ public :
     TH1D *h_pt_window_2;
     TH1D *h_pt_low_2;
     TH1D *h_pt_up_2;
+    TH1D *h_dimuon_mass_low;
+    TH1D *h_dimuon_mass_high;
 };
 
 TH1D* TH1DInitialize(const TString, const TString, const Int_t, const Double_t,
