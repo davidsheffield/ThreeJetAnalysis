@@ -6,6 +6,7 @@ config.General.workArea = 'jobs'
 
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = '../python/DiPhotonNtuplizer_cfg.py'
+config.JobType.outputFiles = ['scouting_diphoton_ntuple.root']
 
 config.Data.primaryDataset = 'ScoutingPFHT'
 config.Data.userInputFiles = ['/store/data/Run2015D/ScoutingPFHT/RAW/v1/000/259/636/00000/E037F887-2678-E511-8C8F-02163E0136BE.root',
