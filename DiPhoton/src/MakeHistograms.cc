@@ -68,20 +68,41 @@ void MakeHistograms::Loop()
 
             float eta1 = (*photon1_eta)[i];
             float phi1 = (*photon1_phi)[i];
+            float pt1 = (*photon1_pt)[i];
             float eta2 = (*photon2_eta)[i];
             float phi2 = (*photon2_phi)[i];
+            float pt2 = (*photon2_pt)[i];
             h_eta_phi_all_1->Fill(eta1, phi1);
             h_eta_phi_all_2->Fill(eta2, phi2);
+            h_pt_all_1->Fill(pt1);
+            h_pt_all_2->Fill(pt2);
 
             if (mass > 460.0 && mass < 540.0) {
                 h_eta_phi_window_1->Fill(eta1, phi1);
                 h_eta_phi_window_2->Fill(eta2, phi2);
+                h_pt_window_1->Fill(pt1);
+                h_pt_window_2->Fill(pt2);
+
+                TLorentzVector vec1;
+                TLorentzVector vec2;
+                vec1.SetPtEtaPhiM(pt1, eta1, phi1, (*photon1_m)[i]);
+                vec2.SetPtEtaPhiM(pt2, eta2, phi2, (*photon2_m)[i]);
+                h_dR_window->Fill(vec1.DeltaR(vec2));
             } else if (mass > 380.0 && mass < 460.0) {
                 h_eta_phi_low_1->Fill(eta1, phi1);
                 h_eta_phi_low_2->Fill(eta2, phi2);
+                h_pt_low_1->Fill(pt1);
+                h_pt_low_2->Fill(pt2);
             } else if (mass > 540.0 && mass < 620.0) {
                 h_eta_phi_up_1->Fill(eta1, phi1);
                 h_eta_phi_up_2->Fill(eta2, phi2);
+                h_pt_up_1->Fill(pt1);
+                h_pt_up_2->Fill(pt2);
+            }
+
+            if (fabs(eta1) < 1.479 && fabs(eta2) < 1.479) {
+                h_diphoton_mass_barrel->Fill(mass);
+                h_diphoton_mass_barrel_eta->Fill(mass*1000.0);
             }
         }
     }
@@ -297,6 +318,8 @@ void MakeHistograms::Make(TString file_name)
     file->cd();
     h_diphoton_mass->Write();
     h_diphoton_mass_eta->Write();
+    h_diphoton_mass_barrel->Write();
+    h_diphoton_mass_barrel_eta->Write();
     h_eta_phi_all_1->Write();
     h_eta_phi_all_2->Write();
     h_eta_phi_window_1->Write();
@@ -305,6 +328,15 @@ void MakeHistograms::Make(TString file_name)
     h_eta_phi_low_2->Write();
     h_eta_phi_up_1->Write();
     h_eta_phi_up_2->Write();
+    h_dR_window->Write();
+    h_pt_all_1->Write();
+    h_pt_all_2->Write();
+    h_pt_window_1->Write();
+    h_pt_window_2->Write();
+    h_pt_low_1->Write();
+    h_pt_low_2->Write();
+    h_pt_up_1->Write();
+    h_pt_up_2->Write();
     file->Close();
 
     return;
@@ -322,6 +354,15 @@ void MakeHistograms::InitializeHistograms()
     h_diphoton_mass_eta = TH1DInitialize("h_diphoton_mass_eta",
                                          "Scouting PF HT", 200, 0.0, 1000.0,
                                          "M_{#gamma#gamma} [MeV]", "events");
+    h_diphoton_mass_barrel = TH1DInitialize("h_diphoton_mass_barrel",
+                                            "Scouting PF HT, EB only",
+                                            200, 0.0, 1000.0,
+                                            "M_{#gamma#gamma} [GeV]", "events");
+    h_diphoton_mass_barrel_eta = TH1DInitialize("h_diphoton_mass_barrel_eta",
+                                                "Scouting PF HT, EB only",
+                                                200, 0.0, 1000.0,
+                                                "M_{#gamma#gamma} [MeV]",
+                                                "events");
     h_eta_phi_all_1 = TH2DInitialize("h_eta_phi_all_1", "Scouting PF HT",
                                      200, -2.5, 2.5, 200, -3.1416, 3.1416,
                                      "#eta", "#phi");
@@ -346,6 +387,24 @@ void MakeHistograms::InitializeHistograms()
     h_eta_phi_up_2 = TH2DInitialize("h_eta_phi_up_2", "Scouting PF HT",
                                     200, -2.5, 2.5, 200, -3.1416, 3.1416,
                                     "#eta", "#phi");
+    h_dR_window = TH1DInitialize("h_dR_window", "Scouting PF HT",
+                                 200, 0.0, 3.0, "#DeltaR", "");
+    h_pt_all_1 = TH1DInitialize("h_pt_all_1", "Scouting PF HT",
+                                200, 0.0, 10000.0, "p_{T} [GeV]", "");
+    h_pt_window_1 = TH1DInitialize("h_pt_window_1", "Scouting PF HT",
+                                   200, 0.0, 20000.0, "p_{T} [GeV]", "");
+    h_pt_low_1 = TH1DInitialize("h_pt_low_1", "Scouting PF HT",
+                                200, 0.0, 10000.0, "p_{T} [GeV]", "");
+    h_pt_up_1 = TH1DInitialize("h_pt_up_1", "Scouting PF HT",
+                               200, 0.0, 10000.0, "p_{T} [GeV]", "");
+    h_pt_all_2 = TH1DInitialize("h_pt_all_2", "Scouting PF HT",
+                                200, 0.0, 10000.0, "p_{T} [GeV]", "");
+    h_pt_window_2 = TH1DInitialize("h_pt_window_2", "Scouting PF HT",
+                                   200, 0.0, 20000.0, "p_{T} [GeV]", "");
+    h_pt_low_2 = TH1DInitialize("h_pt_low_2", "Scouting PF HT",
+                                200, 0.0, 10000.0, "p_{T} [GeV]", "");
+    h_pt_up_2 = TH1DInitialize("h_pt_up_2", "Scouting PF HT",
+                               200, 0.0, 10000.0, "p_{T} [GeV]", "");
 
     return;
 }

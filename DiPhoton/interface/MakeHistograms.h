@@ -13,6 +13,7 @@
 #include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TLorentzVector.h"
 
 // Header file for the classes stored in the TTree if any.
 #include <iostream>
@@ -188,6 +189,8 @@ public :
     TFile *file;
     TH1D *h_diphoton_mass;
     TH1D *h_diphoton_mass_eta;
+    TH1D *h_diphoton_mass_barrel;
+    TH1D *h_diphoton_mass_barrel_eta;
     TH2D *h_eta_phi_all_1;
     TH2D *h_eta_phi_window_1;
     TH2D *h_eta_phi_low_1;
@@ -196,6 +199,15 @@ public :
     TH2D *h_eta_phi_window_2;
     TH2D *h_eta_phi_low_2;
     TH2D *h_eta_phi_up_2;
+    TH1D *h_dR_window;
+    TH1D *h_pt_all_1;
+    TH1D *h_pt_window_1;
+    TH1D *h_pt_low_1;
+    TH1D *h_pt_up_1;
+    TH1D *h_pt_all_2;
+    TH1D *h_pt_window_2;
+    TH1D *h_pt_low_2;
+    TH1D *h_pt_up_2;
 };
 
 TH1D* TH1DInitialize(const TString, const TString, const Int_t, const Double_t,
