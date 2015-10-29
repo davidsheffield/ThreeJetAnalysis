@@ -34,6 +34,7 @@ ScoutingNtuplizer::ScoutingNtuplizer(const edm::ParameterSet& iConfig):
                        iConfig.getParameter<InputTag>("vertex_collection"))),
     token_rho(consumes<double>(
                   iConfig.getParameter<InputTag>("rho"))),
+    cut_nJets_min(iConfig.getParameter<int>("cut_nJets_min")),
     file_name(iConfig.getParameter<string>("output_file_name"))
 {
     //now do what ever initialization is needed
@@ -95,6 +96,9 @@ ScoutingNtuplizer::analyze(const edm::Event& iEvent,
 	return;
 
     jet_num = jets->size();
+    if (jet_num < cut_nJets_min)
+        return;
+
     for (auto &j: *jets) {
         Ht += j.pt();
         jet_pt.push_back(j.pt());

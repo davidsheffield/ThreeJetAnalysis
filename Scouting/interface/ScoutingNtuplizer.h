@@ -77,6 +77,8 @@ private:
     edm::Handle<double> handle_rho;
     std::vector<TLorentzVector> jet;
 
+    int cut_nJets_min;
+
     std::string file_name;
     TFile *file;
     TTree *tree;
