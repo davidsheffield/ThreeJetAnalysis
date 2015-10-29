@@ -1,0 +1,5 @@
+<use name="root"/>
+<library name="ScoutingNtupleTree" file="NtupleTree.cc"/>
+<bin name="makeScoutingHistograms" file="makeScoutingHistograms.cc">
+    <lib name="ScoutingNtupleTree"/>
+</bin>
