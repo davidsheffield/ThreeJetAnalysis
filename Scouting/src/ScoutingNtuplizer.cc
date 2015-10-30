@@ -158,6 +158,8 @@ void normalizeHistogram(TH1D *hist)
 
 void ScoutingNtuplizer::ResetVariables()
 {
+    jet.clear();
+
     Ht = 0.0;
 
     triplet_mass.clear();
