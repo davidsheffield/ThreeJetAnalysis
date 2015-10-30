@@ -17,13 +17,19 @@
 
 #include "TH2D.h"
 
-TH2D* TH2DInitializer(edm::Service<TFileService>, const TString, const TString,
-		      const Int_t, const Double_t, const Double_t, const Int_t,
-		      const Double_t, const Double_t, const TString,
-		      const TString);
-TH2D* TH2DInitializer(TFileDirectory*, const TString, const TString,
-		      const Int_t, const Double_t, const Double_t, const Int_t,
-		      const Double_t, const Double_t, const TString,
-		      const TString);
+template <class T>
+TH2D* TH2DInitializer(T, const TString, const TString, const Int_t,
+                      const Double_t, const Double_t, const Int_t,
+                      const Double_t, const Double_t, const TString,
+                      const TString);
+
+extern template TH2D* TH2DInitializer<edm::Service<TFileService>>(
+    edm::Service<TFileService>, const TString, const TString, const Int_t,
+    const Double_t, const Double_t, const Int_t, const Double_t, const Double_t,
+    const TString, const TString);
+extern template TH2D* TH2DInitializer<TFileDirectory*>(
+    TFileDirectory*, const TString, const TString, const Int_t, const Double_t,
+    const Double_t, const Int_t, const Double_t, const Double_t, const TString,
+    const TString);
 
 #endif

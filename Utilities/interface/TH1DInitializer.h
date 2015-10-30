@@ -18,11 +18,15 @@
 #include "TH1D.h"
 #include "TMath.h"
 
-TH1D* TH1DInitializer(edm::Service<TFileService>, const TString, const TString,
-		      const Int_t, const Double_t, const Double_t,
-		      const TString, const TString, const bool doLogX = false);
-TH1D* TH1DInitializer(TFileDirectory*, const TString, const TString,
+template<class T>
+TH1D* TH1DInitializer(T, const TString, const TString,
 		      const Int_t, const Double_t, const Double_t,
 		      const TString, const TString, const bool doLogX = false);
 
+extern template TH1D* TH1DInitializer<edm::Service<TFileService>>(
+    edm::Service<TFileService>, const TString, const TString, const Int_t,
+    const Double_t, const Double_t, const TString, const TString, const bool);
+extern template TH1D* TH1DInitializer<TFileDirectory*>(
+    TFileDirectory*, const TString, const TString, const Int_t, const Double_t,
+    const Double_t, const TString, const TString, const bool);
 #endif
