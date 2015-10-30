@@ -11,6 +11,20 @@
 
 #include "ThreeJetAnalysis/Utilities/interface/TH2DInitializer.h"
 
+TH2D* TH2DInitializer(const TString name, const TString title,
+                      const Int_t nbinsx, const Double_t xlow,
+                      const Double_t xup, const Int_t nbinsy,
+                      const Double_t ylow, const Double_t yup,
+                      const TString xaxis_title, const TString yaxis_title)
+{
+    TH2D *histogram = new TH2D(name, title, nbinsx, xlow, xup,
+                               nbinsy, ylow, yup);
+    histogram->GetXaxis()->SetTitle(xaxis_title);
+    histogram->GetYaxis()->SetTitle(yaxis_title);
+
+    return histogram;
+}
+
 template<class T>
 TH2D* TH2DInitializer(T fs, const TString name, const TString title,
                       const Int_t nbinsx, const Double_t xlow,

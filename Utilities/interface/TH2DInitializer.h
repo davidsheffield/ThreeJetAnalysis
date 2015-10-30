@@ -17,6 +17,10 @@
 
 #include "TH2D.h"
 
+TH2D* TH2DInitializer(const TString, const TString, const Int_t, const Double_t,
+                      const Double_t, const Int_t, const Double_t,
+                      const Double_t, const TString, const TString);
+
 template <class T>
 TH2D* TH2DInitializer(T, const TString, const TString, const Int_t,
                       const Double_t, const Double_t, const Int_t,
