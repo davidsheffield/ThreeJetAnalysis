@@ -23,9 +23,10 @@ NtupleTree::NtupleTree(TTree *tree): fChain(0)
         // The following code should be used if you want this class to access a
         // chain of trees.
         TChain * chain = new TChain("events","");
-        chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_2.root/events");
+        chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_*.root/events");
+        /*chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_2.root/events");
         chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_3.root/events");
-        chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_4.root/events");
+        chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_4.root/events");*/
         tree = chain;
 #endif // SINGLE_TREE
 
@@ -186,18 +187,97 @@ void NtupleTree::Loop()
         // if (Cut(ientry)) continue;
         if (jentry%report_every_ == 0)
             cout << "Processing event " << jentry << endl;
+
+        h_HT->Fill(HT);
+        h_nJets->Fill(jet_num);
+        for (int i=0; i<jet_num; ++i) {
+            h_jet_pt->Fill(jet_pt->at(i));
+        }
+
+        for (unsigned int i=0; i<triplet_mass->size(); ++i) {
+            h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i));
+            for(int j=0; j<size_h_M_DeltaCut; ++j){
+                double delta = 10.0*static_cast<double>(j);
+                if (triplet_delta->at(i) > delta)
+                    h_M_DeltaCut[j]->Fill(triplet_mass->at(i));
+            }
+            h_Dalitz->Fill(triplet_dalitz_mid->at(i),
+                           triplet_dalitz_high->at(i));
+            h_Dalitz->Fill(triplet_dalitz_low->at(i),
+                           triplet_dalitz_high->at(i));
+            h_Dalitz->Fill(triplet_dalitz_low->at(i),
+                           triplet_dalitz_mid->at(i));
+        }
+
+        h_vertex_num->Fill(vertex_num);
+        h_rho->Fill(rho);
    }
 }
 
 void NtupleTree::MakeHistograms(TString out_file_name, int max_events,
                                 int report_every)
 {
+    out_file_name_ = out_file_name;
     max_events_ = max_events;
     report_every_ = report_every;
 
-    out_file = new TFile(out_file_name, "RECREATE");
+    InitializeHistograms();
     Loop();
+    WriteHistograms();
+
+    return;
+}
+
+void NtupleTree::InitializeHistograms()
+{
+    h_nJets = TH1DInitializer("h_nJets", "Scouting", 30, -0.5, 29.5,
+                              "number of jets", "events");
+    h_HT = TH1DInitializer("h_HT", "Scouting", 200, 0.0, 2000.0,
+                           "H_{T} [GeV]", "events");
+    h_jet_pt = TH1DInitializer("h_jet_pt", "Scouting", 200, 0.0, 2000.0,
+                               "p_{T} [GeV]", "jets");
+    h_M_vs_pt = TH2DInitializer("h_M_vs_pt", "Scouting", 200, 0.0, 2000.0,
+                                200, 0.0, 2000.0, "#Sigma_{jjj} p_{T} [GeV]",
+                                "M_{jjj} [GeV]");
+    h_vertex_num = TH1DInitializer("h_vertex_num", "Scouting", 100, -0.5, 99.5,
+                                   "number of vertices", "events");
+    h_rho = TH1DInitializer("h_rho", "Scouting", 200, 0.0, 30.0,
+                            "#rho", "events");
+    h_Dalitz = TH2DInitializer("h_Dalitz", "Scouting, Dalitz", 100, 0.0, 0.5,
+                               100, 0.0, 1.0, "mid, low, low",
+                               "high, high, mid");
+    for (int i=0; i<size_h_M_DeltaCut; ++i) {
+	int delta = 10*i;
+	h_M_DeltaCut[i] = TH1DInitializer("h_M_DeltaCut_" + to_string(delta),
+					  "Scouting, #Delta = "
+					  + to_string(delta),
+					  200, 0.0, 1000.0,
+					  "M_{jjj} [GeV]", "triplets");
+    }
+
+    return;
+}
+
+void NtupleTree::WriteHistograms()
+{
+    out_file = new TFile(out_file_name_, "RECREATE");
+    out_file->cd();
+
+    h_nJets->Write();
+    h_HT->Write();
+    h_jet_pt->Write();
+    h_M_vs_pt->Write();
+    h_vertex_num->Write();
+    h_rho->Write();
+    h_Dalitz->Write();
+
+    TDirectory *dir_DeltaCuts = out_file->mkdir("Delta_Cuts");
+    dir_DeltaCuts->cd();
+    for (int i=0; i<size_h_M_DeltaCut; ++i) {
+        h_M_DeltaCut[i]->Write();
+    }
 
     out_file->Close();
+
     return;
 }

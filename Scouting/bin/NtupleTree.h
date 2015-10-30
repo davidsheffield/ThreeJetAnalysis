@@ -10,10 +10,15 @@
 #include "TROOT.h"
 #include "TChain.h"
 #include "TFile.h"
+#include "TH1D.h"
+#include "TH2D.h"
 
 // Header file for the classes stored in the TTree if any.
 #include <iostream>
 #include <vector>
+
+#include "ThreeJetAnalysis/Utilities/interface/TH1DInitializer.h"
+#include "ThreeJetAnalysis/Utilities/interface/TH2DInitializer.h"
 
 class NtupleTree {
 public :
@@ -26,9 +31,10 @@ private:
     TTree *fChain;   //!pointer to the analyzed TTree or TChain
     Int_t fCurrent; //!current Tree number in a TChain
 
+    TFile *out_file;
+    TString out_file_name_;
     int max_events_;
     int report_every_;
-    TFile *out_file;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -81,5 +87,17 @@ private:
     virtual void     Loop();
     virtual Bool_t   Notify();
     virtual void     Show(Long64_t entry = -1);
+    virtual void     InitializeHistograms();
+    virtual void     WriteHistograms();
+
+    TH1D *h_nJets;
+    TH1D *h_HT;
+    TH1D *h_jet_pt;
+    TH2D *h_M_vs_pt;
+    TH1D *h_vertex_num;
+    TH1D *h_rho;
+    TH2D *h_Dalitz;
+    static const int size_h_M_DeltaCut = 31;
+    TH1D *h_M_DeltaCut[size_h_M_DeltaCut];
 };
 #endif
