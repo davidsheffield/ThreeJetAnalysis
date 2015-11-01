@@ -135,12 +135,19 @@ void NtupleTree::Show(Long64_t entry)
     fChain->Show(entry);
 }
 
-Int_t NtupleTree::Cut(Long64_t entry)
+void NtupleTree::Cut(Long64_t entry)
 {
     // This function may be called from Loop.
     // returns  0 if entry is accepted.
     // returns >0 otherwise.
-    return 0;
+    passSel_ = 0;
+
+    if (jet_num < cut_nJets_min_)
+        passSel_ |= 0x1;
+    else if (cut_nJets_max_ > -1 && jet_num > cut_nJets_max_)
+        passSel_ |= 0x1;
+
+    return;
 }
 
 void NtupleTree::Loop()
@@ -184,9 +191,14 @@ void NtupleTree::Loop()
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);   nbytes += nb;
-        // if (Cut(ientry)) continue;
+
         if (jentry%report_every_ == 0)
             cout << "Processing event " << jentry << endl;
+
+        Cut(ientry);
+        h_passSel->Fill(passSel_);
+        if (passSel_)
+            continue;
 
         h_HT->Fill(HT);
         h_nJets->Fill(jet_num);
@@ -196,6 +208,7 @@ void NtupleTree::Loop()
 
         for (unsigned int i=0; i<triplet_mass->size(); ++i) {
             h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i));
+            h_mass->Fill(triplet_mass->at(i));
             for(int j=0; j<size_h_M_DeltaCut; ++j){
                 double delta = 10.0*static_cast<double>(j);
                 if (triplet_delta->at(i) > delta)
@@ -221,6 +234,9 @@ void NtupleTree::MakeHistograms(TString out_file_name, int max_events,
     max_events_ = max_events;
     report_every_ = report_every;
 
+    cut_nJets_min_ = 6;
+    cut_nJets_max_ = -1;
+
     InitializeHistograms();
     Loop();
     WriteHistograms();
@@ -230,15 +246,19 @@ void NtupleTree::MakeHistograms(TString out_file_name, int max_events,
 
 void NtupleTree::InitializeHistograms()
 {
-    h_nJets = TH1DInitializer("h_nJets", "Scouting", 30, -0.5, 29.5,
+    h_passSel = TH1DInitializer("h_passSel", "Scouting selection",
+                                32, -0.5, 31.5, "", "events");
+    h_nJets = TH1DInitializer("h_nJets", "Scouting", 100, -0.5, 99.5,
                               "number of jets", "events");
     h_HT = TH1DInitializer("h_HT", "Scouting", 200, 0.0, 2000.0,
                            "H_{T} [GeV]", "events");
     h_jet_pt = TH1DInitializer("h_jet_pt", "Scouting", 200, 0.0, 2000.0,
                                "p_{T} [GeV]", "jets");
-    h_M_vs_pt = TH2DInitializer("h_M_vs_pt", "Scouting", 200, 0.0, 2000.0,
-                                200, 0.0, 2000.0, "#Sigma_{jjj} p_{T} [GeV]",
+    h_M_vs_pt = TH2DInitializer("h_M_vs_pt", "Scouting", 400, 0.0, 4000.0,
+                                400, 0.0, 4000.0, "#Sigma_{jjj} p_{T} [GeV]",
                                 "M_{jjj} [GeV]");
+    h_mass = TH1DInitializer("h_mass", "Scouting", 500, 0.0, 5000.0,
+                             "M_{jjj} [GeV]", "triplets");
     h_vertex_num = TH1DInitializer("h_vertex_num", "Scouting", 100, -0.5, 99.5,
                                    "number of vertices", "events");
     h_rho = TH1DInitializer("h_rho", "Scouting", 200, 0.0, 30.0,
@@ -263,10 +283,12 @@ void NtupleTree::WriteHistograms()
     out_file = new TFile(out_file_name_, "RECREATE");
     out_file->cd();
 
+    h_passSel->Write();
     h_nJets->Write();
     h_HT->Write();
     h_jet_pt->Write();
     h_M_vs_pt->Write();
+    h_mass->Write();
     h_vertex_num->Write();
     h_rho->Write();
     h_Dalitz->Write();

@@ -1,7 +1,7 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-config.General.requestName = 'Scouting_Ntuples_v3'
+config.General.requestName = 'Scouting_Ntuples_v4'
 config.General.workArea = 'jobs'
 
 config.JobType.pluginName = 'Analysis'

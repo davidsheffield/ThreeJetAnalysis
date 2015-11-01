@@ -25,7 +25,7 @@ public :
     NtupleTree(TTree *tree=0);
     virtual ~NtupleTree();
     virtual void MakeHistograms(TString out_file_name="histograms.root",
-                                int max_events=-1, int report_every=100000);
+                                int max_events=-1, int report_every=1000000);
 
 private:
     TTree *fChain;   //!pointer to the analyzed TTree or TChain
@@ -35,6 +35,9 @@ private:
     TString out_file_name_;
     int max_events_;
     int report_every_;
+    int cut_nJets_min_;
+    int cut_nJets_max_;
+    int passSel_;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -80,7 +83,7 @@ private:
     TBranch *b_Lumi;
     TBranch *b_Event;
 
-    virtual Int_t    Cut(Long64_t entry);
+    virtual void     Cut(Long64_t entry);
     virtual Int_t    GetEntry(Long64_t entry);
     virtual Long64_t LoadTree(Long64_t entry);
     virtual void     Init(TTree *tree);
@@ -90,10 +93,12 @@ private:
     virtual void     InitializeHistograms();
     virtual void     WriteHistograms();
 
+    TH1D *h_passSel;
     TH1D *h_nJets;
     TH1D *h_HT;
     TH1D *h_jet_pt;
     TH2D *h_M_vs_pt;
+    TH1D *h_mass;
     TH1D *h_vertex_num;
     TH1D *h_rho;
     TH2D *h_Dalitz;
