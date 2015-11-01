@@ -23,7 +23,7 @@ NtupleTree::NtupleTree(TTree *tree): fChain(0)
         // The following code should be used if you want this class to access a
         // chain of trees.
         TChain * chain = new TChain("events","");
-        chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_*.root/events");
+        chain->Add("/cms/data26/sheffield/Scouting/ntuples/v4/scouting_ntuple_*.root/events");
         /*chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_2.root/events");
         chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_3.root/events");
         chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_4.root/events");*/
@@ -147,6 +147,11 @@ void NtupleTree::Cut(Long64_t entry)
     else if (cut_nJets_max_ > -1 && jet_num > cut_nJets_max_)
         passSel_ |= 0x1;
 
+    if (vertex_num < cut_NPV_min_)
+        passSel_ |= 0x2;
+    else if (cut_NPV_max_ > -1 && vertex_num > cut_NPV_max_)
+        passSel_ |= 0x2;
+
     return;
 }
 
@@ -236,6 +241,8 @@ void NtupleTree::MakeHistograms(TString out_file_name, int max_events,
 
     cut_nJets_min_ = 6;
     cut_nJets_max_ = -1;
+    cut_NPV_min_ = 0;
+    cut_NPV_max_ = -1;
 
     InitializeHistograms();
     Loop();

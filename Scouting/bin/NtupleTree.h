@@ -37,6 +37,8 @@ private:
     int report_every_;
     int cut_nJets_min_;
     int cut_nJets_max_;
+    int cut_NPV_min_;
+    int cut_NPV_max_;
     int passSel_;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
