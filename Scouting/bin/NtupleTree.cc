@@ -32,6 +32,16 @@ NtupleTree::NtupleTree(TTree *tree): fChain(0)
 
     }
     Init(tree);
+
+    cut_Dalitz_low[0] = 0.05;
+    cut_Dalitz_low[1] = 0.1;
+    cut_Dalitz_low[2] = 0.15;
+    for (int i=0; i< number_of_Dalitz_cuts; ++i) {
+        cut_Dalitz_mid[i] = (1.0 - cut_Dalitz_low[i])/2.0;
+    }
+    Dalitz_cut_name[0] = "Soft";
+    Dalitz_cut_name[1] = "Medium";
+    Dalitz_cut_name[2] = "Hard";
 }
 
 NtupleTree::~NtupleTree()
@@ -214,10 +224,16 @@ void NtupleTree::Loop()
         for (unsigned int i=0; i<triplet_mass->size(); ++i) {
             h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i));
             h_mass->Fill(triplet_mass->at(i));
-            for(int j=0; j<size_h_M_DeltaCut; ++j){
+            for (int j=0; j<size_h_M_DeltaCut; ++j) {
                 double delta = 10.0*static_cast<double>(j);
-                if (triplet_delta->at(i) > delta)
+                if (triplet_delta->at(i) > delta) {
                     h_M_DeltaCut[j]->Fill(triplet_mass->at(i));
+                    for (int k=0; k<number_of_Dalitz_cuts; ++k){
+                        if (triplet_dalitz_low->at(i) > cut_Dalitz_low[k]
+                            && triplet_dalitz_mid->at(i) < cut_Dalitz_mid[k])
+                            h_M_DeltaDalitzCut[k][j]->Fill(triplet_mass->at(i));
+                    }
+                }
             }
             h_Dalitz->Fill(triplet_dalitz_mid->at(i),
                            triplet_dalitz_high->at(i));
@@ -278,8 +294,18 @@ void NtupleTree::InitializeHistograms()
 	h_M_DeltaCut[i] = TH1DInitializer("h_M_DeltaCut_" + to_string(delta),
 					  "Scouting, #Delta = "
 					  + to_string(delta),
-					  200, 0.0, 1000.0,
+					  500, 0.0, 1000.0,
 					  "M_{jjj} [GeV]", "triplets");
+    }
+    for (int i=0; i<number_of_Dalitz_cuts; ++i) {
+        for (int j=0; j<size_h_M_DeltaCut; ++j) {
+            int delta = 10*j;
+            h_M_DeltaDalitzCut[i][j] = TH1DInitializer(
+                "h_M_" + Dalitz_cut_name[i] + "_DeltaCut_" + to_string(delta),
+                "Scouting, " + Dalitz_cut_name[i] + " #Delta = "
+                + to_string(delta), 500, 0.0, 1000.0, "M_{jjj} [GeV]",
+                "triplets");
+        }
     }
 
     return;
@@ -304,6 +330,16 @@ void NtupleTree::WriteHistograms()
     dir_DeltaCuts->cd();
     for (int i=0; i<size_h_M_DeltaCut; ++i) {
         h_M_DeltaCut[i]->Write();
+    }
+
+    TDirectory *dir_Dalitz = out_file->mkdir("Dalitz_Cuts");
+    TDirectory *dirs_Dalitz[number_of_Dalitz_cuts];
+    for (int i=0; i<number_of_Dalitz_cuts; ++i) {
+        dirs_Dalitz[i] = dir_Dalitz->mkdir(Dalitz_cut_name[i] + "_Dalitz");
+        dirs_Dalitz[i]->cd();
+        for (int j=0; j<size_h_M_DeltaCut; ++j) {
+            h_M_DeltaDalitzCut[i][j]->Write();
+        }
     }
 
     out_file->Close();

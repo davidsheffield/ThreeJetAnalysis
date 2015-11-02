@@ -106,5 +106,11 @@ private:
     TH2D *h_Dalitz;
     static const int size_h_M_DeltaCut = 31;
     TH1D *h_M_DeltaCut[size_h_M_DeltaCut];
+    static const int number_of_Dalitz_cuts = 3;
+    TH1D *h_M_DeltaDalitzCut[number_of_Dalitz_cuts][size_h_M_DeltaCut];
+
+    double cut_Dalitz_low[number_of_Dalitz_cuts];
+    double cut_Dalitz_mid[number_of_Dalitz_cuts];
+    TString Dalitz_cut_name[number_of_Dalitz_cuts];
 };
 #endif
