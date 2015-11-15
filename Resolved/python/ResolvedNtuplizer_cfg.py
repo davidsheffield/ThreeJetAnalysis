@@ -14,6 +14,11 @@ options.register('reportEvery',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
                  "Number of events to process before reporting progress.")
+options.register('isSignal',
+                 False, # default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "If signal, get correct triplets.")
 options.parseArguments()
 
 process.maxEvents = cms.untracked.PSet(
@@ -30,5 +35,6 @@ process.source = cms.Source(
 process.load('ThreeJetAnalysis.Resolved.resolvedntuplizer_cfi')
 
 process.resolvedntuplizer.output_file_name = cms.string(options.outputFile)
+process.resolvedntuplizer.is_signal = cms.bool(options.isSignal)
 
 process.p = cms.Path(process.resolvedntuplizer)

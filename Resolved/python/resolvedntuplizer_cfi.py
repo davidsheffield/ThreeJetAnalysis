@@ -9,7 +9,15 @@ resolvedntuplizer = cms.EDAnalyzer(
     jet_mass         = cms.InputTag('jetsAK4:jetAK4Mass'),
     jet_csv          = cms.InputTag('jetsAK4:jetAK4CSV'),
     vertex_z         = cms.InputTag('vertexInfo:z'),
+    genpart_ID       = cms.InputTag('genPart:genPartID'),
+    genpart_status   = cms.InputTag('genPart:genPartStatus'),
+    genpart_momID    = cms.InputTag('genPart:genPartMomID'),
+    genpart_pt       = cms.InputTag('genPart:genPartPt'),
+    genpart_eta      = cms.InputTag('genPart:genPartEta'),
+    genpart_phi      = cms.InputTag('genPart:genPartPhi'),
+    genpart_E        = cms.InputTag('genPart:genPartE'),
     #rho              = cms.InputTag('hltScoutingPFPacker:rho'),
     cut_nJets_min    = cms.int32(6),
+    is_signal        = cms.bool(False),
     output_file_name = cms.string('resolved_ntuple.root')
 )
