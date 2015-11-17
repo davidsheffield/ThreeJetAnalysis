@@ -357,6 +357,9 @@ void ResolvedNtuplizer::GetGenParticles()
         }
     }
 
+    double match_DeltaR_cut = 0.2;
+    double match_pt_cut = 0.25;
+
     while (num_to_match > 0) {
         double min_DeltaR = 9999.0;
         int min_jet_ind = -1;
@@ -379,10 +382,14 @@ void ResolvedNtuplizer::GetGenParticles()
         }
 
         signal_daughters_matched[min_daughter_ind] = 1;
-        if (min_daughter_ind < 3)
-            jet_from_triplet[min_jet_ind] = 1;
-        else
-            jet_from_triplet[min_jet_ind] = 2;
+        if (min_DeltaR < match_DeltaR_cut
+            && fabs(jet[min_jet_ind].Pt()/signal_daughters[min_daughter_ind].Pt()
+                    - 1.0) < match_pt_cut) {
+            if (min_daughter_ind < 3)
+                jet_from_triplet[min_jet_ind] = 1;
+            else
+                jet_from_triplet[min_jet_ind] = 2;
+        }
         --num_to_match;
     }
 
