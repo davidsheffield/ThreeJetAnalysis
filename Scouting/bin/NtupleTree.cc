@@ -4,32 +4,12 @@ using namespace std;
 
 NtupleTree::NtupleTree(TTree *tree): fChain(0)
 {
-// if parameter tree is not specified (or zero), connect the file
-// used to generate this class and read the Tree.
+    // if parameter tree is not specified (or zero), connect the file
+    // used to generate this class and read the Tree.
     if (tree == 0) {
-
-#ifdef SINGLE_TREE
-        // The following code should be used if you want this class to access
-        // a single tree instead of a chain
-        TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(
-            "Memory Directory");
-        if (!f || !f->IsOpen()) {
-            f = new TFile("Memory Directory");
-        }
-        f->GetObject("events",tree);
-
-#else // SINGLE_TREE
-
-        // The following code should be used if you want this class to access a
-        // chain of trees.
         TChain * chain = new TChain("events","");
         chain->Add("/cms/data26/sheffield/Scouting/ntuples/v4/scouting_ntuple_*.root/events");
-        /*chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_2.root/events");
-        chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_3.root/events");
-        chain->Add("/eos/uscms/store/user/dgsheffi/ScoutingPFHT/crab_Scouting_Ntuples_v3/151029_181406/0000/scouting_ntuple_4.root/events");*/
         tree = chain;
-#endif // SINGLE_TREE
-
     }
     Init(tree);
 
