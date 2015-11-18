@@ -108,6 +108,8 @@ private:
     TH1D *h_M_DeltaCut[size_h_M_DeltaCut];
     static const int number_of_Dalitz_cuts = 3;
     TH1D *h_M_DeltaDalitzCut[number_of_Dalitz_cuts][size_h_M_DeltaCut];
+    TH2D *h_Dalitz_after_cut[number_of_Dalitz_cuts];
+    TH2D *h_M_vs_pt_after_Dalitz[number_of_Dalitz_cuts];
 
     double cut_Dalitz_low[number_of_Dalitz_cuts];
     double cut_Dalitz_mid[number_of_Dalitz_cuts];
