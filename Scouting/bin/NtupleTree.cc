@@ -211,62 +211,70 @@ void NtupleTree::Loop()
             cout << "Processing event " << jentry << endl;
 
         Cut(ientry);
-        h_passSel->Fill(passSel_);
+        h_passSel->Fill(passSel_, scale_);
         if (passSel_)
             continue;
 
-        h_HT->Fill(HT);
-        h_nJets->Fill(jet_num);
+        h_HT->Fill(HT, scale_);
+        h_nJets->Fill(jet_num, scale_);
         for (int i=0; i<jet_num; ++i) {
-            h_jet_pt->Fill(jet_pt->at(i));
+            h_jet_pt->Fill(jet_pt->at(i), scale_);
         }
 
         for (unsigned int i=0; i<triplet_mass->size(); ++i) {
-            h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i));
-            h_mass->Fill(triplet_mass->at(i));
+            h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i),
+                            scale_);
+            h_mass->Fill(triplet_mass->at(i), scale_);
             for (int j=0; j<size_h_M_DeltaCut; ++j) {
                 double delta = 10.0*static_cast<double>(j);
                 if (triplet_delta->at(i) > delta) {
-                    h_M_DeltaCut[j]->Fill(triplet_mass->at(i));
+                    h_M_DeltaCut[j]->Fill(triplet_mass->at(i), scale_);
                     for (int k=0; k<number_of_Dalitz_cuts; ++k) {
                         if (triplet_dalitz_low->at(i) > cut_Dalitz_low[k]
                             && triplet_dalitz_mid->at(i) < cut_Dalitz_mid[k])
-                            h_M_DeltaDalitzCut[k][j]->Fill(triplet_mass->at(i));
+                            h_M_DeltaDalitzCut[k][j]->Fill(triplet_mass->at(i),
+                                                           scale_);
                     }
                 }
             }
             h_Dalitz->Fill(triplet_dalitz_mid->at(i),
-                           triplet_dalitz_high->at(i));
+                           triplet_dalitz_high->at(i), scale_);
             h_Dalitz->Fill(triplet_dalitz_low->at(i),
-                           triplet_dalitz_high->at(i));
+                           triplet_dalitz_high->at(i), scale_);
             h_Dalitz->Fill(triplet_dalitz_low->at(i),
-                           triplet_dalitz_mid->at(i));
+                           triplet_dalitz_mid->at(i), scale_);
             for (int j=0; j<number_of_Dalitz_cuts; ++j) {
                 if (triplet_dalitz_low->at(i) > cut_Dalitz_low[j]
                     && triplet_dalitz_mid->at(i) < cut_Dalitz_mid[j]) {
                     h_Dalitz_after_cut[j]->Fill(triplet_dalitz_mid->at(i),
-                                                triplet_dalitz_high->at(i));
+                                                triplet_dalitz_high->at(i),
+                                                scale_);
                     h_Dalitz_after_cut[j]->Fill(triplet_dalitz_low->at(i),
-                                                triplet_dalitz_high->at(i));
+                                                triplet_dalitz_high->at(i),
+                                                scale_);
                     h_Dalitz_after_cut[j]->Fill(triplet_dalitz_low->at(i),
-                                                triplet_dalitz_mid->at(i));
+                                                triplet_dalitz_mid->at(i),
+                                                scale_);
                     h_M_vs_pt_after_Dalitz[j]->Fill(triplet_scalar_pt->at(i),
-                                                    triplet_mass->at(i));
+                                                    triplet_mass->at(i),
+                                                    scale_);
                 }
             }
         }
 
-        h_vertex_num->Fill(vertex_num);
-        h_rho->Fill(rho);
+        h_vertex_num->Fill(vertex_num, scale_);
+        h_rho->Fill(rho, scale_);
    }
 }
 
 void NtupleTree::MakeHistograms(TString out_file_name, int max_events,
-                                int report_every)
+                                int report_every, double scale)
 {
     out_file_name_ = out_file_name;
     max_events_ = max_events;
     report_every_ = report_every;
+
+    scale_ = scale;
 
     cut_nJets_min_ = 6;
     cut_nJets_max_ = -1;

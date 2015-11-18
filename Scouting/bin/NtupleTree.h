@@ -25,7 +25,8 @@ public :
     NtupleTree(TTree *tree=0);
     virtual ~NtupleTree();
     virtual void MakeHistograms(TString out_file_name="histograms.root",
-                                int max_events=-1, int report_every=1000000);
+                                int max_events=-1, int report_every=1000000,
+                                double scale=1.0);
 
 private:
     TTree *fChain;   //!pointer to the analyzed TTree or TChain
@@ -40,6 +41,7 @@ private:
     int cut_NPV_min_;
     int cut_NPV_max_;
     int passSel_;
+    double scale_;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 

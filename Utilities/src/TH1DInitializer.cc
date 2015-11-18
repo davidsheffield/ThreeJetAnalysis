@@ -31,6 +31,7 @@ TH1D* TH1DInitializer(const TString name, const TString title,
     }
     histogram->GetXaxis()->SetTitle(xaxis_title);
     histogram->GetYaxis()->SetTitle(yaxis_title);
+    histogram->Sumw2();
 
     return histogram;
 }
@@ -57,6 +58,7 @@ TH1D* TH1DInitializer(T fs, const TString name, const TString title,
     }
     histogram->GetXaxis()->SetTitle(xaxis_title);
     histogram->GetYaxis()->SetTitle(yaxis_title);
+    histogram->Sumw2();
 
     return histogram;
 }
