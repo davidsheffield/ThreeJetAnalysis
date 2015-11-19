@@ -7,6 +7,7 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 def getArguments():
     options = VarParsing.VarParsing('analysis')
     options.maxEvents = -1
+    options.outputFile = "histograms.root"
     options.register('reportEvery',
                      1000000, # default value
                      VarParsing.VarParsing.multiplicity.singleton,
@@ -134,7 +135,8 @@ def main():
                 isMC = 2
 
             command[1] = samples[doing][i]['ntuples']
-            command[2] = 'histograms_{0}.root'.format(samples[doing][i]['dataset'])
+            command[2] = '{0}_{1}.root'.format(options.outputFile.split('.')[0],
+                                               samples[doing][i]['dataset'])
             command[3] = str(isMC)
             command[4] = str(scale)
 
