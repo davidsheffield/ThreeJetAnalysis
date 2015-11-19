@@ -1,6 +1,6 @@
 <use name="root"/>
 <use name="ThreeJetAnalysis/Utilities"/>
 <library name="ScoutingNtupleTree" file="NtupleTree.cc"/>
-<bin name="makeScoutingHistograms" file="makeScoutingHistograms.cc">
+<bin name="ScoutingHistogramsMaker" file="ScoutingHistogramsMaker.cc">
     <lib name="ScoutingNtupleTree"/>
 </bin>

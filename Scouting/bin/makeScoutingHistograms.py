@@ -107,7 +107,7 @@ def fillSamples():
 
 def main():
     architecture = os.environ['SCRAM_ARCH']
-    executable = '../../../../bin/{0}/makeScoutingHistograms'.format(
+    executable = '../../../../bin/{0}/ScoutingHistogramsMaker'.format(
         architecture)
 
     options = getArguments()
