@@ -22,7 +22,7 @@
 
 class NtupleTree {
 public :
-    NtupleTree(TTree *tree=0);
+    NtupleTree(TTree *tree=0, int isMC=0);
     virtual ~NtupleTree();
     virtual void MakeHistograms(TString, double, int, int, int, int, int, int,
                                 double, double, double);
@@ -43,6 +43,7 @@ private:
     double cut_pt_;
     int passSel_;
     double scale_;
+    int isMC_;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 

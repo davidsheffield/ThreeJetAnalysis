@@ -111,11 +111,11 @@ def main():
         architecture)
 
     options = getArguments()
-    command = [executable, '', 'histograms.root', '1.0', str(options.maxEvents),
-               str(options.reportEvery), str(options.cutNJetsMin),
-               str(options.cutNJetsMax), str(options.cutNPVMin),
-               str(options.cutNPVMax), str(options.Ht), str(options.Pt),
-               str(options.eta)]
+    command = [executable, '', 'histograms.root', '0', '1.0',
+               str(options.maxEvents), str(options.reportEvery),
+               str(options.cutNJetsMin), str(options.cutNJetsMax),
+               str(options.cutNPVMin), str(options.cutNPVMax), str(options.Ht),
+               str(options.Pt), str(options.eta)]
 
     samples = fillSamples()
 
@@ -126,9 +126,16 @@ def main():
                 scale = (options.luminosity*1000.0) \
                     *samples[doing][i]['cross_section'] \
                     /samples[doing][i]['events']
+            isMC = 0
+            if doing == "qcd":
+                isMC = 1
+            elif doing == "ttbar":
+                isMC = 2
+
             command[1] = samples[doing][i]['ntuples']
             command[2] = 'histograms_{0}.root'.format(samples[doing][i]['dataset'])
-            command[3] = str(scale)
+            command[3] = str(isMC)
+            command[4] = str(scale)
 
             subprocess.call(command)
 

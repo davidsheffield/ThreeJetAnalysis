@@ -2,7 +2,7 @@
 
 using namespace std;
 
-NtupleTree::NtupleTree(TTree *tree): fChain(0)
+NtupleTree::NtupleTree(TTree *tree, int isMC): fChain(0), isMC_(isMC)
 {
     // if parameter tree is not specified (or zero), connect the file
     // used to generate this class and read the Tree.
@@ -99,7 +99,8 @@ void NtupleTree::Init(TTree *tree)
     fChain->SetBranchAddress("jet_m", &jet_m, &b_jet_m);
     fChain->SetBranchAddress("jet_csv", &jet_csv, &b_jet_csv);
     fChain->SetBranchAddress("vertex_num", &vertex_num, &b_vertex_num);
-    fChain->SetBranchAddress("rho", &rho, &b_rho);
+    if (isMC_ == 0)
+        fChain->SetBranchAddress("rho", &rho, &b_rho);
     fChain->SetBranchAddress("Run", &Run, &b_Run);
     fChain->SetBranchAddress("Lumi", &Lumi, &b_Lumi);
     fChain->SetBranchAddress("Event", &Event, &b_Event);
@@ -249,7 +250,8 @@ void NtupleTree::Loop()
         }
 
         h_vertex_num->Fill(vertex_num, scale_);
-        h_rho->Fill(rho, scale_);
+        if (isMC_ == 0)
+            h_rho->Fill(rho, scale_);
    }
 }
 
