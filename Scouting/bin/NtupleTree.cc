@@ -200,6 +200,9 @@ void NtupleTree::Loop()
         h_HT->Fill(HT, scale_);
         h_nJets->Fill(jet_num, scale_);
         for (int i=0; i<jet_num; ++i) {
+            if (jet_pt->at(i) < cut_pt_)
+                continue;
+
             h_jet_pt->Fill(jet_pt->at(i), scale_);
         }
 
