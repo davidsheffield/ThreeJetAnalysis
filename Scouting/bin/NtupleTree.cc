@@ -13,15 +13,13 @@ NtupleTree::NtupleTree(TTree *tree, int isMC): fChain(0), isMC_(isMC)
     }
     Init(tree);
 
-    cut_Dalitz_low[0] = 0.05;
-    cut_Dalitz_low[1] = 0.1;
-    cut_Dalitz_low[2] = 0.15;
     for (int i=0; i< number_of_Dalitz_cuts; ++i) {
+        cut_Dalitz_low[i] = 0.01*static_cast<double>(i) + 0.01;
         cut_Dalitz_mid[i] = (1.0 - cut_Dalitz_low[i])/2.0;
+        char str[10];
+        sprintf(str, "DalitzCut_%.2f", cut_Dalitz_low[i]);
+        Dalitz_cut_name[i] = str;
     }
-    Dalitz_cut_name[0] = "Soft";
-    Dalitz_cut_name[1] = "Medium";
-    Dalitz_cut_name[2] = "Hard";
 }
 
 NtupleTree::~NtupleTree()
@@ -365,7 +363,7 @@ void NtupleTree::WriteHistograms()
     TDirectory *dir_Dalitz = out_file->mkdir("Dalitz_Cuts");
     TDirectory *dirs_Dalitz[number_of_Dalitz_cuts];
     for (int i=0; i<number_of_Dalitz_cuts; ++i) {
-        dirs_Dalitz[i] = dir_Dalitz->mkdir(Dalitz_cut_name[i] + "_Dalitz");
+        dirs_Dalitz[i] = dir_Dalitz->mkdir(Dalitz_cut_name[i]);
         dirs_Dalitz[i]->cd();
         h_Dalitz_after_cut[i]->Write();
         h_M_vs_pt_after_Dalitz[i]->Write();
