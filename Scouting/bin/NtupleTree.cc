@@ -207,15 +207,26 @@ void NtupleTree::Loop()
         if (passSel_)
             continue;
 
-        h_HT->Fill(HT, scale_);
-        h_nJets->Fill(jet_num, scale_);
+        HT = 0.0;
+        int new_jet_num = 0;
+        vector<double> jet_pts;
         for (int i=0; i<jet_num; ++i) {
             if (jet_pt->at(i) < cut_pt_)
                 continue;
             if (fabs(jet_eta->at(i)) > cut_eta_)
                 continue;
 
-            h_jet_pt->Fill(jet_pt->at(i), scale_);
+            jet_pts.push_back(jet_pt->at(i));
+            HT += jet_pt->at(i);
+            ++new_jet_num;
+        }
+        jet_num = new_jet_num;
+        if (jet_num < cut_nJets_min_)
+            continue;
+        h_HT->Fill(HT, scale_);
+        h_nJets->Fill(jet_num, scale_);
+        for (int i=0; i<jet_num; ++i) {
+            h_jet_pt->Fill(jet_pts[i], scale_);
         }
         h_leading_jet_pt->Fill(jet_pt->at(0), scale_);
 
