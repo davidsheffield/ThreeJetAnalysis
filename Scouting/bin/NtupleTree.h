@@ -24,9 +24,8 @@ class NtupleTree {
 public :
     NtupleTree(TTree *tree=0);
     virtual ~NtupleTree();
-    virtual void MakeHistograms(TString out_file_name="histograms.root",
-                                int max_events=-1, int report_every=1000000,
-                                double scale=1.0);
+    virtual void MakeHistograms(TString, double, int, int, int, int, int, int,
+                                double, double, double);
 
 private:
     TTree *fChain;   //!pointer to the analyzed TTree or TChain
@@ -40,6 +39,8 @@ private:
     int cut_nJets_max_;
     int cut_NPV_min_;
     int cut_NPV_max_;
+    double cut_Ht_;
+    double cut_pt_;
     int passSel_;
     double scale_;
 

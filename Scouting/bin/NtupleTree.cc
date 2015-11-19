@@ -142,6 +142,9 @@ void NtupleTree::Cut(Long64_t entry)
     else if (cut_NPV_max_ > -1 && vertex_num > cut_NPV_max_)
         passSel_ |= 0x2;
 
+    if (HT < cut_Ht_)
+        passSel_ |= 0x4;
+
     return;
 }
 
@@ -202,6 +205,9 @@ void NtupleTree::Loop()
         }
 
         for (unsigned int i=0; i<triplet_mass->size(); ++i) {
+            if (triplet_lowest_pt->at(i) < cut_pt_)
+                continue;
+
             h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i),
                             scale_);
             h_mass->Fill(triplet_mass->at(i), scale_);
@@ -247,8 +253,11 @@ void NtupleTree::Loop()
    }
 }
 
-void NtupleTree::MakeHistograms(TString out_file_name, int max_events,
-                                int report_every, double scale)
+void NtupleTree::MakeHistograms(TString out_file_name, double scale,
+                                int max_events, int report_every,
+                                int cut_nJets_min, int cut_nJets_max,
+                                int cut_NPV_min, int cut_NPV_max, double cut_Ht,
+                                double cut_pt, double cut_eta)
 {
     out_file_name_ = out_file_name;
     max_events_ = max_events;
@@ -256,10 +265,12 @@ void NtupleTree::MakeHistograms(TString out_file_name, int max_events,
 
     scale_ = scale;
 
-    cut_nJets_min_ = 6;
-    cut_nJets_max_ = -1;
-    cut_NPV_min_ = 0;
-    cut_NPV_max_ = -1;
+    cut_nJets_min_ = cut_nJets_min;
+    cut_nJets_max_ = cut_nJets_max;
+    cut_NPV_min_ = cut_NPV_min;
+    cut_NPV_max_ = cut_NPV_max;
+    cut_Ht_ = cut_Ht;
+    cut_pt_ = cut_pt;
 
     InitializeHistograms();
     Loop();
