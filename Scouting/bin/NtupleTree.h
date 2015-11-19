@@ -103,6 +103,7 @@ private:
     TH1D *h_nJets;
     TH1D *h_HT;
     TH1D *h_jet_pt;
+    TH1D *h_leading_jet_pt;
     TH2D *h_M_vs_pt;
     TH1D *h_mass;
     TH1D *h_vertex_num;

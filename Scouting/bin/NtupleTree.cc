@@ -205,6 +205,7 @@ void NtupleTree::Loop()
 
             h_jet_pt->Fill(jet_pt->at(i), scale_);
         }
+        h_leading_jet_pt->Fill(jet_pt->at(0), scale_);
 
         for (unsigned int i=0; i<triplet_mass->size(); ++i) {
             if (triplet_lowest_pt->at(i) < cut_pt_)
@@ -292,6 +293,9 @@ void NtupleTree::InitializeHistograms()
                            "H_{T} [GeV]", "events");
     h_jet_pt = TH1DInitializer("h_jet_pt", "Scouting", 200, 0.0, 2000.0,
                                "p_{T} [GeV]", "jets");
+    h_leading_jet_pt = TH1DInitializer("h_leading_jet_pt", "Scouting",
+                                       300, 0.0, 3000.0, "leading p_{T} [GeV]",
+                                       "events");
     h_M_vs_pt = TH2DInitializer("h_M_vs_pt", "Scouting", 400, 0.0, 4000.0,
                                 400, 0.0, 4000.0, "#Sigma_{jjj} |p_{T}| [GeV]",
                                 "M_{jjj} [GeV]");
@@ -351,6 +355,7 @@ void NtupleTree::WriteHistograms()
     h_nJets->Write();
     h_HT->Write();
     h_jet_pt->Write();
+    h_leading_jet_pt->Write();
     h_M_vs_pt->Write();
     h_mass->Write();
     h_vertex_num->Write();
