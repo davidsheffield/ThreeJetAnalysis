@@ -106,9 +106,10 @@ def fillSamples():
 
 
 def main():
+    cmssw_base = os.environ['CMSSW_BASE']
     architecture = os.environ['SCRAM_ARCH']
-    executable = '../../../../bin/{0}/ScoutingHistogramsMaker'.format(
-        architecture)
+    executable = '{0}/bin/{1}/ScoutingHistogramsMaker'.format(cmssw_base,
+                                                              architecture)
 
     options = getArguments()
     command = [executable, '', 'histograms.root', '0', '1.0',
