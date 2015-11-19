@@ -123,6 +123,8 @@ def main():
 
     for doing in options.do.split(','):
         for i in range(len(samples[doing])):
+            print "Processing {0}".format(samples[doing][i]['dataset'])
+
             scale = 1.0
             if doing != "data":
                 scale = (options.luminosity*1000.0) \
