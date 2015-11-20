@@ -102,8 +102,12 @@ def fillSamples():
                 [{'dataset': 'TTJets',
                   'ntuples': '',
                   'cross_section': 831.76,
-                  'events': 40989797.3916084}]}
-
+                  'events': 40989797.3916084}],
+            'debug':
+                [{'dataset': 'debug',
+                  'ntuples': '/uscmst1b_scratch/lpc1/3DayLifetime/dgsheffi/resolved_ttbar_test.root',
+                  'cross_section': 1.0,
+                  'events': 1.0}]}
 
 
 def main():
