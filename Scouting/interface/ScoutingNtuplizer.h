@@ -96,6 +96,7 @@ private:
 
     int jet_num;
     std::vector<float> jet_pt;
+    std::vector<float> jet_eta;
 
     int vertex_num;
 

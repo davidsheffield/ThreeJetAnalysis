@@ -53,6 +53,7 @@ ScoutingNtuplizer::ScoutingNtuplizer(const edm::ParameterSet& iConfig):
     tree->Branch("triplet_largest_eta", &triplet_largest_eta);
     tree->Branch("jet_num", &jet_num, "jet_num/I");
     tree->Branch("jet_pt", &jet_pt);
+    tree->Branch("jet_eta", &jet_eta);
     tree->Branch("vertex_num", &vertex_num, "vertex_num/I");
     tree->Branch("rho", &rho, "rho/F");
     tree->Branch("Run", &run, "Run/I");
@@ -99,6 +100,7 @@ ScoutingNtuplizer::analyze(const edm::Event& iEvent,
     for (auto &j: *jets) {
         Ht += j.pt();
         jet_pt.push_back(j.pt());
+        jet_eta.push_back(j.eta());
 
         TLorentzVector tmp_vector;
         tmp_vector.SetPtEtaPhiM(j.pt(), j.eta(), j.phi(), j.m());
@@ -166,6 +168,7 @@ void ScoutingNtuplizer::ResetVariables()
 
     jet_num = 0;
     jet_pt.clear();
+    jet_eta.clear();
 
     vertex_num = 0;
 
