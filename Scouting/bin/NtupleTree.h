@@ -41,6 +41,7 @@ private:
     int cut_NPV_max_;
     double cut_Ht_;
     double cut_pt_;
+    double cut_eta_;
     int passSel_;
     double scale_;
     int isMC_;
@@ -56,8 +57,10 @@ private:
     std::vector<float>   *triplet_dalitz_mid;
     std::vector<float>   *triplet_dalitz_low;
     std::vector<float>   *triplet_lowest_pt;
+    std::vector<float>   *triplet_largest_eta;
     Int_t                jet_num;
     std::vector<float>   *jet_pt;
+    std::vector<float>   *jet_eta;
     Int_t                vertex_num;
     Float_t              rho;
     Int_t                Run;
@@ -73,8 +76,10 @@ private:
     TBranch *b_triplet_dalitz_mid;
     TBranch *b_triplet_dalitz_low;
     TBranch *b_triplet_lowest_pt;
+    TBranch *b_triplet_largest_eta;
     TBranch *b_jet_num;
     TBranch *b_jet_pt;
+    TBranch *b_jet_eta;
     TBranch *b_vertex_num;
     TBranch *b_rho;
     TBranch *b_Run;

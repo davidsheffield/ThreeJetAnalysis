@@ -70,6 +70,7 @@ ResolvedNtuplizer::ResolvedNtuplizer(const edm::ParameterSet& iConfig):
     tree->Branch("triplet_dalitz_mid", &triplet_dalitz_mid);
     tree->Branch("triplet_dalitz_low", &triplet_dalitz_low);
     tree->Branch("triplet_lowest_pt", &triplet_lowest_pt);
+    tree->Branch("triplet_largest_eta", &triplet_largest_eta);
     if (is_signal)
         tree->Branch("triplet_is_correct", &triplet_is_correct);
     tree->Branch("jet_num", &jet_num, "jet_num/I");
@@ -178,6 +179,7 @@ void ResolvedNtuplizer::ResetVariables()
     triplet_dalitz_mid.clear();
     triplet_dalitz_low.clear();
     triplet_lowest_pt.clear();
+    triplet_largest_eta.clear();
     triplet_is_correct.clear();
 
     jet_num = 0;
@@ -395,6 +397,17 @@ void ResolvedNtuplizer::MakeTriplets()
                 triplet_scalar_pt.push_back(scalar_pt);
                 triplet_delta.push_back(scalar_pt - mass);
                 triplet_lowest_pt.push_back(jet[k].Pt());
+                if (fabs(jet[i].Eta()) > fabs(jet[j].Eta())) {
+                    if (fabs(jet[i].Eta()) > fabs(jet[k].Eta()))
+                        triplet_largest_eta.push_back(jet[i].Eta());
+                    else
+                        triplet_largest_eta.push_back(jet[k].Eta());
+                } else {
+                    if (fabs(jet[j].Eta()) > fabs(jet[k].Eta()))
+                        triplet_largest_eta.push_back(jet[j].Eta());
+                    else
+                        triplet_largest_eta.push_back(jet[k].Eta());
+                }
 
                 if (is_signal) {
                     if (jet_from_triplet[i] == 1 && jet_from_triplet[j] == 1

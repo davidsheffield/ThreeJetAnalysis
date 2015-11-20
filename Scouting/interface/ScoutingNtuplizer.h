@@ -92,6 +92,7 @@ private:
     std::vector<float> triplet_dalitz_mid;
     std::vector<float> triplet_dalitz_low;
     std::vector<float> triplet_lowest_pt;
+    std::vector<float> triplet_largest_eta;
 
     int jet_num;
     std::vector<float> jet_pt;

@@ -50,6 +50,7 @@ ScoutingNtuplizer::ScoutingNtuplizer(const edm::ParameterSet& iConfig):
     tree->Branch("triplet_dalitz_mid", &triplet_dalitz_mid);
     tree->Branch("triplet_dalitz_low", &triplet_dalitz_low);
     tree->Branch("triplet_lowest_pt", &triplet_lowest_pt);
+    tree->Branch("triplet_largest_eta", &triplet_largest_eta);
     tree->Branch("jet_num", &jet_num, "jet_num/I");
     tree->Branch("jet_pt", &jet_pt);
     tree->Branch("vertex_num", &vertex_num, "vertex_num/I");
@@ -161,6 +162,7 @@ void ScoutingNtuplizer::ResetVariables()
     triplet_dalitz_mid.clear();
     triplet_dalitz_low.clear();
     triplet_lowest_pt.clear();
+    triplet_largest_eta.clear();
 
     jet_num = 0;
     jet_pt.clear();
@@ -219,6 +221,17 @@ void ScoutingNtuplizer::MakeTriplets()
                 triplet_scalar_pt.push_back(scalar_pt);
                 triplet_delta.push_back(scalar_pt - mass);
                 triplet_lowest_pt.push_back(jet[k].Pt());
+                if (fabs(jet[i].Eta()) > fabs(jet[j].Eta())) {
+                    if (fabs(jet[i].Eta()) > fabs(jet[k].Eta()))
+                        triplet_largest_eta.push_back(jet[i].Eta());
+                    else
+                        triplet_largest_eta.push_back(jet[k].Eta());
+                } else {
+                    if (fabs(jet[j].Eta()) > fabs(jet[k].Eta()))
+                        triplet_largest_eta.push_back(jet[j].Eta());
+                    else
+                        triplet_largest_eta.push_back(jet[k].Eta());
+                }
 
                 double Dalitz_variable[3];
                 double denominator = (jet[i] + jet[j] + jet[k]).M()

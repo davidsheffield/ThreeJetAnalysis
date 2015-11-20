@@ -66,7 +66,9 @@ void NtupleTree::Init(TTree *tree)
     triplet_dalitz_mid = 0;
     triplet_dalitz_low = 0;
     triplet_lowest_pt = 0;
+    triplet_largest_eta = 0;
     jet_pt = 0;
+    jet_eta = 0;
     // Set branch addresses and branch pointers
     if (!tree) return;
     fChain = tree;
@@ -86,8 +88,11 @@ void NtupleTree::Init(TTree *tree)
                              &b_triplet_dalitz_low);
     fChain->SetBranchAddress("triplet_lowest_pt", &triplet_lowest_pt,
                              &b_triplet_lowest_pt);
+    fChain->SetBranchAddress("triplet_largest_eta", &triplet_largest_eta,
+                             &b_triplet_largest_eta);
     fChain->SetBranchAddress("jet_num", &jet_num, &b_jet_num);
     fChain->SetBranchAddress("jet_pt", &jet_pt, &b_jet_pt);
+    fChain->SetBranchAddress("jet_eta", &jet_eta, &b_jet_eta);
     fChain->SetBranchAddress("vertex_num", &vertex_num, &b_vertex_num);
     if (isMC_ == 0)
         fChain->SetBranchAddress("rho", &rho, &b_rho);
@@ -194,6 +199,8 @@ void NtupleTree::Loop()
         for (int i=0; i<jet_num; ++i) {
             if (jet_pt->at(i) < cut_pt_)
                 continue;
+            if (jet_eta->at(i) < cut_eta_)
+                continue;
 
             h_jet_pt->Fill(jet_pt->at(i), scale_);
         }
@@ -201,6 +208,8 @@ void NtupleTree::Loop()
 
         for (unsigned int i=0; i<triplet_mass->size(); ++i) {
             if (triplet_lowest_pt->at(i) < cut_pt_)
+                continue;
+            if (triplet_largest_eta->at(i) < cut_eta_)
                 continue;
 
             h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i),
@@ -267,6 +276,7 @@ void NtupleTree::MakeHistograms(TString out_file_name, double scale,
     cut_NPV_max_ = cut_NPV_max;
     cut_Ht_ = cut_Ht;
     cut_pt_ = cut_pt;
+    cut_eta_ = cut_eta;
 
     InitializeHistograms();
     Loop();
