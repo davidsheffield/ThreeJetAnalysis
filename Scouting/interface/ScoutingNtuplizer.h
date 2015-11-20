@@ -95,10 +95,6 @@ private:
 
     int jet_num;
     std::vector<float> jet_pt;
-    std::vector<float> jet_eta;
-    std::vector<float> jet_phi;
-    std::vector<float> jet_m;
-    std::vector<float> jet_csv;
 
     int vertex_num;
 

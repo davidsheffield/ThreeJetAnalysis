@@ -67,10 +67,6 @@ void NtupleTree::Init(TTree *tree)
     triplet_dalitz_low = 0;
     triplet_lowest_pt = 0;
     jet_pt = 0;
-    jet_eta = 0;
-    jet_phi = 0;
-    jet_m = 0;
-    jet_csv = 0;
     // Set branch addresses and branch pointers
     if (!tree) return;
     fChain = tree;
@@ -92,10 +88,6 @@ void NtupleTree::Init(TTree *tree)
                              &b_triplet_lowest_pt);
     fChain->SetBranchAddress("jet_num", &jet_num, &b_jet_num);
     fChain->SetBranchAddress("jet_pt", &jet_pt, &b_jet_pt);
-    fChain->SetBranchAddress("jet_eta", &jet_eta, &b_jet_eta);
-    fChain->SetBranchAddress("jet_phi", &jet_phi, &b_jet_phi);
-    fChain->SetBranchAddress("jet_m", &jet_m, &b_jet_m);
-    fChain->SetBranchAddress("jet_csv", &jet_csv, &b_jet_csv);
     fChain->SetBranchAddress("vertex_num", &vertex_num, &b_vertex_num);
     if (isMC_ == 0)
         fChain->SetBranchAddress("rho", &rho, &b_rho);

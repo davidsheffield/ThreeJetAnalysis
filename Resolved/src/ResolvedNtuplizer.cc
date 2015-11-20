@@ -74,10 +74,6 @@ ResolvedNtuplizer::ResolvedNtuplizer(const edm::ParameterSet& iConfig):
         tree->Branch("triplet_is_correct", &triplet_is_correct);
     tree->Branch("jet_num", &jet_num, "jet_num/I");
     tree->Branch("jet_pt", &jet_pt);
-    tree->Branch("jet_eta", &jet_eta);
-    tree->Branch("jet_phi", &jet_phi);
-    tree->Branch("jet_m", &jet_m);
-    tree->Branch("jet_csv", &jet_csv);
     tree->Branch("vertex_num", &vertex_num, "vertex_num/I");
     //tree->Branch("rho", &rho, "rho/F");
     tree->Branch("Run", &run, "Run/I");
@@ -124,10 +120,6 @@ ResolvedNtuplizer::analyze(const edm::Event& iEvent,
     for (int i=0; i<jet_num; ++i) {
         Ht += jetPt->at(i);
         jet_pt.push_back(jetPt->at(i));
-        jet_eta.push_back(jetEta->at(i));
-        jet_phi.push_back(jetPhi->at(i));
-        jet_m.push_back(jetMass->at(i));
-        jet_csv.push_back(jetCSV->at(i));
 
         TLorentzVector tmp_vector;
         tmp_vector.SetPtEtaPhiE(jetPt->at(i), jetEta->at(i), jetPhi->at(i),
@@ -190,10 +182,6 @@ void ResolvedNtuplizer::ResetVariables()
 
     jet_num = 0;
     jet_pt.clear();
-    jet_eta.clear();
-    jet_phi.clear();
-    jet_m.clear();
-    jet_csv.clear();
 
     vertex_num = 0;
 

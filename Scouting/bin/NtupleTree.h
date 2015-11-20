@@ -58,10 +58,6 @@ private:
     std::vector<float>   *triplet_lowest_pt;
     Int_t                jet_num;
     std::vector<float>   *jet_pt;
-    std::vector<float>   *jet_eta;
-    std::vector<float>   *jet_phi;
-    std::vector<float>   *jet_m;
-    std::vector<float>   *jet_csv;
     Int_t                vertex_num;
     Float_t              rho;
     Int_t                Run;
@@ -79,10 +75,6 @@ private:
     TBranch *b_triplet_lowest_pt;
     TBranch *b_jet_num;
     TBranch *b_jet_pt;
-    TBranch *b_jet_eta;
-    TBranch *b_jet_phi;
-    TBranch *b_jet_m;
-    TBranch *b_jet_csv;
     TBranch *b_vertex_num;
     TBranch *b_rho;
     TBranch *b_Run;
