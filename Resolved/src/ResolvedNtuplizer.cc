@@ -54,6 +54,8 @@ ResolvedNtuplizer::ResolvedNtuplizer(const edm::ParameterSet& iConfig):
     token_genpart_E(consumes<vector<float>>(
                         iConfig.getParameter<InputTag>("genpart_E"))),
     cut_nJets_min(iConfig.getParameter<int>("cut_nJets_min")),
+    cut_pt(iConfig.getParameter<double>("cut_pt")),
+    cut_eta(iConfig.getParameter<double>("cut_eta")),
     is_signal(iConfig.getParameter<bool>("is_signal")),
     file_name(iConfig.getParameter<string>("output_file_name"))
 {
@@ -114,18 +116,23 @@ ResolvedNtuplizer::analyze(const edm::Event& iEvent,
     if (getCollectionsResult)
 	return;
 
-    jet_num = jetPt->size();
+    jet_num = jet.size();
     if (jet_num < cut_nJets_min)
         return;
 
     for (int i=0; i<jet_num; ++i) {
-        Ht += jetPt->at(i);
-        jet_pt.push_back(jetPt->at(i));
+        // Ht += jetPt->at(i);
+        // jet_pt.push_back(jetPt->at(i));
 
-        TLorentzVector tmp_vector;
-        tmp_vector.SetPtEtaPhiE(jetPt->at(i), jetEta->at(i), jetPhi->at(i),
-                                jetE->at(i));
-        jet.push_back(tmp_vector);
+        // TLorentzVector tmp_vector;
+        // tmp_vector.SetPtEtaPhiE(jetPt->at(i), jetEta->at(i), jetPhi->at(i),
+        //                         jetE->at(i));
+        // jet.push_back(tmp_vector);
+        // if (is_signal)
+        //     jet_from_triplet.push_back(0);
+        jet_pt.push_back(jet[i].Pt());
+        jet_eta.push_back(jet[i].Eta());
+
         if (is_signal)
             jet_from_triplet.push_back(0);
     }
@@ -195,6 +202,7 @@ void ResolvedNtuplizer::ResetVariables()
 
     return;
 }
+
 
 int ResolvedNtuplizer::GetCollections(const edm::Event& iEvent)
 {
@@ -312,8 +320,19 @@ int ResolvedNtuplizer::GetCollections(const edm::Event& iEvent)
 	return 1;
         }*/
 
+    for (unsigned i=0; i<jetPt->size(); ++i) {
+        TLorentzVector tmp_vector;
+        tmp_vector.SetPtEtaPhiE(jetPt->at(i), jetEta->at(i), jetPhi->at(i),
+                                jetE->at(i));
+        if (!JetCuts(tmp_vector)) {
+            jet.push_back(tmp_vector);
+            Ht += jetPt->at(i);
+        }
+    }
+
     return 0;
 }
+
 
 void ResolvedNtuplizer::GetGenParticles()
 {
@@ -386,6 +405,7 @@ void ResolvedNtuplizer::GetGenParticles()
     return;
 }
 
+
 void ResolvedNtuplizer::MakeTriplets()
 {
     for (int i=0; i<jet_num-2; ++i) {
@@ -444,6 +464,20 @@ void ResolvedNtuplizer::MakeTriplets()
 
     return;
 }
+
+
+int ResolvedNtuplizer::JetCuts(const TLorentzVector jet_)
+{
+    // Returns >0 if jet fails cuts
+    // Returns  0 is jet passes cuts
+    if (fabs(jet_.Eta()) > cut_eta)
+        return 0x1;
+    if (jet_.Pt() < cut_pt)
+        return 2;
+
+    return 0;
+}
+
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(ResolvedNtuplizer);

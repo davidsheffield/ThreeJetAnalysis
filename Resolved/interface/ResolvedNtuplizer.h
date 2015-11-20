@@ -60,6 +60,7 @@ private:
     virtual int GetCollections(const edm::Event&);
     virtual void GetGenParticles();
     virtual void MakeTriplets();
+    virtual int JetCuts(const TLorentzVector);
 
     // ----------member data ---------------------------
     edm::EDGetTokenT<std::vector<float>> token_jet_pt;
@@ -95,6 +96,8 @@ private:
     std::vector<TLorentzVector> jet;
 
     int cut_nJets_min;
+    double cut_pt;
+    double cut_eta;
     bool is_signal;
 
     std::string file_name;
@@ -115,6 +118,7 @@ private:
 
     int jet_num;
     std::vector<float> jet_pt;
+    std::vector<float> jet_eta;
 
     int vertex_num;
 

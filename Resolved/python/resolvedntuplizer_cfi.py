@@ -18,6 +18,8 @@ resolvedntuplizer = cms.EDAnalyzer(
     genpart_E        = cms.InputTag('genPart:genPartE'),
     #rho              = cms.InputTag('hltScoutingPFPacker:rho'),
     cut_nJets_min    = cms.int32(6),
+    cut_pt           = cms.double(20.0),
+    cut_eta          = cms.double(3.0),
     is_signal        = cms.bool(False),
     output_file_name = cms.string('resolved_ntuple.root')
 )
