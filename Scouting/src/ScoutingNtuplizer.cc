@@ -51,6 +51,8 @@ ScoutingNtuplizer::ScoutingNtuplizer(const edm::ParameterSet& iConfig):
     tree->Branch("triplet_dalitz_low", &triplet_dalitz_low);
     tree->Branch("triplet_lowest_pt", &triplet_lowest_pt);
     tree->Branch("triplet_largest_eta", &triplet_largest_eta);
+    tree->Branch("triplet_pairwise_mass", &triplet_pairwise_mass);
+    tree->Branch("triplet_jet_csv", &triplet_jet_csv);
     tree->Branch("jet_num", &jet_num, "jet_num/I");
     tree->Branch("jet_pt", &jet_pt);
     tree->Branch("jet_eta", &jet_eta);
@@ -138,18 +140,6 @@ void ScoutingNtuplizer::fillDescriptions(edm::ConfigurationDescriptions& descrip
   descriptions.addDefault(desc);
 }
 
-void normalizeHistogram(TH1D *hist)
-{
-    int nbins = hist->GetNbinsX();
-    for (int i=1; i<nbins+1; ++i) {
-        double content = hist->GetBinContent(i);
-        double error = hist->GetBinError(i);
-        double width = hist->GetXaxis()->GetBinWidth(i);
-        hist->SetBinContent(i, content/width);
-        hist->SetBinError(i, error/width);
-    }
-    return;
-}
 
 void ScoutingNtuplizer::ResetVariables()
 {
@@ -165,6 +155,8 @@ void ScoutingNtuplizer::ResetVariables()
     triplet_dalitz_low.clear();
     triplet_lowest_pt.clear();
     triplet_largest_eta.clear();
+    triplet_pairwise_mass.clear();
+    triplet_jet_csv.clear();
 
     jet_num = 0;
     jet_pt.clear();
@@ -252,12 +244,36 @@ void ScoutingNtuplizer::MakeTriplets()
                 triplet_dalitz_high.push_back(Dalitz_variable[2]);
                 triplet_dalitz_mid.push_back(Dalitz_variable[1]);
                 triplet_dalitz_low.push_back(Dalitz_variable[0]);
+
+                vector<pair<float, float>> Wb_pairs;
+                Wb_pairs.push_back(pair<float, float>((jet[i] + jet[j]).M(),
+                                                      jets->at(k).csv()));
+                Wb_pairs.push_back(pair<float, float>((jet[i] + jet[k]).M(),
+                                                      jets->at(j).csv()));
+                Wb_pairs.push_back(pair<float, float>((jet[j] + jet[k]).M(),
+                                                      jets->at(i).csv()));
+                sort(begin(Wb_pairs), end(Wb_pairs), SortWbPairs);
+                vector<float> tmp_pairwise_mass;
+                vector<float> tmp_jet_csv;
+                for (int l=0; l<3; ++l) {
+                    tmp_pairwise_mass.push_back(Wb_pairs[l].first);
+                    tmp_jet_csv.push_back(Wb_pairs[l].second);
+                }
+                triplet_pairwise_mass.push_back(tmp_pairwise_mass);
+                triplet_jet_csv.push_back(tmp_jet_csv);
             }
         }
     }
 
     return;
 }
+
+
+bool SortWbPairs(const pair<float, float> a, const pair<float, float> b)
+{
+    return (a.second > b.second);
+}
+
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(ScoutingNtuplizer);

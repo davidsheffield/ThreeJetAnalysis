@@ -73,6 +73,8 @@ ResolvedNtuplizer::ResolvedNtuplizer(const edm::ParameterSet& iConfig):
     tree->Branch("triplet_dalitz_low", &triplet_dalitz_low);
     tree->Branch("triplet_lowest_pt", &triplet_lowest_pt);
     tree->Branch("triplet_largest_eta", &triplet_largest_eta);
+    tree->Branch("triplet_pairwise_mass", &triplet_pairwise_mass);
+    tree->Branch("triplet_jet_csv", &triplet_jet_csv);
     if (is_signal)
         tree->Branch("triplet_is_correct", &triplet_is_correct);
     tree->Branch("jet_num", &jet_num, "jet_num/I");
@@ -179,6 +181,8 @@ void ResolvedNtuplizer::ResetVariables()
     triplet_dalitz_low.clear();
     triplet_lowest_pt.clear();
     triplet_largest_eta.clear();
+    triplet_pairwise_mass.clear();
+    triplet_jet_csv.clear();
     triplet_is_correct.clear();
 
     jet_num = 0;
@@ -451,6 +455,23 @@ void ResolvedNtuplizer::MakeTriplets()
                 triplet_dalitz_high.push_back(Dalitz_variable[2]);
                 triplet_dalitz_mid.push_back(Dalitz_variable[1]);
                 triplet_dalitz_low.push_back(Dalitz_variable[0]);
+
+                vector<pair<float, float>> Wb_pairs;
+                Wb_pairs.push_back(pair<float, float>((jet[i] + jet[j]).M(),
+                                                      jetCSV->at(k)));
+                Wb_pairs.push_back(pair<float, float>((jet[i] + jet[k]).M(),
+                                                      jetCSV->at(j)));
+                Wb_pairs.push_back(pair<float, float>((jet[j] + jet[k]).M(),
+                                                      jetCSV->at(i)));
+                sort(begin(Wb_pairs), end(Wb_pairs), SortWbPairs);
+                vector<float> tmp_pairwise_mass;
+                vector<float> tmp_jet_csv;
+                for (int l=0; l<3; ++l) {
+                    tmp_pairwise_mass.push_back(Wb_pairs[l].first);
+                    tmp_jet_csv.push_back(Wb_pairs[l].second);
+                }
+                triplet_pairwise_mass.push_back(tmp_pairwise_mass);
+                triplet_jet_csv.push_back(tmp_jet_csv);
             }
         }
     }
@@ -469,6 +490,12 @@ int ResolvedNtuplizer::JetCuts(const TLorentzVector jet_)
         return 2;
 
     return 0;
+}
+
+
+bool SortWbPairs(const pair<float, float> a, const pair<float, float> b)
+{
+    return (a.second > b.second);
 }
 
 

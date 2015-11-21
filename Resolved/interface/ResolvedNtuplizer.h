@@ -21,6 +21,7 @@
 #include <memory>
 #include <iostream>
 #include <vector>
+#include <utility>
 
 // CMSSW include files
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -115,6 +116,8 @@ private:
     std::vector<float> triplet_lowest_pt;
     std::vector<float> triplet_largest_eta;
     std::vector<int> triplet_is_correct;
+    std::vector<std::vector<float>> triplet_pairwise_mass;
+    std::vector<std::vector<float>> triplet_jet_csv;
 
     int jet_num;
     std::vector<float> jet_pt;
@@ -130,3 +133,5 @@ private:
     int lumi;
     int event;
 };
+
+bool SortWbPairs(const std::pair<float, float>, const std::pair<float, float>);
