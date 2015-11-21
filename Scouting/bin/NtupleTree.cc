@@ -212,7 +212,7 @@ void NtupleTree::Loop()
         for (int i=0; i<jet_num; ++i) {
             if (jet_pt->at(i) < cut_pt_)
                 continue;
-            if (jet_eta->at(i) < cut_eta_)
+            if (fabs(jet_eta->at(i)) > cut_eta_)
                 continue;
 
             h_jet_pt->Fill(jet_pt->at(i), scale_);
@@ -222,7 +222,7 @@ void NtupleTree::Loop()
         for (unsigned int i=0; i<triplet_mass->size(); ++i) {
             if (triplet_lowest_pt->at(i) < cut_pt_)
                 continue;
-            if (triplet_largest_eta->at(i) < cut_eta_)
+            if (fabs(triplet_largest_eta->at(i)) > cut_eta_)
                 continue;
 
             h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i),
