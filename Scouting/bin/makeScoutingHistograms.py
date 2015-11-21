@@ -68,46 +68,56 @@ def fillSamples():
                 [{'dataset': 'data',
                   'ntuples': '/cms/data26/sheffield/Scouting/ntuples/v4/scouting_ntuple_*.root',
                   'cross_section': 1.0,
-                  'events': 1.0}],
+                  'events': 1.0,
+                  'isMC': 0}],
             'qcd':
                 [{'dataset': 'QCD_Pt-120To170',
                   'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_QCD_Pt-120To170_v1/resolved_QCD_Pt-120To170ntuple_*.root',
                   'cross_section': 471100.0,
-                  'events': 3452896.0},
+                  'events': 3452896.0,
+                  'isMC': 1},
                  {'dataset': 'QCD_Pt-170To300',
                   'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_QCD_Pt-170To300_v1/resolved_ntuple_QCD_Pt-170To300_v1_*.root',
                   'cross_section': 117276.0,
-                  'events': 3342746.09768638},
+                  'events': 3342746.09768638,
+                  'isMC': 1},
                  {'dataset': 'QCD_Pt-300To470',
                   'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_QCD_Pt-300To470_v1/resolved_ntuple_QCD_Pt-300To470_v1_*.root',
                   'cross_section': 7823.0,
-                  'events': 2912596.59455587},
+                  'events': 2912596.59455587,
+                  'isMC': 1},
                  {'dataset': 'QCD_Pt-470To600',
                   'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_QCD_Pt-470To600_v1/resolved_ntuple_QCD_Pt-470To600_v1_*.root',
                   'cross_section': 648.2,
-                  'events': 1933310.48727273},
+                  'events': 1933310.48727273,
+                  'isMC': 1},
                  {'dataset': 'QCD_Pt-600To800',
                   'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_QCD_Pt-600To800_v1/resolved_ntuple_QCD_Pt-600To800_v1_*.root',
                   'cross_section': 186.9,
-                  'events': 1964128.0},
+                  'events': 1964128.0,
+                  'isMC': 1},
                  {'dataset': 'QCD_Pt-800To1000',
                   'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_QCD_Pt-800To1000_v1/resolved_ntuple_QCD_Pt-800To1000_v1_*.root',
                   'cross_section': 32.293,
-                  'events': 1937216.0},
+                  'events': 1937216.0,
+                  'isMC': 1},
                  {'dataset': 'QCD_Pt-1000To1400',
                   'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_QCD_Pt-1000To1400_v1/resolved_ntuple_QCD_Pt-1000To1400_v1_*.root',
                   'cross_section': 9.4183,
-                  'events': 1487136.0}],
+                  'events': 1487136.0,
+                  'isMC': 1}],
             'ttbar':
                 [{'dataset': 'TTJets',
                   'ntuples': '',
                   'cross_section': 831.76,
-                  'events': 40989797.3916084}],
+                  'events': 40989797.3916084,
+                  'isMC': 2}],
             'debug':
                 [{'dataset': 'debug',
-                  'ntuples': '/uscmst1b_scratch/lpc1/3DayLifetime/dgsheffi/resolved_ttbar_test.root',
+                  'ntuples': '/uscmst1b_scratch/lpc1/3DayLifetime/dgsheffi/test_ntuple_ttbar.root',
                   'cross_section': 1.0,
-                  'events': 1.0}]}
+                  'events': 1.0,
+                  'isMC': 2}]}
 
 
 def main():
@@ -134,16 +144,11 @@ def main():
                 scale = (options.luminosity*1000.0) \
                     *samples[doing][i]['cross_section'] \
                     /samples[doing][i]['events']
-            isMC = 0
-            if doing == "qcd":
-                isMC = 1
-            elif doing == "ttbar":
-                isMC = 2
 
             command[1] = samples[doing][i]['ntuples']
             command[2] = '{0}_{1}.root'.format(options.outputFile.split('.')[0],
                                                samples[doing][i]['dataset'])
-            command[3] = str(isMC)
+            command[3] = str(samples[doing][i]['isMC'])
             command[4] = str(scale)
 
             subprocess.call(command)
