@@ -12,6 +12,7 @@
 #include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TLorentzVector.h"
 
 // Header file for the classes stored in the TTree if any.
 #include <iostream>
@@ -52,6 +53,9 @@ private:
     Float_t                         HT;
     std::vector<float>              *triplet_mass;
     std::vector<float>              *triplet_scalar_pt;
+    std::vector<float>              *triplet_vector_pt;
+    std::vector<float>              *triplet_eta;
+    std::vector<float>              *triplet_phi;
     std::vector<float>              *triplet_delta;
     std::vector<float>              *triplet_dalitz_high;
     std::vector<float>              *triplet_dalitz_mid;
@@ -73,6 +77,9 @@ private:
     TBranch *b_HT;
     TBranch *b_triplet_mass;
     TBranch *b_triplet_scalar_pt;
+    TBranch *b_triplet_vector_pt;
+    TBranch *b_triplet_eta;
+    TBranch *b_triplet_phi;
     TBranch *b_triplet_delta;
     TBranch *b_triplet_dalitz_high;
     TBranch *b_triplet_dalitz_mid;
@@ -80,7 +87,7 @@ private:
     TBranch *b_triplet_lowest_pt;
     TBranch *b_triplet_largest_eta;
     TBranch *b_triplet_pairwise_mass;
-    TBranch *h_triplet_jet_csv;
+    TBranch *b_triplet_jet_csv;
     TBranch *b_jet_num;
     TBranch *b_jet_pt;
     TBranch *b_jet_eta;
@@ -113,7 +120,7 @@ private:
     static const int size_h_M_DeltaCut = 31;
     TH1D *h_M_DeltaCut[size_h_M_DeltaCut];
     TH1D *h_MW_DeltaCut[size_h_M_DeltaCut];
-    TH2D *h_CSV_vs_M_DelaCut[size_h_M_DeltaCut];
+    TH2D *h_CSV_vs_M_DeltaCut[size_h_M_DeltaCut];
     static const int number_of_Dalitz_cuts = 10;
     TH1D *h_M_DeltaDalitzCut[number_of_Dalitz_cuts][size_h_M_DeltaCut];
     TH2D *h_Dalitz_after_cut[number_of_Dalitz_cuts];

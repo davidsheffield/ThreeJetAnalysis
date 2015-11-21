@@ -45,6 +45,9 @@ ScoutingNtuplizer::ScoutingNtuplizer(const edm::ParameterSet& iConfig):
     tree->Branch("HT", &Ht, "HT/F");
     tree->Branch("triplet_mass", &triplet_mass);
     tree->Branch("triplet_scalar_pt", &triplet_scalar_pt);
+    tree->Branch("triplet_vector_pt", &triplet_vector_pt);
+    tree->Branch("triplet_eta", &triplet_eta);
+    tree->Branch("triplet_phi", &triplet_phi);
     tree->Branch("triplet_delta", &triplet_delta);
     tree->Branch("triplet_dalitz_high", &triplet_dalitz_high);
     tree->Branch("triplet_dalitz_mid", &triplet_dalitz_mid);
@@ -149,6 +152,9 @@ void ScoutingNtuplizer::ResetVariables()
 
     triplet_mass.clear();
     triplet_scalar_pt.clear();
+    triplet_vector_pt.clear();
+    triplet_eta.clear();
+    triplet_phi.clear();
     triplet_delta.clear();
     triplet_dalitz_high.clear();
     triplet_dalitz_mid.clear();
@@ -210,10 +216,14 @@ void ScoutingNtuplizer::MakeTriplets()
     for (int i=0; i<jet_num-2; ++i) {
         for (int j=i+1; j<jet_num-1; ++j) {
             for (int k=j+1; k<jet_num; ++k) {
-                double mass = (jet[i] + jet[j] + jet[k]).M();
+                TLorentzVector triplet_vector = jet[i] + jet[j] + jet[k];
+                double mass = triplet_vector.M();
                 double scalar_pt = jet[i].Pt() + jet[j].Pt() + jet[k].Pt();
                 triplet_mass.push_back(mass);
                 triplet_scalar_pt.push_back(scalar_pt);
+                triplet_vector_pt.push_back(triplet_vector.Pt());
+                triplet_eta.push_back(triplet_vector.Eta());
+                triplet_phi.push_back(triplet_vector.Phi());
                 triplet_delta.push_back(scalar_pt - mass);
                 triplet_lowest_pt.push_back(jet[k].Pt());
                 if (fabs(jet[i].Eta()) > fabs(jet[j].Eta())) {

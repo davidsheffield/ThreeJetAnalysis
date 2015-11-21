@@ -61,6 +61,9 @@ void NtupleTree::Init(TTree *tree)
     // Set object pointer
     triplet_mass = 0;
     triplet_scalar_pt = 0;
+    triplet_vector_pt = 0;
+    triplet_eta = 0;
+    triplet_phi = 0;
     triplet_delta = 0;
     triplet_dalitz_high = 0;
     triplet_dalitz_mid = 0;
@@ -81,6 +84,10 @@ void NtupleTree::Init(TTree *tree)
     fChain->SetBranchAddress("triplet_mass", &triplet_mass, &b_triplet_mass);
     fChain->SetBranchAddress("triplet_scalar_pt", &triplet_scalar_pt,
                              &b_triplet_scalar_pt);
+    fChain->SetBranchAddress("triplet_vector_pt", &triplet_vector_pt,
+                             &b_triplet_vector_pt);
+    fChain->SetBranchAddress("triplet_eta", &triplet_eta, &b_triplet_eta);
+    fChain->SetBranchAddress("triplet_phi", &triplet_phi, &b_triplet_phi);
     fChain->SetBranchAddress("triplet_delta", &triplet_delta, &b_triplet_delta);
     fChain->SetBranchAddress("triplet_dalitz_high", &triplet_dalitz_high,
                              &b_triplet_dalitz_high);
@@ -225,8 +232,10 @@ void NtupleTree::Loop()
                 double delta = 10.0*static_cast<double>(j);
                 if (triplet_delta->at(i) > delta) {
                     h_M_DeltaCut[j]->Fill(triplet_mass->at(i), scale_);
-                    h_MW_DeltaCut[j]->Fill(triplet_pairwise_mass->at(i), scale_);
-                    h_CSV_vs_M_DeltaCut[j]->Fill(triplet_jet_CSV->at(i), scale_);
+                    h_MW_DeltaCut[j]->Fill(triplet_pairwise_mass->at(i)[0],
+                                           scale_);
+                    h_CSV_vs_M_DeltaCut[j]->Fill(triplet_jet_csv->at(i)[0],
+                                                 scale_);
                     for (int k=0; k<number_of_Dalitz_cuts; ++k) {
                         if (triplet_dalitz_low->at(i) > cut_Dalitz_low[k]
                             && triplet_dalitz_mid->at(i) < cut_Dalitz_mid[k])

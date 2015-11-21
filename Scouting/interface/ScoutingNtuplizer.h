@@ -88,6 +88,9 @@ private:
 
     std::vector<float> triplet_mass;
     std::vector<float> triplet_scalar_pt;
+    std::vector<float> triplet_vector_pt;
+    std::vector<float> triplet_eta;
+    std::vector<float> triplet_phi;
     std::vector<float> triplet_delta;
     std::vector<float> triplet_dalitz_high;
     std::vector<float> triplet_dalitz_mid;
