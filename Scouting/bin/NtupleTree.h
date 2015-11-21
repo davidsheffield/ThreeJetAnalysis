@@ -49,23 +49,25 @@ private:
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
     // Declaration of leaf types
-    Float_t              HT;
-    std::vector<float>   *triplet_mass;
-    std::vector<float>   *triplet_scalar_pt;
-    std::vector<float>   *triplet_delta;
-    std::vector<float>   *triplet_dalitz_high;
-    std::vector<float>   *triplet_dalitz_mid;
-    std::vector<float>   *triplet_dalitz_low;
-    std::vector<float>   *triplet_lowest_pt;
-    std::vector<float>   *triplet_largest_eta;
-    Int_t                jet_num;
-    std::vector<float>   *jet_pt;
-    std::vector<float>   *jet_eta;
-    Int_t                vertex_num;
-    Float_t              rho;
-    Int_t                Run;
-    Int_t                Lumi;
-    Int_t                Event;
+    Float_t                         HT;
+    std::vector<float>              *triplet_mass;
+    std::vector<float>              *triplet_scalar_pt;
+    std::vector<float>              *triplet_delta;
+    std::vector<float>              *triplet_dalitz_high;
+    std::vector<float>              *triplet_dalitz_mid;
+    std::vector<float>              *triplet_dalitz_low;
+    std::vector<float>              *triplet_lowest_pt;
+    std::vector<float>              *triplet_largest_eta;
+    std::vector<std::vector<float>> *triplet_pairwise_mass;
+    std::vector<std::vector<float>> *triplet_jet_csv;
+    Int_t                           jet_num;
+    std::vector<float>              *jet_pt;
+    std::vector<float>              *jet_eta;
+    Int_t                           vertex_num;
+    Float_t                         rho;
+    Int_t                           Run;
+    Int_t                           Lumi;
+    Int_t                           Event;
 
     // List of branches
     TBranch *b_HT;
@@ -77,6 +79,8 @@ private:
     TBranch *b_triplet_dalitz_low;
     TBranch *b_triplet_lowest_pt;
     TBranch *b_triplet_largest_eta;
+    TBranch *b_triplet_pairwise_mass;
+    TBranch *h_triplet_jet_csv;
     TBranch *b_jet_num;
     TBranch *b_jet_pt;
     TBranch *b_jet_eta;
@@ -108,6 +112,8 @@ private:
     TH2D *h_Dalitz;
     static const int size_h_M_DeltaCut = 31;
     TH1D *h_M_DeltaCut[size_h_M_DeltaCut];
+    TH1D *h_MW_DeltaCut[size_h_M_DeltaCut];
+    TH2D *h_CSV_vs_M_DelaCut[size_h_M_DeltaCut];
     static const int number_of_Dalitz_cuts = 10;
     TH1D *h_M_DeltaDalitzCut[number_of_Dalitz_cuts][size_h_M_DeltaCut];
     TH2D *h_Dalitz_after_cut[number_of_Dalitz_cuts];

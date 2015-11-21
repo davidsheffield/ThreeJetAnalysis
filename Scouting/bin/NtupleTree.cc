@@ -67,6 +67,8 @@ void NtupleTree::Init(TTree *tree)
     triplet_dalitz_low = 0;
     triplet_lowest_pt = 0;
     triplet_largest_eta = 0;
+    triplet_pairwise_mass = 0;
+    triplet_jet_csv = 0;
     jet_pt = 0;
     jet_eta = 0;
     // Set branch addresses and branch pointers
@@ -90,6 +92,10 @@ void NtupleTree::Init(TTree *tree)
                              &b_triplet_lowest_pt);
     fChain->SetBranchAddress("triplet_largest_eta", &triplet_largest_eta,
                              &b_triplet_largest_eta);
+    fChain->SetBranchAddress("triplet_pairwise_mass", &triplet_pairwise_mass,
+                             &b_triplet_pairwise_mass);
+    fChain->SetBranchAddress("triplet_jet_csv", &triplet_jet_csv,
+                             &b_triplet_jet_csv);
     fChain->SetBranchAddress("jet_num", &jet_num, &b_jet_num);
     fChain->SetBranchAddress("jet_pt", &jet_pt, &b_jet_pt);
     fChain->SetBranchAddress("jet_eta", &jet_eta, &b_jet_eta);
@@ -219,6 +225,8 @@ void NtupleTree::Loop()
                 double delta = 10.0*static_cast<double>(j);
                 if (triplet_delta->at(i) > delta) {
                     h_M_DeltaCut[j]->Fill(triplet_mass->at(i), scale_);
+                    h_MW_DeltaCut[j]->Fill(triplet_pairwise_mass->at(i), scale_);
+                    h_CSV_vs_M_DeltaCut[j]->Fill(triplet_jet_CSV->at(i), scale_);
                     for (int k=0; k<number_of_Dalitz_cuts; ++k) {
                         if (triplet_dalitz_low->at(i) > cut_Dalitz_low[k]
                             && triplet_dalitz_mid->at(i) < cut_Dalitz_mid[k])
@@ -317,6 +325,18 @@ void NtupleTree::InitializeHistograms()
 					  + to_string(delta),
 					  500, 0.0, 1000.0,
 					  "M_{jjj} [GeV]", "triplets");
+        h_MW_DeltaCut[i] = TH1DInitializer("h_MW_DeltaCut_" + to_string(delta),
+					  "Scouting, #Delta = "
+					  + to_string(delta),
+					  500, 0.0, 1000.0,
+					  "M_{jj} [GeV]", "triplets");
+        h_CSV_vs_M_DeltaCut[i] = TH2DInitializer("h_CSV_vs_M_DeltaCut_"
+                                                 + to_string(delta),
+                                                 "Scouting, #Delta = "
+                                                 + to_string(delta),
+                                                 500, 0.0, 1000.0,
+                                                 100, 0.0, 1.0, "M_{jj} [GeV]",
+                                                 "CSV");
     }
     for (int i=0; i<number_of_Dalitz_cuts; ++i) {
         for (int j=0; j<size_h_M_DeltaCut; ++j) {
@@ -368,6 +388,14 @@ void NtupleTree::WriteHistograms()
     dir_DeltaCuts->cd();
     for (int i=0; i<size_h_M_DeltaCut; ++i) {
         h_M_DeltaCut[i]->Write();
+    }
+    TDirectory *dir_DeltaCuts_Wb = dir_DeltaCuts->mkdir("Wb");
+    dir_DeltaCuts_Wb->cd();
+    for (int i=0; i<size_h_M_DeltaCut; ++i) {
+        h_MW_DeltaCut[i]->Write();
+    }
+    for (int i=0; i<size_h_M_DeltaCut; ++i) {
+        h_CSV_vs_M_DeltaCut[i]->Write();
     }
 
     TDirectory *dir_Dalitz = out_file->mkdir("Dalitz_Cuts");
