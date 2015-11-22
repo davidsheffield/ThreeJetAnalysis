@@ -1,7 +1,7 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-dataset = 'QCD_Pt-1000To1400'
+dataset = 'TTJets' #'QCD_Pt-1000To1400'
 version = 'v1'
 
 config.General.requestName = 'Resolved_Ntuples_{0}_{1}'.format(dataset, version)
@@ -19,14 +19,15 @@ config.JobType.outputFiles = [output_name]
 #config.Data.inputDataset = '/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
 #config.Data.inputDataset = '/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
 #config.Data.inputDataset = '/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
-config.Data.inputDataset = '/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
+#config.Data.inputDataset = '/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
 #config.Data.inputDataset = '/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
 #config.Data.inputDataset = '/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
 #config.Data.inputDataset = '/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
 #config.Data.inputDataset = '/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
+config.Data.inputDataset = '/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/dsheffie-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER'
 config.Data.inputDBS = 'phys03'
 config.Data.splitting = 'FileBased'
-config.Data.unitsPerJob = 5
+config.Data.unitsPerJob = 35
 #NJOBS = 264
 #config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
 #config.Data.totalUnits = 3890
