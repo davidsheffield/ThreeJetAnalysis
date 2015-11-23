@@ -228,7 +228,7 @@ void NtupleTree::Loop()
         for (int i=0; i<jet_num; ++i) {
             h_jet_pt->Fill(jet_pts[i], scale_);
         }
-        h_leading_jet_pt->Fill(jet_pt->at(0), scale_);
+        h_leading_jet_pt->Fill(jet_pts[0], scale_);
 
         for (unsigned int i=0; i<triplet_mass->size(); ++i) {
             if (triplet_lowest_pt->at(i) < cut_pt_)
