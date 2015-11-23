@@ -40,7 +40,7 @@ TheoryMiniTuplizer::TheoryMiniTuplizer(const edm::ParameterSet& iConfig):
     //now do what ever initialization is needed
     file = new TFile(file_name.c_str(), "RECREATE");
 
-    tree = new TTree("events", "Tree for scouting data");
+    tree = new TTree("tree", "Tree for scouting data");
 
     // Initialize the ID Codes for the theory Ntuple
     m_theoryID_photon = 0.0;
