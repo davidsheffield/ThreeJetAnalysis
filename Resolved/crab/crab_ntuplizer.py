@@ -2,7 +2,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 dataset = 'TTJets' #'QCD_Pt-1000To1400'
-version = 'v1'
+version = 'v2'
 
 config.General.requestName = 'Resolved_Ntuples_{0}_{1}'.format(dataset, version)
 config.General.workArea = 'jobs'
@@ -10,7 +10,8 @@ config.General.workArea = 'jobs'
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = '../python/ResolvedNtuplizer_cfg.py'
 output_name = 'resolved_ntuple_{0}_{1}.root'.format(dataset, version)
-config.JobType.pyCfgParams = ['outputFile={0}'.format(output_name)]
+config.JobType.pyCfgParams = ['outputFile={0}'.format(output_name),
+                              'isSignal=True']
 config.JobType.outputFiles = [output_name]
 
 #config.Data.inputDataset = '/QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08-4a60e85fe45fa92e3d679925522bbd7b/USER'
