@@ -15,7 +15,6 @@ NtupleTree::NtupleTree(TTree *tree, int isMC): fChain(0), isMC_(isMC)
 
     for (int i=0; i< number_of_Dalitz_cuts; ++i) {
         cut_Dalitz_low[i] = 0.01*static_cast<double>(i) + 0.01;
-        cut_Dalitz_mid[i] = (1.0 - cut_Dalitz_low[i])/2.0;
         char str[10];
         sprintf(str, "DalitzCut_%.2f", cut_Dalitz_low[i]);
         Dalitz_cut_name[i] = str;
@@ -257,8 +256,7 @@ void NtupleTree::Loop()
                                                 triplet_pairwise_mass->at(i)[0],
                                                 scale_);
                     for (int k=0; k<number_of_Dalitz_cuts; ++k) {
-                        if (triplet_dalitz_low->at(i) > cut_Dalitz_low[k]
-                            && triplet_dalitz_mid->at(i) < cut_Dalitz_mid[k])
+                        if (triplet_dalitz_low->at(i) > cut_Dalitz_low[k])
                             h_M_DeltaDalitzCut[k][j]->Fill(triplet_mass->at(i),
                                                            scale_);
                     }
@@ -271,8 +269,7 @@ void NtupleTree::Loop()
             h_Dalitz->Fill(triplet_dalitz_low->at(i),
                            triplet_dalitz_mid->at(i), scale_);
             for (int j=0; j<number_of_Dalitz_cuts; ++j) {
-                if (triplet_dalitz_low->at(i) > cut_Dalitz_low[j]
-                    && triplet_dalitz_mid->at(i) < cut_Dalitz_mid[j]) {
+                if (triplet_dalitz_low->at(i) > cut_Dalitz_low[j]) {
                     h_Dalitz_after_cut[j]->Fill(triplet_dalitz_mid->at(i),
                                                 triplet_dalitz_high->at(i),
                                                 scale_);

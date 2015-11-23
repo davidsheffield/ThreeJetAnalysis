@@ -128,7 +128,6 @@ private:
     TH2D *h_M_vs_pt_after_Dalitz[number_of_Dalitz_cuts];
 
     double cut_Dalitz_low[number_of_Dalitz_cuts];
-    double cut_Dalitz_mid[number_of_Dalitz_cuts];
     TString Dalitz_cut_name[number_of_Dalitz_cuts];
 };
 #endif
