@@ -54,7 +54,7 @@ def getArguments():
                      VarParsing.VarParsing.varType.string,
                      "What datasets to run over")
     options.register('luminosity',
-                     1.317741, # default value
+                     1.724, # default value
                      VarParsing.VarParsing.multiplicity.singleton,
                      VarParsing.VarParsing.varType.float,
                      "Integrated luminosity in /fb.")
@@ -108,9 +108,9 @@ def fillSamples():
                   'isMC': 1}],
             'ttbar':
                 [{'dataset': 'TTJets',
-                  'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_TTJets_v1/',
+                  'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_TTJets_v1/*.root',
                   'cross_section': 831.76,
-                  'events': 40989797.3916084,
+                  'events': 42784971.0,
                   'isMC': 2}],
             'debug':
                 [{'dataset': 'debug',

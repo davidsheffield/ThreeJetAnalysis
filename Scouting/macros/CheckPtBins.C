@@ -12,7 +12,8 @@ void CheckPtBins()
     TH1D *h_pts[bin_num];
     for (int i=0; i<bin_num; ++i) {
         files[i] = new TFile(file_names[i]);
-        files[i]->GetObject("h_jet_pt", h_pts[i]);
+        //files[i]->GetObject("h_jet_pt", h_pts[i]);
+        files[i]->GetObject("h_leading_jet_pt", h_pts[i]);
         h_pts[i]->SetMarkerColor(i+2);
         h_pts[i]->SetLineColor(i+2);
     }
