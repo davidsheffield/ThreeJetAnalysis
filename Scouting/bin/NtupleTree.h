@@ -122,6 +122,7 @@ private:
     TH1D *h_MW_DeltaCut[size_h_M_DeltaCut];
     TH2D *h_CSV_vs_M_DeltaCut[size_h_M_DeltaCut];
     TH2D *h_MW_vs_M_DeltaCut[size_h_M_DeltaCut];
+    TH2D *h_Dalitz_after_DeltaCut[size_h_M_DeltaCut];
     static const int number_of_Dalitz_cuts = 10;
     TH1D *h_M_DeltaDalitzCut[number_of_Dalitz_cuts][size_h_M_DeltaCut];
     TH2D *h_Dalitz_after_cut[number_of_Dalitz_cuts];
