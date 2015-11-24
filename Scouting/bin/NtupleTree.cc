@@ -255,13 +255,13 @@ void NtupleTree::Loop()
                     h_MW_vs_M_DeltaCut[j]->Fill(triplet_mass->at(i),
                                                 triplet_pairwise_mass->at(i)[0],
                                                 scale_);
-                    h_Dalitz_after_DeltaCut[i]->Fill(triplet_dalitz_mid->at(i),
+                    h_Dalitz_after_DeltaCut[j]->Fill(triplet_dalitz_mid->at(i),
                                                      triplet_dalitz_high->at(i),
                                                      scale_);
-                    h_Dalitz_after_DeltaCut[i]->Fill(triplet_dalitz_low->at(i),
+                    h_Dalitz_after_DeltaCut[j]->Fill(triplet_dalitz_low->at(i),
                                                      triplet_dalitz_high->at(i),
                                                      scale_);
-                    h_Dalitz_after_DeltaCut[i]->Fill(triplet_dalitz_low->at(i),
+                    h_Dalitz_after_DeltaCut[j]->Fill(triplet_dalitz_low->at(i),
                                                      triplet_dalitz_mid->at(i),
                                                      scale_);
                     for (int k=0; k<number_of_Dalitz_cuts; ++k) {
