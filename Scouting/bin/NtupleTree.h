@@ -62,6 +62,7 @@ private:
     std::vector<float>              *triplet_dalitz_low;
     std::vector<float>              *triplet_lowest_pt;
     std::vector<float>              *triplet_largest_eta;
+    std::vector<int>                *triplet_is_correct;
     std::vector<std::vector<float>> *triplet_pairwise_mass;
     std::vector<std::vector<float>> *triplet_jet_csv;
     Int_t                           jet_num;
@@ -86,6 +87,7 @@ private:
     TBranch *b_triplet_dalitz_low;
     TBranch *b_triplet_lowest_pt;
     TBranch *b_triplet_largest_eta;
+    TBranch *b_triplet_is_correct;
     TBranch *b_triplet_pairwise_mass;
     TBranch *b_triplet_jet_csv;
     TBranch *b_jet_num;

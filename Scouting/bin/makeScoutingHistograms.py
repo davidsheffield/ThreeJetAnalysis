@@ -128,7 +128,7 @@ def fillSamples():
                   'isMC': 1}],
             'ttbar':
                 [{'dataset': 'TTJets',
-                  'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_TTJets_v1/*.root',
+                  'ntuples': '/cms/data26/sheffield/ThreeJets/ntuples/Resolved_Ntuples_TTJets_v2/*.root',
                   'cross_section': 831.76,
                   'events': 42784971.0,
                   'isMC': 2}],

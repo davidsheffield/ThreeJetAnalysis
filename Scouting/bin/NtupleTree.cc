@@ -69,6 +69,7 @@ void NtupleTree::Init(TTree *tree)
     triplet_dalitz_low = 0;
     triplet_lowest_pt = 0;
     triplet_largest_eta = 0;
+    triplet_is_correct = 0;
     triplet_pairwise_mass = 0;
     triplet_jet_csv = 0;
     jet_pt = 0;
@@ -98,6 +99,10 @@ void NtupleTree::Init(TTree *tree)
                              &b_triplet_lowest_pt);
     fChain->SetBranchAddress("triplet_largest_eta", &triplet_largest_eta,
                              &b_triplet_largest_eta);
+    if (abs(isMC_) == 2) {
+        fChain->SetBranchAddress("triplet_is_correct", &triplet_is_correct,
+                                 &b_triplet_is_correct);
+    }
     fChain->SetBranchAddress("triplet_pairwise_mass", &triplet_pairwise_mass,
                              &b_triplet_pairwise_mass);
     fChain->SetBranchAddress("triplet_jet_csv", &triplet_jet_csv,
@@ -236,6 +241,10 @@ void NtupleTree::Loop()
                 continue;
             if (triplet_jet_csv->at(i)[0] < 0.95
                 || triplet_jet_csv->at(i)[1] > 0.4)
+                continue;
+            if (isMC_ == 2 && triplet_is_correct->at(i) == 0)
+                continue;
+            if (isMC_ == -2 && triplet_is_correct->at(i) > 0)
                 continue;
 
             h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i),
