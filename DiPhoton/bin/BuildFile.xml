@@ -1,5 +1,5 @@
 <use name="root"/>
 <library name="DiPhotonNtupleToHistograms" file="MakeHistograms.cc"/>
-<bin name="makeHistograms" file="makeHistograms.cc">
+<bin name="DiPhotonHistogramsMaker" file="DiPhotonHistogramsMaker.cc">
   <lib name="DiPhotonNtupleToHistograms"/>
 </bin>
