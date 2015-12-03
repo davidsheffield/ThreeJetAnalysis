@@ -11,8 +11,8 @@ void Fit()
     h_data->Rebin(2);
     h_correct_signal->Rebin(2);
 
-    double peak = 120.0;
-    double max_fit = 300.0;
+    double peak = 120.0; // 120
+    double max_fit = 300.0; // 300
 
     ////////////////////////////////////////
     //
@@ -20,7 +20,7 @@ void Fit()
     //
     ////////////////////////////////////////
 
-    h_correct_signal->Fit("gaus");
+    h_correct_signal->Fit("gaus", "0");
     TF1 *signal_fit = h_correct_signal->GetFunction("gaus");
 
     ////////////////////////////////////////
@@ -49,7 +49,7 @@ void Fit()
     background->FixParameter(5, signal_fit->GetParameter(1));
     background->FixParameter(6, signal_fit->GetParameter(2));
 
-    h_data->Fit("background", "R");
+    h_data->Fit("background", "R0");
 
     ////////////////////////////////////////
     //
@@ -79,7 +79,7 @@ void Fit()
     combined->SetParLimits(5, 150.0, 190.0);
     combined->SetParLimits(6, 2.0, 100.0);
 
-    h_data->Fit("combined", "R");
+    h_data->Fit("combined", "R0");
 
     ////////////////////////////////////////
     //
@@ -113,7 +113,7 @@ void Fit()
     h_data->SetMarkerSize(0.25);
     h_data->GetXaxis()->SetRangeUser(100.0, 400.0);
     h_data->SetMinimum(0);
-    //h_data->GetFunction("combined")->SetBit(TF1::kNotDraw, 1);
+    h_data->GetFunction("combined")->SetBit(TF1::kNotDraw, 0);
     h_data->GetFunction("combined")->SetLineColor(2);
 
     h_correct_signal->SetLineColor(3);
@@ -140,6 +140,9 @@ void Fit()
          << h_correct_signal->Integral(1, 1000) << endl;
     cout << "Fit area    " << fit_area << endl;
     cout << "Cross section " << fit_cross_section << " pb" << endl;
+
+    cout << "chi^2/ndof " << h_data->GetFunction("combined")->GetChisquare()
+         << "/" << h_data->GetFunction("combined")->GetNDF() << endl;
 
     return;
 }
