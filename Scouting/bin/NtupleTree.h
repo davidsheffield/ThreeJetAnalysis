@@ -116,6 +116,7 @@ private:
     TH1D *h_leading_jet_pt;
     TH2D *h_M_vs_pt;
     TH1D *h_mass;
+    TH1D *h_triplet_scalar_pt;
     TH1D *h_vertex_num;
     TH1D *h_rho;
     TH2D *h_Dalitz;

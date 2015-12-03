@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
         TString name = argv[2];
 
         NtupleTree ntuple_tree_correct(chain, isMC);
-        ntuple_tree_correct->MakeHistograms(
+        ntuple_tree_correct.MakeHistograms(
             "correct_" + name, strtod(argv[4], &endptr),
             strtol(argv[5], &endptr, 10), strtol(argv[6], &endptr, 10),
             strtol(argv[7], &endptr, 10), strtol(argv[8], &endptr, 10),
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
             strtod(argv[13], &endptr));
 
         NtupleTree ntuple_tree_incorrect(chain, -isMC);
-        ntuple_tree_incorrect->MakeHistograms(
+        ntuple_tree_incorrect.MakeHistograms(
             "incorrect_" + name, strtod(argv[4], &endptr),
             strtol(argv[5], &endptr, 10), strtol(argv[6], &endptr, 10),
             strtol(argv[7], &endptr, 10), strtol(argv[8], &endptr, 10),
