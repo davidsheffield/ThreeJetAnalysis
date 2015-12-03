@@ -5,14 +5,13 @@ void Fit()
 
     TH1D *h_data, *h_correct_signal;
 
-    file_data->GetObject("Dalitz_Cuts/DalitzCut_0.06/h_M_DalitzCut_0.06_DeltaCut_110",
-                         h_data);
-    file_correct_signal->GetObject("Dalitz_Cuts/DalitzCut_0.06/h_M_DalitzCut_0.06_DeltaCut_110",
-                                   h_correct_signal);
+    TString name = "Dalitz_Cuts/DalitzCut_0.06/h_M_DalitzCut_0.06_DeltaCut_130";
+    file_data->GetObject(name, h_data);
+    file_correct_signal->GetObject(name, h_correct_signal);
     h_data->Rebin(2);
     h_correct_signal->Rebin(2);
 
-    double peak = 100.0;
+    double peak = 120.0;
     double max_fit = 300.0;
 
     ////////////////////////////////////////
@@ -77,8 +76,8 @@ void Fit()
     //combined->SetParameters(4, signal_fit->GetParameter(0));
     //combined->SetParameter(5, signal_fit->GetParameter(1));
     //combined->SetParameter(6, signal_fit->GetParameter(2));
-    combined->SetParLimits(5, 160.0, 172.0);
-    combined->SetParLimits(6, 2.0, 10.0);
+    combined->SetParLimits(5, 150.0, 190.0);
+    combined->SetParLimits(6, 2.0, 100.0);
 
     h_data->Fit("combined", "R");
 
