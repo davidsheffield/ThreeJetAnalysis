@@ -2,7 +2,7 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc != 14)
+    if (argc != 15)
         return 1;
 
     char *endptr;
@@ -14,7 +14,11 @@ int main(int argc, char* argv[])
     chain->Add(ntuple);
 
     if (isMC != 2) {
+        TString scaleTriplets = argv[14];
+
         NtupleTree ntuple_tree(chain, isMC);
+        if (scaleTriplets != "")
+            ntuple_tree.ScaleTriplets(scaleTriplets);
         ntuple_tree.MakeHistograms(argv[2], strtod(argv[4], &endptr),
                                    strtol(argv[5], &endptr, 10),
                                    strtol(argv[6], &endptr, 10),

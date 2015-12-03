@@ -2,7 +2,8 @@
 
 using namespace std;
 
-NtupleTree::NtupleTree(TTree *tree, int isMC): fChain(0), isMC_(isMC)
+NtupleTree::NtupleTree(TTree *tree, int isMC): fChain(0), isMC_(isMC),
+                                               scale_triplets(false)
 {
     // if parameter tree is not specified (or zero), connect the file
     // used to generate this class and read the Tree.
@@ -247,60 +248,66 @@ void NtupleTree::Loop()
             if (isMC_ == -2 && triplet_is_correct->at(i) > 0)
                 continue;
 
+            double scale_factor = scale_;
+            if (scale_triplets) {
+                int bin = static_cast<int>(triplet_scalar_pt->at(i)) + 1;
+                scale_factor *= h_scales->GetBinContent(bin);
+            }
+
             h_M_vs_pt->Fill(triplet_scalar_pt->at(i), triplet_mass->at(i),
-                            scale_);
-            h_mass->Fill(triplet_mass->at(i), scale_);
+                            scale_factor);
+            h_mass->Fill(triplet_mass->at(i), scale_factor);
             h_triplet_scalar_pt->Fill(triplet_scalar_pt->at(i));
             for (int j=0; j<size_h_M_DeltaCut; ++j) {
                 double delta = 10.0*static_cast<double>(j);
                 if (triplet_delta->at(i) > delta) {
-                    h_M_DeltaCut[j]->Fill(triplet_mass->at(i), scale_);
+                    h_M_DeltaCut[j]->Fill(triplet_mass->at(i), scale_factor);
                     if (fabs(triplet_mass->at(i) - 173.21) < 30.0) {
                         h_MW_DeltaCut[j]->Fill(triplet_pairwise_mass->at(i)[0],
-                                               scale_);
+                                               scale_factor);
                     }
                     h_CSV_vs_M_DeltaCut[j]->Fill(triplet_mass->at(i),
                                                  triplet_jet_csv->at(i)[0],
-                                                 scale_);
+                                                 scale_factor);
                     h_MW_vs_M_DeltaCut[j]->Fill(triplet_mass->at(i),
                                                 triplet_pairwise_mass->at(i)[0],
-                                                scale_);
+                                                scale_factor);
                     h_Dalitz_after_DeltaCut[j]->Fill(triplet_dalitz_mid->at(i),
                                                      triplet_dalitz_high->at(i),
-                                                     scale_);
+                                                     scale_factor);
                     h_Dalitz_after_DeltaCut[j]->Fill(triplet_dalitz_low->at(i),
                                                      triplet_dalitz_high->at(i),
-                                                     scale_);
+                                                     scale_factor);
                     h_Dalitz_after_DeltaCut[j]->Fill(triplet_dalitz_low->at(i),
                                                      triplet_dalitz_mid->at(i),
-                                                     scale_);
+                                                     scale_factor);
                     for (int k=0; k<number_of_Dalitz_cuts; ++k) {
                         if (triplet_dalitz_low->at(i) > cut_Dalitz_low[k])
                             h_M_DeltaDalitzCut[k][j]->Fill(triplet_mass->at(i),
-                                                           scale_);
+                                                           scale_factor);
                     }
                 }
             }
             h_Dalitz->Fill(triplet_dalitz_mid->at(i),
-                           triplet_dalitz_high->at(i), scale_);
+                           triplet_dalitz_high->at(i), scale_factor);
             h_Dalitz->Fill(triplet_dalitz_low->at(i),
-                           triplet_dalitz_high->at(i), scale_);
+                           triplet_dalitz_high->at(i), scale_factor);
             h_Dalitz->Fill(triplet_dalitz_low->at(i),
-                           triplet_dalitz_mid->at(i), scale_);
+                           triplet_dalitz_mid->at(i), scale_factor);
             for (int j=0; j<number_of_Dalitz_cuts; ++j) {
                 if (triplet_dalitz_low->at(i) > cut_Dalitz_low[j]) {
                     h_Dalitz_after_cut[j]->Fill(triplet_dalitz_mid->at(i),
                                                 triplet_dalitz_high->at(i),
-                                                scale_);
+                                                scale_factor);
                     h_Dalitz_after_cut[j]->Fill(triplet_dalitz_low->at(i),
                                                 triplet_dalitz_high->at(i),
-                                                scale_);
+                                                scale_factor);
                     h_Dalitz_after_cut[j]->Fill(triplet_dalitz_low->at(i),
                                                 triplet_dalitz_mid->at(i),
-                                                scale_);
+                                                scale_factor);
                     h_M_vs_pt_after_Dalitz[j]->Fill(triplet_scalar_pt->at(i),
                                                     triplet_mass->at(i),
-                                                    scale_);
+                                                    scale_factor);
                 }
             }
         }
@@ -484,6 +491,16 @@ void NtupleTree::WriteHistograms()
     }
 
     out_file->Close();
+
+    return;
+}
+
+
+void NtupleTree::ScaleTriplets(TString scale_file_name)
+{
+    TFile *f_scales = new TFile(scale_file_name);
+    f_scales->GetObject("h_scales", h_scales);
+    scale_triplets = true;
 
     return;
 }

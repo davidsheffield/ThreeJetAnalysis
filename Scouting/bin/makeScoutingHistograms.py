@@ -52,12 +52,17 @@ def getArguments():
                      'data', # default value
                      VarParsing.VarParsing.multiplicity.singleton,
                      VarParsing.VarParsing.varType.string,
-                     "What datasets to run over")
+                     "What datasets to run over.")
     options.register('luminosity',
                      1.724, # default value
                      VarParsing.VarParsing.multiplicity.singleton,
                      VarParsing.VarParsing.varType.float,
                      "Integrated luminosity in /fb.")
+    options.register('scaleTriplets',
+                     '', # default value
+                     VarParsing.VarParsing.multiplicity.singleton,
+                     VarParsing.VarParsing.varType.string,
+                     "Histogram to scale triplets by.")
     options.parseArguments()
 
     return options
@@ -151,7 +156,7 @@ def main():
                str(options.maxEvents), str(options.reportEvery),
                str(options.cutNJetsMin), str(options.cutNJetsMax),
                str(options.cutNPVMin), str(options.cutNPVMax), str(options.Ht),
-               str(options.Pt), str(options.eta)]
+               str(options.Pt), str(options.eta), options.scaleTriplets]
 
     samples = fillSamples()
 
