@@ -142,7 +142,41 @@ void Fit()
     cout << "Cross section " << fit_cross_section << " pb" << endl;
 
     cout << "chi^2/ndof " << h_data->GetFunction("combined")->GetChisquare()
-         << "/" << h_data->GetFunction("combined")->GetNDF() << endl;
+         << "/" << h_data->GetFunction("combined")->GetNDF() << " = "
+         << h_data->GetFunction("combined")->GetChisquare()
+           /h_data->GetFunction("combined")->GetNDF() << endl;
+
+    //////////
+
+    TH1D *h2 = h_data->Clone();
+    vector<double> errors;
+    for (int i=38; i<50; ++i) {
+        errors.push_back(h2->GetBinError(i));
+        h2->SetBinError(i, 1e6);
+    }
+
+    TF1 *masked = new TF1("masked",
+                          "[0]*(1 - x/13000)^([1])/(x/13000)^([2] + [3]*log(x/13000))",
+                          peak, max_fit);
+    masked->SetParName(0, "P0");
+    masked->SetParName(1, "P1");
+    masked->SetParName(2, "P2");
+    masked->SetParName(3, "P3");
+    for (int i=0; i<4; ++i) {
+        masked->SetParameter(i, background->GetParameter(i));
+    }
+
+    h2->Fit("masked", "R0");
+
+    for (int i=38; i<50; ++i) {
+        h2->SetBinError(i, errors[i-38]);
+    }
+    h2->GetFunction("masked")->SetBit(TF1::kNotDraw, 0);
+
+    TCanvas *c2 = new TCanvas("c2", "c2", 800, 600);
+    c2->cd();
+
+    h2->Draw();
 
     return;
 }
