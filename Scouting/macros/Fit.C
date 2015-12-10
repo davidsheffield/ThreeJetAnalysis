@@ -14,6 +14,14 @@ void Fit()
     h_data->Rebin(2);
     h_correct_signal->Rebin(2);
 
+    for (int i=1; i<h_data->GetSize()-1; ++i) {
+        double x = h_data->GetBinContent(i)/h_data->GetXaxis()->GetBinWidth(i);
+        double err = h_data->GetBinError(i)/h_data->GetXaxis()->GetBinWidth(i);
+        h_data->SetBinContent(i, x);
+        h_data->SetBinError(i, err);
+    }
+    h_data->GetYaxis()->SetTitle("dN/dm");
+
     double min = 120.0; // 120
     double max = 300.0; // 300
 
@@ -67,6 +75,8 @@ void Fit()
 
     CMS_lumi(c1, 4, 33);
 
+    cout << "Integral " << f4->Integral(min, max) - f5->Integral(min, max)
+         << endl;
     // double signal_area = signal_fit->GetParameter(0)
     //     *sqrt(2.0*TMath::Pi()*pow(signal_fit->GetParameter(2), 2))
     //     /h_data->GetXaxis()->GetBinWidth(1);
