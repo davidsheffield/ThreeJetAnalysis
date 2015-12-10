@@ -138,21 +138,44 @@ void Fit()
 
     // LandGauss
     ScoutingFitter fit2(h_data);
-    TF1 *g1 = fit2.FitLandGauss(min, max, 160.0, 188.0);  // Fit P4
+    TF1 *g1 = fit2.FitLandGauss(min, max, 160.0, 188.0);  // Fit LandGauss
+    TF1 *g2 = fit2.FitLandGaussPlusGauss(min, max, 0xf);  // Fit fixed LandGauss + Gauss
+    TF1 *g3 = fit2.FitLandGaussPlusGauss(min, max, 0x70); // Fit LandGauss + fixed gauss
+    TF1 *g4 = fit2.FitLandGaussPlusGauss(min, max);       // Fit LandGauss + gauss
+    TF1 *g5 = fit2.GetLandGauss(min, max);                // Get P4 for display
+
+    ScoutingFitter fit2_signal(h_signal);
+    TF1 *sg1 = fit2_signal.FitLandGauss(min, max, 160.0, 188.0);  // Fit LandGauss
+    TF1 *sg2 = fit2_signal.FitLandGaussPlusGauss(min, max, 0xf);  // Fit fixed LandGauss + Gauss
+    TF1 *sg3 = fit2_signal.FitLandGaussPlusGauss(min, max, 0x70); // Fit LandGauss + fixed gauss
+    TF1 *sg4 = fit2_signal.FitLandGaussPlusGauss(min, max);       // Fit LandGauss + gauss
+    TF1 *sg5 = fit2_signal.GetLandGauss(min, max);                // Get P4 for display
 
     TCanvas *c2 = new TCanvas("c2", "c2", 800, 600);
     c2->cd();
 
-    g1->SetLineColor(4);
+    g4->SetLineColor(2);
+    g5->SetLineColor(4);
+    sg4->SetLineColor(2);
+    sg5->SetLineColor(4);
+    sg4->SetLineStyle(2);
+    sg5->SetLineStyle(2);
 
     h_data->Draw();
-    g1->Draw("same");
+    g4->Draw("same");
+    g5->Draw("same");
+    h_signal_stack->Draw("hist same");
+    sg4->Draw("same");
+    sg5->Draw("same");
 
     TLegend *leg2 = new TLegend(0.6, 0.4, 0.89, 0.6);
     leg2->SetLineColor(0);
     leg2->SetFillColor(0);
     leg2->AddEntry(h_data, "data", "lp");
-    leg2->AddEntry(g1, "LandGauss", "l");
+    leg2->AddEntry(g4, "LandGauss + Gauss", "l");
+    leg2->AddEntry(g5, "LandGauss", "l");
+    leg1->AddEntry(h_correct_signal, "t#bar{t}, correct", "f");
+    leg1->AddEntry(h_incorrect_signal, "t#bar{t}, incorrect", "f");
     leg2->Draw();
 
     cout << "f1 " << f1->GetChisquare() << "/" << f1->GetNDF() << " = "
@@ -165,6 +188,8 @@ void Fit()
          << f4->GetChisquare()/f4->GetNDF() << endl;
     cout << "g1 " << g1->GetChisquare() << "/" << g1->GetNDF() << " = "
          << g1->GetChisquare()/g1->GetNDF() << endl;
+    cout << "g4 " << g4->GetChisquare() << "/" << g4->GetNDF() << " = "
+         << g4->GetChisquare()/g4->GetNDF() << endl;
 
     CMS_lumi(c2, 4, 33);
 

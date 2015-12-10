@@ -16,17 +16,19 @@ ScoutingFitter::ScoutingFitter(TH1D *h_data, TH1D *h_signal):
     constant = 4.18961e+02;
     mean     = 1.74515e+02;
     sigma    = 9.81969e+00;
-    width    = 2.18847e+01;
-    mp       = 1.13474e+02;
-    area     = 5.75916e+05;
-    gsigma   = 6.37830e+01;
+    width    = 2.15783e+01;
+    mp       = 1.12572e+02;
+    area     = 5.79198e+05;
+    gsigma   = 6.49301e+01;
 
     return;
 }
 
+
 ScoutingFitter::~ScoutingFitter()
 {
 }
+
 
 TF1* ScoutingFitter::FitP4(double min, double max, double mask_min,
                            double mask_max)
@@ -62,6 +64,7 @@ TF1* ScoutingFitter::FitP4(double min, double max, double mask_min,
 
     return p4;
 }
+
 
 TF1* ScoutingFitter::FitP4PlusGauss(double min, double max, int fixed)
 {
@@ -106,6 +109,7 @@ TF1* ScoutingFitter::FitP4PlusGauss(double min, double max, int fixed)
     return p4_gauss;
 }
 
+
 TF1* ScoutingFitter::FitLandGauss(double min, double max, double mask_min,
                                   double mask_max)
 {
@@ -139,6 +143,49 @@ TF1* ScoutingFitter::FitLandGauss(double min, double max, double mask_min,
     return landgauss;
 }
 
+TF1* ScoutingFitter::FitLandGaussPlusGauss(double min, double max, int fixed)
+{
+    TF1 *landgauss_gauss = new TF1("landgauss_gauss", landgauss_gauss_function,
+                                   min, max, 7);
+    landgauss_gauss->SetParName(0, "Width");
+    landgauss_gauss->SetParName(1, "MP");
+    landgauss_gauss->SetParName(2, "Area");
+    landgauss_gauss->SetParName(3, "GSigma");
+    landgauss_gauss->SetParName(4, "Constant");
+    landgauss_gauss->SetParName(5, "Mean");
+    landgauss_gauss->SetParName(6, "Sigma");
+
+    // Initialize parameters
+    landgauss_gauss->SetParameter(0, width);
+    landgauss_gauss->SetParameter(1, mp);
+    landgauss_gauss->SetParameter(2, area);
+    landgauss_gauss->SetParameter(3, gsigma);
+    landgauss_gauss->SetParameter(4, constant);
+    landgauss_gauss->SetParameter(5, mean);
+    landgauss_gauss->SetParameter(6, sigma);
+
+    for (i=0; i<7; ++i) {
+        if ((fixed >> i) & 1) {
+            landgauss_gauss->FixParameter(i, landgauss_gauss->GetParameter(i));
+        }
+    }
+
+    TH1D *hist = h_data_->Clone();
+
+    hist->Fit("landgauss_gauss", "R0");
+
+    width = landgauss_gauss->GetParameter(0);
+    mp = landgauss_gauss->GetParameter(1);
+    area = landgauss_gauss->GetParameter(2);
+    gsigma = landgauss_gauss->GetParameter(3);
+    constant = landgauss_gauss->GetParameter(4);
+    mean = landgauss_gauss->GetParameter(5);
+    sigma = landgauss_gauss->GetParameter(6);
+
+    return landgauss_gauss;
+}
+
+
 TF1* ScoutingFitter::GetP4(double min, double max)
 {
     TF1 *p4 = new TF1("p4",
@@ -157,6 +204,24 @@ TF1* ScoutingFitter::GetP4(double min, double max)
 
     return p4;
 }
+
+TF1* ScoutingFitter::GetLandGauss(double min, double max)
+{
+    TF1 *landgauss = new TF1("landgauss", landgauss_function, min, max, 4);
+    landgauss->SetParName(0, "Width");
+    landgauss->SetParName(1, "MP");
+    landgauss->SetParName(2, "Area");
+    landgauss->SetParName(3, "GSigma");
+
+    // Initialize parameters
+    landgauss->SetParameter(0, width);
+    landgauss->SetParameter(1, mp);
+    landgauss->SetParameter(2, area);
+    landgauss->SetParameter(3, gsigma);
+
+    return landgauss;
+}
+
 
 double landgauss_function(double *x, double *par)
 {
@@ -210,6 +275,20 @@ double landgauss_function(double *x, double *par)
     }
 
     return (par[2] * step * sum * invsq2pi / par[3]);
+}
+
+
+double landgauss_gauss_function(double *x, double *par)
+{
+    double par_landgauss[4];
+    par_landgauss[0] = par[0];
+    par_landgauss[1] = par[1];
+    par_landgauss[2] = par[2];
+    par_landgauss[3] = par[3];
+
+    double gaussian_value = par[4]*TMath::Gaus(x[0], par[5], par[6]);
+
+    return landgauss_function(x, par_landgauss) + gaussian_value;
 }
 
 #endif
