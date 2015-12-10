@@ -5,22 +5,50 @@ void Fit()
 {
     TFile *file_data = new TFile("../../../plots/Analysis/2015-11-21/histograms_data.root");
     TFile *file_correct_signal = new TFile("../../../plots/Analysis/2015-11-21/correct_histograms_TTJets.root");
+    TFile *file_incorrect_signal = new TFile("../../../plots/Analysis/2015-11-21/incorrect_histograms_TTJets.root");
 
-    TH1D *h_data, *h_correct_signal;
+    TH1D *h_data, *h_correct_signal, *h_incorrect_signal;
 
     TString name = "Dalitz_Cuts/DalitzCut_0.06/h_M_DalitzCut_0.06_DeltaCut_130";
     file_data->GetObject(name, h_data);
     file_correct_signal->GetObject(name, h_correct_signal);
-    h_data->Rebin(2);
-    h_correct_signal->Rebin(2);
+    file_incorrect_signal->GetObject(name, h_incorrect_signal);
+    TH1D *h_signal = h_correct_signal->Clone();
+    h_signal->Add(h_incorrect_signal);
+
+    int rebin = 2;
+    h_data->Rebin(rebin);
+    h_signal->Rebin(rebin);
 
     for (int i=1; i<h_data->GetSize()-1; ++i) {
         double x = h_data->GetBinContent(i)/h_data->GetXaxis()->GetBinWidth(i);
         double err = h_data->GetBinError(i)/h_data->GetXaxis()->GetBinWidth(i);
         h_data->SetBinContent(i, x);
         h_data->SetBinError(i, err);
+
+        x = h_signal->GetBinContent(i)/h_signal->GetXaxis()->GetBinWidth(i);
+        err = h_signal->GetBinError(i)/h_signal->GetXaxis()->GetBinWidth(i);
+        h_signal->SetBinContent(i, x);
+        h_signal->SetBinError(i, err);
+
+        x = h_correct_signal->GetBinContent(i)
+           /h_correct_signal->GetXaxis()->GetBinWidth(i);
+        err = h_correct_signal->GetBinError(i)
+             /h_correct_signal->GetXaxis()->GetBinWidth(i);
+        h_correct_signal->SetBinContent(i, x);
+        h_correct_signal->SetBinError(i, err);
+
+        x = h_incorrect_signal->GetBinContent(i)
+           /h_incorrect_signal->GetXaxis()->GetBinWidth(i);
+        err = h_incorrect_signal->GetBinError(i)
+             /h_incorrect_signal->GetXaxis()->GetBinWidth(i);
+        h_incorrect_signal->SetBinContent(i, x);
+        h_incorrect_signal->SetBinError(i, err);
     }
     h_data->GetYaxis()->SetTitle("dN/dm");
+    h_signal->GetYaxis()->SetTitle("dN/dm");
+    h_correct_signal->GetYaxis()->SetTitle("dN/dm");
+    h_incorrect_signal->GetYaxis()->SetTitle("dN/dm");
 
     double min = 120.0; // 120
     double max = 300.0; // 300
@@ -32,6 +60,13 @@ void Fit()
     TF1 *f3 = fit.FitP4PlusGauss(min, max, 0x70); // Fit P4 + fixed gauss
     TF1 *f4 = fit.FitP4PlusGauss(min, max);       // Fit P4 + gauss
     TF1 *f5 = fit.GetP4(min, max);                // Get P4 for display
+
+    ScoutingFitter fit_signal(h_signal);
+    TF1 *sf1 = fit_signal.FitP4(min, max, 165.0, 188.0);  // Fit P4
+    TF1 *sf2 = fit_signal.FitP4PlusGauss(min, max, 0xf);  // Fit fixed P4+gauss
+    TF1 *sf3 = fit_signal.FitP4PlusGauss(min, max, 0x70); // Fit P4+fixed gauss
+    TF1 *sf4 = fit_signal.FitP4PlusGauss(min, max);       // Fit P4 + gauss
+    TF1 *sf5 = fit_signal.GetP4(min, max);                // Get P4 for display
 
     //combined->SetParLimits(5, 150.0, 190.0);
 
@@ -48,13 +83,28 @@ void Fit()
 
     f4->SetLineColor(2);
     f5->SetLineColor(4);
+    h_correct_signal->SetLineColor(1);
+    h_incorrect_signal->SetLineColor(1);
+    h_correct_signal->SetFillColor(3);
+    h_incorrect_signal->SetFillColor(5);
+    sf4->SetLineColor(2);
+    sf5->SetLineColor(4);
+    sf4->SetLineStyle(2);
+    sf5->SetLineStyle(2);
 
     h_data->SetTitle();
     h_data->GetYaxis()->SetTitleOffset(1.4);
 
+    THStack *h_signal_stack = new THStack("h_signal_stack", "signal stack");
+    h_signal_stack->Add(h_incorrect_signal);
+    h_signal_stack->Add(h_correct_signal);
+
     h_data->Draw();
     f4->Draw("same");
     f5->Draw("same");
+    h_signal_stack->Draw("hist same");
+    sf4->Draw("same");
+    sf5->Draw("same");
 
     TLegend *leg1 = new TLegend(0.6, 0.4, 0.89, 0.6);
     leg1->SetLineColor(0);
@@ -62,12 +112,16 @@ void Fit()
     leg1->AddEntry(h_data, "data", "lp");
     leg1->AddEntry(f4, "P4 + Gaussian", "l");
     leg1->AddEntry(f5, "P4", "l");
+    leg1->AddEntry(h_correct_signal, "t#bar{t}, correct", "f");
+    leg1->AddEntry(h_incorrect_signal, "t#bar{t}, incorrect", "f");
     leg1->Draw();
 
     CMS_lumi(c1, 4, 33);
 
-    cout << "Integral " << f4->Integral(min, max) - f5->Integral(min, max)
+    cout << "Data integral " << f4->Integral(min, max) - f5->Integral(min, max)
          << endl;
+    cout << "Signal integral " << sf4->Integral(min, max) - sf5->Integral(min, max)
+         << " " << sf4->Integral(min, max) << endl;
     // double signal_area = signal_fit->GetParameter(0)
     //     *sqrt(2.0*TMath::Pi()*pow(signal_fit->GetParameter(2), 2))
     //     /h_data->GetXaxis()->GetBinWidth(1);
