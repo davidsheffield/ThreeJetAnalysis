@@ -1,3 +1,5 @@
+#include "CMS_lumi.C"
+
 void Fit()
 {
     TFile *file_data = new TFile("../../../plots/Analysis/2015-11-21/histograms_data.root");
@@ -11,7 +13,7 @@ void Fit()
     h_data->Rebin(2);
     h_correct_signal->Rebin(2);
 
-    double peak = 120.0; // 120
+    double peak = 110.0; // 120
     double max_fit = 300.0; // 300
 
     ////////////////////////////////////////
@@ -120,12 +122,26 @@ void Fit()
 
     background->SetLineColor(6);
 
+    h_data->SetTitle();
+    h_data->GetYaxis()->SetTitleOffset(1.4);
+
     h_data->Draw();
     background_display->Draw("same");
     //bump_display->Draw("same");
     h_correct_signal->Draw("hist same");
     //signal_fit->Draw("same");
     //background->Draw("same");
+
+    TLegend *leg = new TLegend(0.6, 0.4, 0.89, 0.6);
+    leg->SetLineColor(0);
+    leg->SetFillColor(0);
+    leg->AddEntry(h_data, "data", "lp");
+    leg->AddEntry(h_data->GetFunction("combined"), "gaussian", "l");
+    leg->AddEntry(background_display, "4 parameter fit", "l");
+    leg->AddEntry(h_correct_signal, "t#bar{t}, correct triplets", "l");
+    leg->Draw();
+
+    CMS_lumi(c1, 4, 33);
 
     double signal_area = signal_fit->GetParameter(0)
         *sqrt(2.0*TMath::Pi()*pow(signal_fit->GetParameter(2), 2))
