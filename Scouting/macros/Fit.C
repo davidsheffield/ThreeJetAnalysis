@@ -33,15 +33,6 @@ void Fit()
     TF1 *f4 = fit.FitP4PlusGauss(min, max);       // Fit P4 + gauss
     TF1 *f5 = fit.GetP4(min, max);                // Get P4 for display
 
-    cout << "f1 " << f1->GetChisquare() << "/" << f1->GetNDF() << " = "
-         << f1->GetChisquare()/f1->GetNDF() << endl;
-    cout << "f2 " << f2->GetChisquare() << "/" << f2->GetNDF() << " = "
-         << f2->GetChisquare()/f2->GetNDF() << endl;
-    cout << "f3 " << f3->GetChisquare() << "/" << f3->GetNDF() << " = "
-         << f3->GetChisquare()/f3->GetNDF() << endl;
-    cout << "f4 " << f4->GetChisquare() << "/" << f4->GetNDF() << " = "
-         << f4->GetChisquare()/f4->GetNDF() << endl;
-
     //combined->SetParLimits(5, 150.0, 190.0);
 
     gStyle->SetOptStat(0);
@@ -65,13 +56,13 @@ void Fit()
     f4->Draw("same");
     f5->Draw("same");
 
-    TLegend *leg = new TLegend(0.6, 0.4, 0.89, 0.6);
-    leg->SetLineColor(0);
-    leg->SetFillColor(0);
-    leg->AddEntry(h_data, "data", "lp");
-    leg->AddEntry(f4, "P4 + Gaussian", "l");
-    leg->AddEntry(f5, "P4", "l");
-    leg->Draw();
+    TLegend *leg1 = new TLegend(0.6, 0.4, 0.89, 0.6);
+    leg1->SetLineColor(0);
+    leg1->SetFillColor(0);
+    leg1->AddEntry(h_data, "data", "lp");
+    leg1->AddEntry(f4, "P4 + Gaussian", "l");
+    leg1->AddEntry(f5, "P4", "l");
+    leg1->Draw();
 
     CMS_lumi(c1, 4, 33);
 
@@ -90,6 +81,38 @@ void Fit()
     //      << h_correct_signal->Integral(1, 1000) << endl;
     // cout << "Fit area    " << fit_area << endl;
     // cout << "Cross section " << fit_cross_section << " pb" << endl;
+
+    // LandGauss
+    ScoutingFitter fit2(h_data);
+    TF1 *g1 = fit2.FitLandGauss(min, max, 160.0, 188.0);  // Fit P4
+
+    TCanvas *c2 = new TCanvas("c2", "c2", 800, 600);
+    c2->cd();
+
+    g1->SetLineColor(4);
+
+    h_data->Draw();
+    g1->Draw("same");
+
+    TLegend *leg2 = new TLegend(0.6, 0.4, 0.89, 0.6);
+    leg2->SetLineColor(0);
+    leg2->SetFillColor(0);
+    leg2->AddEntry(h_data, "data", "lp");
+    leg2->AddEntry(g1, "LandGauss", "l");
+    leg2->Draw();
+
+    cout << "f1 " << f1->GetChisquare() << "/" << f1->GetNDF() << " = "
+         << f1->GetChisquare()/f1->GetNDF() << endl;
+    cout << "f2 " << f2->GetChisquare() << "/" << f2->GetNDF() << " = "
+         << f2->GetChisquare()/f2->GetNDF() << endl;
+    cout << "f3 " << f3->GetChisquare() << "/" << f3->GetNDF() << " = "
+         << f3->GetChisquare()/f3->GetNDF() << endl;
+    cout << "f4 " << f4->GetChisquare() << "/" << f4->GetNDF() << " = "
+         << f4->GetChisquare()/f4->GetNDF() << endl;
+    cout << "g1 " << g1->GetChisquare() << "/" << g1->GetNDF() << " = "
+         << g1->GetChisquare()/g1->GetNDF() << endl;
+
+    CMS_lumi(c2, 4, 33);
 
     return;
 }

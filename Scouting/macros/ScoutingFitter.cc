@@ -16,6 +16,10 @@ ScoutingFitter::ScoutingFitter(TH1D *h_data, TH1D *h_signal):
     constant = 4.18961e+02;
     mean     = 1.74515e+02;
     sigma    = 9.81969e+00;
+    width    = 2.18847e+01;
+    mp       = 1.13474e+02;
+    area     = 5.75916e+05;
+    gsigma   = 6.37830e+01;
 
     return;
 }
@@ -102,6 +106,39 @@ TF1* ScoutingFitter::FitP4PlusGauss(double min, double max, int fixed)
     return p4_gauss;
 }
 
+TF1* ScoutingFitter::FitLandGauss(double min, double max, double mask_min,
+                                  double mask_max)
+{
+    TF1 *landgauss = new TF1("landgauss", landgauss_function, min, max, 4);
+    landgauss->SetParName(0, "Width");
+    landgauss->SetParName(1, "MP");
+    landgauss->SetParName(2, "Area");
+    landgauss->SetParName(3, "GSigma");
+
+    // Initialize parameters
+    landgauss->SetParameter(0, width);
+    landgauss->SetParameter(1, mp);
+    landgauss->SetParameter(2, area);
+    landgauss->SetParameter(3, gsigma);
+
+    TH1D *hist = h_data_->Clone();
+    for (int i=1; i<h_data_->GetSize()-1; ++i) {
+        if (h_data_->GetXaxis()->GetBinLowEdge(i) >= mask_min
+            && h_data_->GetXaxis()->GetBinUpEdge(i) <= mask_max) {
+            hist->SetBinError(i, 1e12);
+        }
+    }
+
+    hist->Fit("landgauss", "R0");
+
+    width = landgauss->GetParameter(0);
+    mp = landgauss->GetParameter(1);
+    area = landgauss->GetParameter(2);
+    gsigma = landgauss->GetParameter(3);
+
+    return landgauss;
+}
+
 TF1* ScoutingFitter::GetP4(double min, double max)
 {
     TF1 *p4 = new TF1("p4",
@@ -119,6 +156,60 @@ TF1* ScoutingFitter::GetP4(double min, double max)
     p4->SetParameter(3, P3);
 
     return p4;
+}
+
+double landgauss_function(double *x, double *par)
+{
+    //Fit parameters:
+    //par[0]=Width (scale) parameter of Landau density
+    //par[1]=Most Probable (MP, location) parameter of Landau density
+    //par[2]=Total area (integral -inf to inf, normalization constant)
+    //par[3]=Width (sigma) of convoluted Gaussian function
+    //
+    //In the Landau distribution (represented by the CERNLIB approximation),
+    //the maximum is located at x=-0.22278298 with the location parameter=0.
+    //This shift is corrected within this function, so that the actual
+    //maximum is identical to the MP parameter.
+
+    // Numeric constants
+    Double_t invsq2pi = 0.3989422804014;   // (2 pi)^(-1/2)
+    Double_t mpshift  = -0.22278298;       // Landau maximum location
+
+    // Control constants
+    Double_t np = 100.0;      // number of convolution steps
+    Double_t sc =   5.0;      // convolution extends to +-sc Gaussian sigmas
+
+    // Variables
+    Double_t xx;
+    Double_t mpc;
+    Double_t fland;
+    Double_t sum = 0.0;
+    Double_t xlow,xupp;
+    Double_t step;
+    Double_t i;
+
+
+    // MP shift correction
+    mpc = par[1] - mpshift * par[0];
+
+    // Range of convolution integral
+    xlow = x[0] - sc * par[3];
+    xupp = x[0] + sc * par[3];
+
+    step = (xupp-xlow) / np;
+
+    // Convolution integral of Landau and Gaussian by sum
+    for(i=1.0; i<=np/2; i++) {
+        xx = xlow + (i-.5) * step;
+        fland = TMath::Landau(xx,mpc,par[0]) / par[0];
+        sum += fland * TMath::Gaus(x[0],xx,par[3]);
+
+        xx = xupp - (i-.5) * step;
+        fland = TMath::Landau(xx,mpc,par[0]) / par[0];
+        sum += fland * TMath::Gaus(x[0],xx,par[3]);
+    }
+
+    return (par[2] * step * sum * invsq2pi / par[3]);
 }
 
 #endif

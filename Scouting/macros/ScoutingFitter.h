@@ -3,6 +3,7 @@
 
 #include "TH1D.h"
 #include "TF1.h"
+#include "TMath.h"
 
 class ScoutingFitter {
 public:
@@ -11,8 +12,10 @@ public:
 
     TF1* FitP4(double, double, double, double);
     TF1* FitP4PlusGauss(double, double, int fixed=0);
+    TF1* FitLandGauss(double, double, double, double);
 
     TF1* GetP4(double, double);
+    double landgauss_function(double*, double*);
 
 private:
     TH1D *h_data_;
@@ -25,6 +28,10 @@ private:
     double constant;
     double mean;
     double sigma;
+    double width;
+    double mp;
+    double area;
+    double gsigma;
 };
 
 #endif
