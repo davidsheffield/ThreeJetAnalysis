@@ -1,12 +1,16 @@
+#include "CMS_lumi.C"
+
 void DalitzPlots()
 {
     gStyle->SetOptStat(0);
     gStyle->SetErrorX(0);
 
-    TFile *f_ttbar_correct = new TFile("correct_histograms_TTJets.root");
+    TFile *f_ttbar_correct = new TFile("../../../plots/Analysis/2015-11-21/correct_histograms_TTJets.root");
+    //TFile *f_ttbar_correct = new TFile("../../../plots/Analysis/2015-11-21/histograms_qcd_combined.root");
 
     TH2D *h_ttbar_correct;
     f_ttbar_correct->GetObject("h_Dalitz", h_ttbar_correct);
+    //h_ttbar_correct->SetTitle("QCD");
 
     TCanvas *c1 = new TCanvas("c1", "c1", 800, 600);
     c1->cd();
@@ -43,6 +47,8 @@ void DalitzPlots()
     l5->SetLineStyle(9);
     l5->Draw();
 
+    //CMS_lumi(c1, 4, 33);
+
     TCanvas *c2 = new TCanvas("c2", "c2", 800, 600);
     c2->cd();
 
@@ -62,6 +68,26 @@ void DalitzPlots()
     l7->SetLineColor(1);
     l7->SetLineStyle(1);
     l7->Draw();
+
+    //CMS_lumi(c2, 4, 33);
+
+    TCanvas *c3 = new TCanvas("c3", "c3", 800, 600);
+    c3->cd();
+
+    h_ttbar_correct->Draw("colz");
+
+    TLine *l8 = new TLine(0.0, 1.0, 0.33333, 0.33333);
+    l8->SetLineWidth(3);
+    l8->SetLineColor(1);
+    l8->SetLineStyle(1);
+    l8->Draw();
+    TLine *l9 = new TLine(0.0, 0.5, 0.33333, 0.33333);
+    l9->SetLineWidth(3);
+    l9->SetLineColor(1);
+    l9->SetLineStyle(1);
+    l9->Draw();
+
+    //CMS_lumi(c3, 4, 33);
 
     return;
 }
