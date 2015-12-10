@@ -56,7 +56,7 @@ TF1* ScoutingFitter::FitP4(double min, double max, double mask_min,
     P2 = p4->GetParameter(2);
     P3 = p4->GetParameter(3);
 
-    return p4;//hist->GetFunction("p4");
+    return p4;
 }
 
 TF1* ScoutingFitter::FitP4PlusGauss(double min, double max, int fixed)
@@ -100,6 +100,25 @@ TF1* ScoutingFitter::FitP4PlusGauss(double min, double max, int fixed)
     sigma = p4_gauss->GetParameter(6);
 
     return p4_gauss;
+}
+
+TF1* ScoutingFitter::GetP4(double min, double max)
+{
+    TF1 *p4 = new TF1("p4",
+                      "[0]*(1 - x/13000)^([1])/(x/13000)^([2] + [3]*log(x/13000))",
+                      min, max);
+    p4->SetParName(0, "P0");
+    p4->SetParName(1, "P1");
+    p4->SetParName(2, "P2");
+    p4->SetParName(3, "P3");
+
+    // Initialize parameters
+    p4->SetParameter(0, P0);
+    p4->SetParameter(1, P1);
+    p4->SetParameter(2, P2);
+    p4->SetParameter(3, P3);
+
+    return p4;
 }
 
 #endif

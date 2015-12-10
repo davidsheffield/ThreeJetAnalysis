@@ -23,15 +23,16 @@ void Fit()
     TF1 *f2 = fit.FitP4PlusGauss(min, max, 0xf);  // Fit fixed P4 + gauss
     TF1 *f3 = fit.FitP4PlusGauss(min, max, 0x70); // Fit P4 + fixed gauss
     TF1 *f4 = fit.FitP4PlusGauss(min, max);       // Fit P4 + gauss
+    TF1 *f5 = fit.GetP4(min, max);                // Get P4 for display
 
     cout << "f1 " << f1->GetChisquare() << "/" << f1->GetNDF() << " = "
          << f1->GetChisquare()/f1->GetNDF() << endl;
     cout << "f2 " << f2->GetChisquare() << "/" << f2->GetNDF() << " = "
-         << f2->GetChisquare()/f1->GetNDF() << endl;
+         << f2->GetChisquare()/f2->GetNDF() << endl;
     cout << "f3 " << f3->GetChisquare() << "/" << f3->GetNDF() << " = "
-         << f3->GetChisquare()/f1->GetNDF() << endl;
+         << f3->GetChisquare()/f3->GetNDF() << endl;
     cout << "f4 " << f4->GetChisquare() << "/" << f4->GetNDF() << " = "
-         << f4->GetChisquare()/f1->GetNDF() << endl;
+         << f4->GetChisquare()/f4->GetNDF() << endl;
 
     //combined->SetParLimits(5, 150.0, 190.0);
 
@@ -46,22 +47,22 @@ void Fit()
     h_data->GetXaxis()->SetRangeUser(100.0, 400.0);
     h_data->SetMinimum(0);
 
-    f1->SetLineColor(4);
     f4->SetLineColor(2);
+    f5->SetLineColor(4);
 
     h_data->SetTitle();
     h_data->GetYaxis()->SetTitleOffset(1.4);
 
     h_data->Draw();
     f4->Draw("same");
-    f1->Draw("same");
+    f5->Draw("same");
 
     TLegend *leg = new TLegend(0.6, 0.4, 0.89, 0.6);
     leg->SetLineColor(0);
     leg->SetFillColor(0);
     leg->AddEntry(h_data, "data", "lp");
     leg->AddEntry(f4, "P4 + Gaussian", "l");
-    leg->AddEntry(f1, "P4", "l");
+    leg->AddEntry(f5, "P4", "l");
     leg->Draw();
 
     CMS_lumi(c1, 4, 33);
