@@ -3,8 +3,9 @@
 
 #include "ScoutingFitter.h"
 
-ScoutingFitter::ScoutingFitter(TH1D *h_data, TH1D *h_signal):
-    h_data_(h_data), h_signal_(h_signal)
+ScoutingFitter::ScoutingFitter(TH1D *h_data, double min, double max,
+                               TH1D *h_signal):
+    h_data_(h_data), min_(min), max_(max), h_signal_(h_signal)
 {
     // if (h_signal != 0) {
     //     h_signal_->Draw();
@@ -30,12 +31,11 @@ ScoutingFitter::~ScoutingFitter()
 }
 
 
-TF1* ScoutingFitter::FitP4(double min, double max, double mask_min,
-                           double mask_max)
+TF1* ScoutingFitter::FitP4(double mask_min, double mask_max)
 {
     TF1 *p4 = new TF1("p4",
                       "[0]*(1 - x/13000)^([1])/(x/13000)^([2] + [3]*log(x/13000))",
-                      min, max);
+                      min_, max_);
     p4->SetParName(0, "P0");
     p4->SetParName(1, "P1");
     p4->SetParName(2, "P2");
@@ -66,11 +66,11 @@ TF1* ScoutingFitter::FitP4(double min, double max, double mask_min,
 }
 
 
-TF1* ScoutingFitter::FitP4PlusGauss(double min, double max, int fixed)
+TF1* ScoutingFitter::FitP4PlusGauss(int fixed)
 {
     TF1 *p4_gauss = new TF1("p4_gauss",
                             "[0]*(1 - x/13000)^([1])/(x/13000)^([2] + [3]*log(x/13000))  + [4]*exp(-0.5*((x - [5])/[6])^2)",
-                            min, max);
+                            min_, max_);
     p4_gauss->SetParName(0, "P0");
     p4_gauss->SetParName(1, "P1");
     p4_gauss->SetParName(2, "P2");
@@ -88,7 +88,7 @@ TF1* ScoutingFitter::FitP4PlusGauss(double min, double max, int fixed)
     p4_gauss->SetParameter(5, mean);
     p4_gauss->SetParameter(6, sigma);
 
-    for (i=0; i<7; ++i) {
+    for (int i=0; i<7; ++i) {
         if ((fixed >> i) & 1) {
             p4_gauss->FixParameter(i, p4_gauss->GetParameter(i));
         }
@@ -104,16 +104,15 @@ TF1* ScoutingFitter::FitP4PlusGauss(double min, double max, int fixed)
     P3 = p4_gauss->GetParameter(3);
     constant = p4_gauss->GetParameter(4);
     mean = p4_gauss->GetParameter(5);
-    sigma = p4_gauss->GetParameter(6);
+    sigma = fabs(p4_gauss->GetParameter(6));
 
     return p4_gauss;
 }
 
 
-TF1* ScoutingFitter::FitLandGauss(double min, double max, double mask_min,
-                                  double mask_max)
+TF1* ScoutingFitter::FitLandGauss(double mask_min, double mask_max)
 {
-    TF1 *landgauss = new TF1("landgauss", landgauss_function, min, max, 4);
+    TF1 *landgauss = new TF1("landgauss", landgauss_function, min_, max_, 4);
     landgauss->SetParName(0, "Width");
     landgauss->SetParName(1, "MP");
     landgauss->SetParName(2, "Area");
@@ -143,10 +142,10 @@ TF1* ScoutingFitter::FitLandGauss(double min, double max, double mask_min,
     return landgauss;
 }
 
-TF1* ScoutingFitter::FitLandGaussPlusGauss(double min, double max, int fixed)
+TF1* ScoutingFitter::FitLandGaussPlusGauss(int fixed)
 {
     TF1 *landgauss_gauss = new TF1("landgauss_gauss", landgauss_gauss_function,
-                                   min, max, 7);
+                                   min_, max_, 7);
     landgauss_gauss->SetParName(0, "Width");
     landgauss_gauss->SetParName(1, "MP");
     landgauss_gauss->SetParName(2, "Area");
@@ -164,7 +163,7 @@ TF1* ScoutingFitter::FitLandGaussPlusGauss(double min, double max, int fixed)
     landgauss_gauss->SetParameter(5, mean);
     landgauss_gauss->SetParameter(6, sigma);
 
-    for (i=0; i<7; ++i) {
+    for (int i=0; i<7; ++i) {
         if ((fixed >> i) & 1) {
             landgauss_gauss->FixParameter(i, landgauss_gauss->GetParameter(i));
         }
@@ -180,17 +179,17 @@ TF1* ScoutingFitter::FitLandGaussPlusGauss(double min, double max, int fixed)
     gsigma = landgauss_gauss->GetParameter(3);
     constant = landgauss_gauss->GetParameter(4);
     mean = landgauss_gauss->GetParameter(5);
-    sigma = landgauss_gauss->GetParameter(6);
+    sigma = fabs(landgauss_gauss->GetParameter(6));
 
     return landgauss_gauss;
 }
 
 
-TF1* ScoutingFitter::GetP4(double min, double max)
+TF1* ScoutingFitter::GetP4()
 {
     TF1 *p4 = new TF1("p4",
                       "[0]*(1 - x/13000)^([1])/(x/13000)^([2] + [3]*log(x/13000))",
-                      min, max);
+                      min_, max_);
     p4->SetParName(0, "P0");
     p4->SetParName(1, "P1");
     p4->SetParName(2, "P2");
@@ -205,9 +204,9 @@ TF1* ScoutingFitter::GetP4(double min, double max)
     return p4;
 }
 
-TF1* ScoutingFitter::GetLandGauss(double min, double max)
+TF1* ScoutingFitter::GetLandGauss()
 {
-    TF1 *landgauss = new TF1("landgauss", landgauss_function, min, max, 4);
+    TF1 *landgauss = new TF1("landgauss", landgauss_function, min_, max_, 4);
     landgauss->SetParName(0, "Width");
     landgauss->SetParName(1, "MP");
     landgauss->SetParName(2, "Area");

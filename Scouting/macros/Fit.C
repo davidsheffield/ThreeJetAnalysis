@@ -54,19 +54,19 @@ void Fit()
     double max = 300.0; // 300
 
     // Do fit
-    ScoutingFitter fit(h_data);
-    TF1 *f1 = fit.FitP4(min, max, 160.0, 188.0);  // Fit P4
-    TF1 *f2 = fit.FitP4PlusGauss(min, max, 0xf);  // Fit fixed P4 + gauss
-    TF1 *f3 = fit.FitP4PlusGauss(min, max, 0x70); // Fit P4 + fixed gauss
-    TF1 *f4 = fit.FitP4PlusGauss(min, max);       // Fit P4 + gauss
-    TF1 *f5 = fit.GetP4(min, max);                // Get P4 for display
+    ScoutingFitter fit(h_data, min, max);
+    TF1 *f1 = fit.FitP4(160.0, 188.0);  // Fit P4
+    TF1 *f2 = fit.FitP4PlusGauss(0xf);  // Fit fixed P4 + gauss
+    TF1 *f3 = fit.FitP4PlusGauss(0x70); // Fit P4 + fixed gauss
+    TF1 *f4 = fit.FitP4PlusGauss();     // Fit P4 + gauss
+    TF1 *f5 = fit.GetP4();              // Get P4 for display
 
-    ScoutingFitter fit_signal(h_signal);
-    TF1 *sf1 = fit_signal.FitP4(min, max, 165.0, 188.0);  // Fit P4
-    TF1 *sf2 = fit_signal.FitP4PlusGauss(min, max, 0xf);  // Fit fixed P4+gauss
-    TF1 *sf3 = fit_signal.FitP4PlusGauss(min, max, 0x70); // Fit P4+fixed gauss
-    TF1 *sf4 = fit_signal.FitP4PlusGauss(min, max);       // Fit P4 + gauss
-    TF1 *sf5 = fit_signal.GetP4(min, max);                // Get P4 for display
+    ScoutingFitter fit_signal(h_signal, min, max);
+    TF1 *sf1 = fit_signal.FitP4(165.0, 188.0);  // Fit P4
+    TF1 *sf2 = fit_signal.FitP4PlusGauss(0xf);  // Fit fixed P4+gauss
+    TF1 *sf3 = fit_signal.FitP4PlusGauss(0x70); // Fit P4+fixed gauss
+    TF1 *sf4 = fit_signal.FitP4PlusGauss();     // Fit P4 + gauss
+    TF1 *sf5 = fit_signal.GetP4();              // Get P4 for display
 
     //combined->SetParLimits(5, 150.0, 190.0);
 
@@ -137,19 +137,19 @@ void Fit()
     // cout << "Cross section " << fit_cross_section << " pb" << endl;
 
     // LandGauss
-    ScoutingFitter fit2(h_data);
-    TF1 *g1 = fit2.FitLandGauss(min, max, 160.0, 188.0);  // Fit LandGauss
-    TF1 *g2 = fit2.FitLandGaussPlusGauss(min, max, 0xf);  // Fit fixed LandGauss + Gauss
-    TF1 *g3 = fit2.FitLandGaussPlusGauss(min, max, 0x70); // Fit LandGauss + fixed gauss
-    TF1 *g4 = fit2.FitLandGaussPlusGauss(min, max);       // Fit LandGauss + gauss
-    TF1 *g5 = fit2.GetLandGauss(min, max);                // Get P4 for display
+    ScoutingFitter fit2(h_data, min, max);
+    TF1 *g1 = fit2.FitLandGauss(160.0, 188.0);  // Fit LandGauss
+    TF1 *g2 = fit2.FitLandGaussPlusGauss(0xf);  // Fit fixed LandGauss + Gauss
+    TF1 *g3 = fit2.FitLandGaussPlusGauss(0x70); // Fit LandGauss + fixed gauss
+    TF1 *g4 = fit2.FitLandGaussPlusGauss();     // Fit LandGauss + gauss
+    TF1 *g5 = fit2.GetLandGauss();              // Get P4 for display
 
-    ScoutingFitter fit2_signal(h_signal);
-    TF1 *sg1 = fit2_signal.FitLandGauss(min, max, 160.0, 188.0);  // Fit LandGauss
-    TF1 *sg2 = fit2_signal.FitLandGaussPlusGauss(min, max, 0xf);  // Fit fixed LandGauss + Gauss
-    TF1 *sg3 = fit2_signal.FitLandGaussPlusGauss(min, max, 0x70); // Fit LandGauss + fixed gauss
-    TF1 *sg4 = fit2_signal.FitLandGaussPlusGauss(min, max);       // Fit LandGauss + gauss
-    TF1 *sg5 = fit2_signal.GetLandGauss(min, max);                // Get P4 for display
+    ScoutingFitter fit2_signal(h_signal, min, max);
+    TF1 *sg1 = fit2_signal.FitLandGauss(160.0, 188.0);  // Fit LandGauss
+    TF1 *sg2 = fit2_signal.FitLandGaussPlusGauss(0xf);  // Fit fixed LandGauss + Gauss
+    TF1 *sg3 = fit2_signal.FitLandGaussPlusGauss(0x70); // Fit LandGauss + fixed gauss
+    TF1 *sg4 = fit2_signal.FitLandGaussPlusGauss();     // Fit LandGauss + gauss
+    TF1 *sg5 = fit2_signal.GetLandGauss();              // Get P4 for display
 
     TCanvas *c2 = new TCanvas("c2", "c2", 800, 600);
     c2->cd();
@@ -174,20 +174,20 @@ void Fit()
     leg2->AddEntry(h_data, "data", "lp");
     leg2->AddEntry(g4, "LandGauss + Gauss", "l");
     leg2->AddEntry(g5, "LandGauss", "l");
-    leg1->AddEntry(h_correct_signal, "t#bar{t}, correct", "f");
-    leg1->AddEntry(h_incorrect_signal, "t#bar{t}, incorrect", "f");
+    leg2->AddEntry(h_correct_signal, "t#bar{t}, correct", "f");
+    leg2->AddEntry(h_incorrect_signal, "t#bar{t}, incorrect", "f");
     leg2->Draw();
 
-    cout << "f1 " << f1->GetChisquare() << "/" << f1->GetNDF() << " = "
-         << f1->GetChisquare()/f1->GetNDF() << endl;
+    cout << "f1 " << f1->GetChisquare() << "/" << f1->GetNDF() - 5 << " = "
+         << f1->GetChisquare()/(f1->GetNDF() - 5) << endl;
     cout << "f2 " << f2->GetChisquare() << "/" << f2->GetNDF() << " = "
          << f2->GetChisquare()/f2->GetNDF() << endl;
     cout << "f3 " << f3->GetChisquare() << "/" << f3->GetNDF() << " = "
          << f3->GetChisquare()/f3->GetNDF() << endl;
     cout << "f4 " << f4->GetChisquare() << "/" << f4->GetNDF() << " = "
          << f4->GetChisquare()/f4->GetNDF() << endl;
-    cout << "g1 " << g1->GetChisquare() << "/" << g1->GetNDF() << " = "
-         << g1->GetChisquare()/g1->GetNDF() << endl;
+    cout << "g1 " << g1->GetChisquare() << "/" << g1->GetNDF() - 5 << " = "
+         << g1->GetChisquare()/(g1->GetNDF() - 5) << endl;
     cout << "g4 " << g4->GetChisquare() << "/" << g4->GetNDF() << " = "
          << g4->GetChisquare()/g4->GetNDF() << endl;
 

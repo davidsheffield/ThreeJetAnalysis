@@ -7,16 +7,16 @@
 
 class ScoutingFitter {
 public:
-    ScoutingFitter(TH1D *h_data, TH1D *h_signal=0);
+    ScoutingFitter(TH1D*, double, double, TH1D *h_signal=0);
     ~ScoutingFitter();
 
-    TF1* FitP4(double, double, double, double);
-    TF1* FitP4PlusGauss(double, double, int fixed=0);
-    TF1* FitLandGauss(double, double, double, double);
-    TF1* FitLandGaussPlusGauss(double, double, int fixed=0);
+    TF1* FitP4(double, double);
+    TF1* FitP4PlusGauss(int fixed=0);
+    TF1* FitLandGauss(double, double);
+    TF1* FitLandGaussPlusGauss(int fixed=0);
 
-    TF1* GetP4(double, double);
-    TF1* GetLandGauss(double, double);
+    TF1* GetP4();
+    TF1* GetLandGauss();
 
     double landgauss_function(double*, double*);
     double landgauss_gauss_function(double*, double*);
@@ -24,6 +24,8 @@ public:
 private:
     TH1D *h_data_;
     TH1D *h_signal_;
+    double min_;
+    double max_;
 
     double P0;
     double P1;
