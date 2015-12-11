@@ -46,6 +46,7 @@ void Fit()
         h_incorrect_signal->SetBinError(i, err);
     }
     h_data->GetYaxis()->SetTitle("dN/dm");
+    h_data->GetYaxis()->SetTitleOffset(0.9);
     h_signal->GetYaxis()->SetTitle("dN/dm");
     h_correct_signal->GetYaxis()->SetTitle("dN/dm");
     h_incorrect_signal->GetYaxis()->SetTitle("dN/dm");
@@ -73,7 +74,13 @@ void Fit()
     gStyle->SetOptStat(0);
 
     TCanvas *c1 = new TCanvas("c1", "c1", 800, 600);
+    TPad *pad1a = new TPad("pad1a", "The pad 80% of the height",
+                           0.0, 0.2, 1.0, 1.0, 0);
+    TPad *pad1b = new TPad("pad1b", "The pad 20% of the height",
+                           0.0, 0.0, 1.0, 0.2, 0);
     c1->cd();
+    pad1a->Draw();
+    pad1b->Draw();
 
     h_data->SetLineColor(1);
     h_data->SetMarkerStyle(20);
@@ -93,18 +100,22 @@ void Fit()
     sf5->SetLineStyle(2);
 
     h_data->SetTitle();
-    h_data->GetYaxis()->SetTitleOffset(1.4);
+    h_data->GetYaxis()->SetTitleSize(0.05);
+    //h_data->GetYaxis()->SetTitleOffset(1.4);
+    h_data->GetXaxis()->SetTitle();
 
     THStack *h_signal_stack = new THStack("h_signal_stack", "signal stack");
     h_signal_stack->Add(h_incorrect_signal);
     h_signal_stack->Add(h_correct_signal);
 
+    pad1a->cd();
     h_data->Draw();
     f4->Draw("same");
     f5->Draw("same");
     h_signal_stack->Draw("hist same");
     sf4->Draw("same");
     sf5->Draw("same");
+    h_data->Draw("sameaxis"); // Redraw axes
 
     TLegend *leg1 = new TLegend(0.6, 0.4, 0.89, 0.6);
     leg1->SetLineColor(0);
@@ -116,12 +127,59 @@ void Fit()
     leg1->AddEntry(h_incorrect_signal, "t#bar{t}, incorrect", "f");
     leg1->Draw();
 
-    CMS_lumi(c1, 4, 33);
+    TH1D *h_pull_f5 = new TH1D("h_pull_f5", "Pulls", h_data->GetSize()-2,
+                               h_data->GetXaxis()->GetXmin(),
+                               h_data->GetXaxis()->GetXmax());
+    TH1D *h_pull_f4 = new TH1D("h_pull_f4", "Pulls", h_data->GetSize()-2,
+                               h_data->GetXaxis()->GetXmin(),
+                               h_data->GetXaxis()->GetXmax());
+    for (int i=0; i<h_pull_f5->GetSize(); ++i) {
+        if (h_pull_f5->GetBinCenter(i) >= min
+            && h_pull_f5->GetBinCenter(i) <= max) {
+            h_pull_f5->SetBinContent(i, (h_data->GetBinContent(i)
+                                         - f5->Eval(h_data->GetBinCenter(i)))
+                                        /h_data->GetBinError(i));
+            h_pull_f5->SetBinError(i, 1.0);
+            h_pull_f4->SetBinContent(i, (h_data->GetBinContent(i)
+                                         - f4->Eval(h_data->GetBinCenter(i)))
+                                        /h_data->GetBinError(i));
+            h_pull_f4->SetBinError(i, 1.0);
+        } else {
+            h_pull_f5->SetBinContent(i, 0.0);
+            h_pull_f5->SetBinError(i, 0.0);
+            h_pull_f4->SetBinContent(i, 0.0);
+            h_pull_f4->SetBinError(i, 0.0);
+        }
+    }
+    h_pull_f5->SetTitle();
+    h_pull_f5->GetXaxis()->SetLabelSize(0.14);
+    h_pull_f5->GetYaxis()->SetLabelSize(0.14);
+    h_pull_f5->GetXaxis()->SetTitleSize(0.2);
+    h_pull_f5->GetYaxis()->SetTitleSize(0.2);
+    h_pull_f5->GetXaxis()->SetTitleOffset(0.75);
+    h_pull_f5->GetYaxis()->SetTitleOffset(0.2);
+    h_pull_f5->GetXaxis()->SetTitle("M_{jjj} [GeV]");
+    h_pull_f5->GetYaxis()->SetTitle("pull");
+    h_pull_f5->GetXaxis()->SetRange(h_data->GetXaxis()->GetFirst(),
+                                    h_data->GetXaxis()->GetLast());
+    h_pull_f5->SetLineColor(1);
+    h_pull_f5->SetFillColor(4);
+    h_pull_f4->SetLineColor(2);
+
+    pad1b->cd();
+    pad1b->SetGridy();
+    pad1b->SetTopMargin(0.05);
+    pad1b->SetBottomMargin(0.4);
+    h_pull_f5->Draw("hist");
+    h_pull_f4->Draw("hist same");
+
+    CMS_lumi(pad1a, 4, 33);
 
     cout << "Data integral " << f4->Integral(min, max) - f5->Integral(min, max)
          << endl;
     cout << "Signal integral " << sf4->Integral(min, max) - sf5->Integral(min, max)
          << " " << sf4->Integral(min, max) << endl;
+
     // double signal_area = signal_fit->GetParameter(0)
     //     *sqrt(2.0*TMath::Pi()*pow(signal_fit->GetParameter(2), 2))
     //     /h_data->GetXaxis()->GetBinWidth(1);
@@ -152,7 +210,13 @@ void Fit()
     TF1 *sg5 = fit2_signal.GetLandGauss();              // Get P4 for display
 
     TCanvas *c2 = new TCanvas("c2", "c2", 800, 600);
+    TPad *pad2a = new TPad("pad2a", "The pad 80% of the height",
+                           0.0, 0.2, 1.0, 1.0, 0);
+    TPad *pad2b = new TPad("pad2b", "The pad 20% of the height",
+                           0.0, 0.0, 1.0, 0.2, 0);
     c2->cd();
+    pad2a->Draw();
+    pad2b->Draw();
 
     g4->SetLineColor(2);
     g5->SetLineColor(4);
@@ -161,12 +225,14 @@ void Fit()
     sg4->SetLineStyle(2);
     sg5->SetLineStyle(2);
 
+    pad2a->cd();
     h_data->Draw();
     g4->Draw("same");
     g5->Draw("same");
     h_signal_stack->Draw("hist same");
     sg4->Draw("same");
     sg5->Draw("same");
+    h_data->Draw("sameaxis"); // Redraw axes
 
     TLegend *leg2 = new TLegend(0.6, 0.4, 0.89, 0.6);
     leg2->SetLineColor(0);
@@ -177,6 +243,54 @@ void Fit()
     leg2->AddEntry(h_correct_signal, "t#bar{t}, correct", "f");
     leg2->AddEntry(h_incorrect_signal, "t#bar{t}, incorrect", "f");
     leg2->Draw();
+
+    TH1D *h_pull_g5 = new TH1D("h_pull_g5", "Pulls", h_data->GetSize()-2,
+                               h_data->GetXaxis()->GetXmin(),
+                               h_data->GetXaxis()->GetXmax());
+    TH1D *h_pull_g4 = new TH1D("h_pull_g4", "Pulls", h_data->GetSize()-2,
+                               h_data->GetXaxis()->GetXmin(),
+                               h_data->GetXaxis()->GetXmax());
+    for (int i=0; i<h_pull_g5->GetSize(); ++i) {
+        if (h_pull_g5->GetBinCenter(i) >= min
+            && h_pull_g5->GetBinCenter(i) <= max) {
+            h_pull_g5->SetBinContent(i, (h_data->GetBinContent(i)
+                                         - g5->Eval(h_data->GetBinCenter(i)))
+                                        /h_data->GetBinError(i));
+            h_pull_g5->SetBinError(i, 1.0);
+            h_pull_g4->SetBinContent(i, (h_data->GetBinContent(i)
+                                         - g4->Eval(h_data->GetBinCenter(i)))
+                                        /h_data->GetBinError(i));
+            h_pull_g4->SetBinError(i, 1.0);
+        } else {
+            h_pull_g5->SetBinContent(i, 0.0);
+            h_pull_g5->SetBinError(i, 0.0);
+            h_pull_g4->SetBinContent(i, 0.0);
+            h_pull_g4->SetBinError(i, 0.0);
+        }
+    }
+    h_pull_g5->SetTitle();
+    h_pull_g5->GetXaxis()->SetLabelSize(0.14);
+    h_pull_g5->GetYaxis()->SetLabelSize(0.14);
+    h_pull_g5->GetXaxis()->SetTitleSize(0.2);
+    h_pull_g5->GetYaxis()->SetTitleSize(0.2);
+    h_pull_g5->GetXaxis()->SetTitleOffset(0.75);
+    h_pull_g5->GetYaxis()->SetTitleOffset(0.2);
+    h_pull_g5->GetXaxis()->SetTitle("M_{jjj} [GeV]");
+    h_pull_g5->GetYaxis()->SetTitle("pull");
+    h_pull_g5->GetXaxis()->SetRange(h_data->GetXaxis()->GetFirst(),
+                                    h_data->GetXaxis()->GetLast());
+    h_pull_g5->SetLineColor(1);
+    h_pull_g5->SetFillColor(4);
+    h_pull_g4->SetLineColor(2);
+
+    pad2b->cd();
+    pad2b->SetGridy();
+    pad2b->SetTopMargin(0.05);
+    pad2b->SetBottomMargin(0.4);
+    h_pull_g5->Draw("hist");
+    h_pull_g4->Draw("hist same");
+
+    CMS_lumi(pad2a, 4, 33);
 
     cout << "f1 " << f1->GetChisquare() << "/" << f1->GetNDF() - 5 << " = "
          << f1->GetChisquare()/(f1->GetNDF() - 5) << endl;
@@ -190,8 +304,6 @@ void Fit()
          << g1->GetChisquare()/(g1->GetNDF() - 5) << endl;
     cout << "g4 " << g4->GetChisquare() << "/" << g4->GetNDF() << " = "
          << g4->GetChisquare()/g4->GetNDF() << endl;
-
-    CMS_lumi(c2, 4, 33);
 
     return;
 }
