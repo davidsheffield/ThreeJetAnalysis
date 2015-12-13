@@ -222,6 +222,22 @@ TF1* ScoutingFitter::GetLandGauss()
 }
 
 
+TF1* ScoutingFitter::GetGauss()
+{
+    TF1 *gauss = new TF1("gauss", "gaus(0)", min_, max_);
+    gauss->SetParName(0, "Constant");
+    gauss->SetParName(1, "Mean");
+    gauss->SetParName(2, "Sigma");
+
+    // Initialize parameters
+    gauss->SetParameter(0, constant);
+    gauss->SetParameter(1, mean);
+    gauss->SetParameter(2, sigma);
+
+    return gauss;
+}
+
+
 double landgauss_function(double *x, double *par)
 {
     //Fit parameters:

@@ -53,6 +53,8 @@ void Fit()
 
     double min = 120.0; // 120
     double max = 300.0; // 300
+    double min_range = 100.0; // 100
+    double max_range = 400.0; // 400
 
     // Do fit
     ScoutingFitter fit(h_data, min, max);
@@ -85,7 +87,7 @@ void Fit()
     h_data->SetLineColor(1);
     h_data->SetMarkerStyle(20);
     h_data->SetMarkerSize(0.25);
-    h_data->GetXaxis()->SetRangeUser(100.0, 400.0);
+    h_data->GetXaxis()->SetRangeUser(min_range, max_range);
     h_data->SetMinimum(0);
 
     f4->SetLineColor(2);
@@ -300,6 +302,8 @@ void Fit()
          << f3->GetChisquare()/f3->GetNDF() << endl;
     cout << "f4 " << f4->GetChisquare() << "/" << f4->GetNDF() << " = "
          << f4->GetChisquare()/f4->GetNDF() << endl;
+    cout << "f5 " << h_data->Chisquare(f5, "R") << endl;
+    cout << "f5 max " << f5->GetMaximumX(min, max) << endl;
     cout << "g1 " << g1->GetChisquare() << "/" << g1->GetNDF() - 5 << " = "
          << g1->GetChisquare()/(g1->GetNDF() - 5) << endl;
     cout << "g4 " << g4->GetChisquare() << "/" << g4->GetNDF() << " = "

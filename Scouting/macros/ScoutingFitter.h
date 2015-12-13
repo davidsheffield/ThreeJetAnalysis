@@ -17,6 +17,7 @@ public:
 
     TF1* GetP4();
     TF1* GetLandGauss();
+    TF1* GetGauss();
 
     double landgauss_function(double*, double*);
     double landgauss_gauss_function(double*, double*);
