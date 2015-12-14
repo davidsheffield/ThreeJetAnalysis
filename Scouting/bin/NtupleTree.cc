@@ -283,9 +283,13 @@ void NtupleTree::Loop()
                                                      triplet_dalitz_mid->at(i),
                                                      scale_factor);
                     for (int k=0; k<number_of_Dalitz_cuts; ++k) {
-                        if (triplet_dalitz_low->at(i) > cut_Dalitz_low[k])
+                        if (triplet_dalitz_low->at(i) > cut_Dalitz_low[k]) {
                             h_M_DeltaDalitzCut[k][j]->Fill(triplet_mass->at(i),
                                                            scale_factor);
+                            h_MW_vs_M_DeltaDalitzCut[k][j]->Fill(
+                                triplet_mass->at(i),
+                                triplet_pairwise_mass->at(i)[0], scale_factor);
+                        }
                     }
                 }
             }
@@ -418,6 +422,11 @@ void NtupleTree::InitializeHistograms()
                 "Scouting, " + Dalitz_cut_name[i] + " #Delta = "
                 + to_string(delta), 500, 0.0, 1000.0, "M_{jjj} [GeV]",
                 "triplets");
+            h_MW_vs_M_DeltaDalitzCut[i][j] = TH2DInitializer(
+                "h_MW_vs_M_" + Dalitz_cut_name[i] + "_DeltaCut_"
+                + to_string(delta), "Scouting, " + Dalitz_cut_name[i]
+                + " #Delta = " + to_string(delta), 500, 0.0, 1000.0,
+                250, 0.0, 500.0, "M_{jjj} [GeV]", "M_{jj} [GeV]");
         }
         h_Dalitz_after_cut[i] = TH2DInitializer("h_Dalitz_cut_"
                                                 + Dalitz_cut_name[i],
@@ -483,6 +492,7 @@ void NtupleTree::WriteHistograms()
 
     TDirectory *dir_Dalitz = out_file->mkdir("Dalitz_Cuts");
     TDirectory *dirs_Dalitz[number_of_Dalitz_cuts];
+    TDirectory *dirs_Dalitz_Wb[number_of_Dalitz_cuts];
     for (int i=0; i<number_of_Dalitz_cuts; ++i) {
         dirs_Dalitz[i] = dir_Dalitz->mkdir(Dalitz_cut_name[i]);
         dirs_Dalitz[i]->cd();
@@ -490,6 +500,12 @@ void NtupleTree::WriteHistograms()
         h_M_vs_pt_after_Dalitz[i]->Write();
         for (int j=0; j<size_h_M_DeltaCut; ++j) {
             h_M_DeltaDalitzCut[i][j]->Write();
+        }
+
+        dirs_Dalitz_Wb[i] = dirs_Dalitz[i]->mkdir("Wb");
+        dirs_Dalitz_Wb[i]->cd();
+        for (int j=0; j<size_h_M_DeltaCut; ++j) {
+            h_MW_vs_M_DeltaDalitzCut[i][j]->Write();
         }
     }
 
