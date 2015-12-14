@@ -235,11 +235,13 @@ void NtupleTree::Loop()
         }
         h_leading_jet_pt->Fill(jet_pts[0], scale_);
 
+        double comb_factor = new_jet_num/(TMath::Binomial(new_jet_num, 3)*3.0);
         for (unsigned int i=0; i<triplet_mass->size(); ++i) {
             if (triplet_lowest_pt->at(i) < cut_pt_)
                 continue;
             if (fabs(triplet_largest_eta->at(i)) > cut_eta_)
                 continue;
+            h_csv->Fill(triplet_jet_csv->at(i)[0], comb_factor);
             if (triplet_jet_csv->at(i)[0] < 0.95
                 || triplet_jet_csv->at(i)[1] > 0.4)
                 continue;
@@ -373,6 +375,7 @@ void NtupleTree::InitializeHistograms()
     h_Dalitz = TH2DInitializer("h_Dalitz", "Scouting, Dalitz", 100, 0.0, 0.5,
                                100, 0.0, 1.0, "mid, low, low",
                                "high, high, mid");
+    h_csv = TH1DInitializer("h_csv", "Scouting", 200, 0.0, 2.0, "CSV", "jets");
     for (int i=0; i<size_h_M_DeltaCut; ++i) {
 	int delta = 10*i;
 	h_M_DeltaCut[i] = TH1DInitializer("h_M_DeltaCut_" + to_string(delta),
@@ -454,6 +457,7 @@ void NtupleTree::WriteHistograms()
     h_vertex_num->Write();
     h_rho->Write();
     h_Dalitz->Write();
+    h_csv->Write();
 
     TDirectory *dir_DeltaCuts = out_file->mkdir("Delta_Cuts");
     dir_DeltaCuts->cd();

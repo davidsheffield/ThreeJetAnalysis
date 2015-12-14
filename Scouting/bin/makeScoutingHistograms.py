@@ -44,7 +44,7 @@ def getArguments():
                      VarParsing.VarParsing.varType.float,
                      "Minimum jet Pt.")
     options.register('eta',
-                     3.0, # default value
+                     2.4, # default value
                      VarParsing.VarParsing.multiplicity.singleton,
                      VarParsing.VarParsing.varType.float,
                      "Maximum |eta|.")
