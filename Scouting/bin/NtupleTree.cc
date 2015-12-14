@@ -242,8 +242,7 @@ void NtupleTree::Loop()
             if (fabs(triplet_largest_eta->at(i)) > cut_eta_)
                 continue;
             h_csv->Fill(triplet_jet_csv->at(i)[0], comb_factor);
-            if (triplet_jet_csv->at(i)[0] < 0.95
-                || triplet_jet_csv->at(i)[1] > 0.4)
+            if (triplet_jet_csv->at(i)[0] < 0.95)
                 continue;
             if (isMC_ == 2 && triplet_is_correct->at(i) == 0)
                 continue;
