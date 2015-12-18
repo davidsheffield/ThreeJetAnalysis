@@ -24,6 +24,10 @@ void Fit()
     h_data->Rebin(rebin);
     h_signal->Rebin(rebin);
 
+    TLatex *text = new TLatex(230.0, 4900, "#splitline{#splitline{#Delta = 110 GeV}{D_{low} > 0.06}}{1 jet with CSV > 0.95}");
+    text.SetTextFont(43);
+    text.SetTextSize(24);
+
     for (int i=1; i<h_data->GetSize()-1; ++i) {
         double x = h_data->GetBinContent(i)/h_data->GetXaxis()->GetBinWidth(i);
         double err = h_data->GetBinError(i)/h_data->GetXaxis()->GetBinWidth(i);
@@ -137,6 +141,8 @@ void Fit()
     leg1->AddEntry(h_incorrect_signal, "t#bar{t}, incorrect", "f");
     leg1->Draw();
 
+    text->Draw();
+
     TH1D *h_pull_f5 = new TH1D("h_pull_f5", "Pulls", h_data->GetSize()-2,
                                h_data->GetXaxis()->GetXmin(),
                                h_data->GetXaxis()->GetXmax());
@@ -165,11 +171,12 @@ void Fit()
     h_pull_f5->GetXaxis()->SetLabelSize(0.14);
     h_pull_f5->GetYaxis()->SetLabelSize(0.14);
     h_pull_f5->GetXaxis()->SetTitleSize(0.2);
-    h_pull_f5->GetYaxis()->SetTitleSize(0.2);
+    h_pull_f5->GetYaxis()->SetTitleSize(0.15);
     h_pull_f5->GetXaxis()->SetTitleOffset(0.75);
     h_pull_f5->GetYaxis()->SetTitleOffset(0.2);
     h_pull_f5->GetXaxis()->SetTitle("M_{jjj} [GeV]");
-    h_pull_f5->GetYaxis()->SetTitle("pull");
+    //h_pull_f5->GetYaxis()->SetTitle("pull");
+    h_pull_f5->GetYaxis()->SetTitle("#frac{data - fit}{#sigma_{data}}");
     h_pull_f5->GetXaxis()->SetTickLength(0.1);
     h_pull_f5->GetYaxis()->SetNdivisions(210);
     h_pull_f5->GetXaxis()->SetRange(h_data->GetXaxis()->GetFirst(),
