@@ -3,13 +3,17 @@
 
 void Fit()
 {
-    TFile *file_data = new TFile("../../../plots/Analysis/2015-11-21/histograms_data.root");
-    TFile *file_correct_signal = new TFile("../../../plots/Analysis/2015-11-21/correct_histograms_TTJets.root");
-    TFile *file_incorrect_signal = new TFile("../../../plots/Analysis/2015-11-21/incorrect_histograms_TTJets.root");
+    TString version = "";//noBtag_";
+    TFile *file_data = new TFile("../../../plots/Analysis/2015-11-21/histograms_"
+                                 + version + "data.root");
+    TFile *file_correct_signal = new TFile("../../../plots/Analysis/2015-11-21/correct_histograms_"
+                                           + version + "TTJets.root");
+    TFile *file_incorrect_signal = new TFile("../../../plots/Analysis/2015-11-21/incorrect_histograms_"
+                                             + version + "TTJets.root");
 
     TH1D *h_data, *h_correct_signal, *h_incorrect_signal;
 
-    TString name = "Dalitz_Cuts/DalitzCut_0.06/h_M_DalitzCut_0.06_DeltaCut_130";
+    TString name = "Dalitz_Cuts/DalitzCut_0.06/h_M_DalitzCut_0.06_DeltaCut_110";
     file_data->GetObject(name, h_data);
     file_correct_signal->GetObject(name, h_correct_signal);
     file_incorrect_signal->GetObject(name, h_incorrect_signal);
@@ -19,6 +23,10 @@ void Fit()
     int rebin = 2;
     h_data->Rebin(rebin);
     h_signal->Rebin(rebin);
+
+    TLatex *text = new TLatex(230.0, 4900, "#splitline{#splitline{#Delta = 110 GeV}{D_{low} > 0.06}}{1 jet with CSV > 0.95}");
+    text.SetTextFont(43);
+    text.SetTextSize(24);
 
     for (int i=1; i<h_data->GetSize()-1; ++i) {
         double x = h_data->GetBinContent(i)/h_data->GetXaxis()->GetBinWidth(i);
@@ -58,20 +66,21 @@ void Fit()
 
     // Do fit
     ScoutingFitter fit(h_data, min, max);
-    TF1 *f1 = fit.FitP4(160.0, 188.0);  // Fit P4
+    TF1 *f1 = fit.FitP4(160.0, 300.0);  // Fit P4
     TF1 *f2 = fit.FitP4PlusGauss(0xf);  // Fit fixed P4 + gauss
     TF1 *f3 = fit.FitP4PlusGauss(0x70); // Fit P4 + fixed gauss
     TF1 *f4 = fit.FitP4PlusGauss();     // Fit P4 + gauss
     TF1 *f5 = fit.GetP4();              // Get P4 for display
+    TF1 *f6 = fit.GetGauss();           // Get gauss for display
+    TF1 *f7 = fit.FitP4(0.0, 0.0);      // Fit P4 without mask
 
     ScoutingFitter fit_signal(h_signal, min, max);
-    TF1 *sf1 = fit_signal.FitP4(165.0, 188.0);  // Fit P4
+    TF1 *sf1 = fit_signal.FitP4(160.0, 188.0);  // Fit P4
     TF1 *sf2 = fit_signal.FitP4PlusGauss(0xf);  // Fit fixed P4+gauss
     TF1 *sf3 = fit_signal.FitP4PlusGauss(0x70); // Fit P4+fixed gauss
     TF1 *sf4 = fit_signal.FitP4PlusGauss();     // Fit P4 + gauss
     TF1 *sf5 = fit_signal.GetP4();              // Get P4 for display
-
-    //combined->SetParLimits(5, 150.0, 190.0);
+    TF1 *sf6 = fit_signal.GetGauss();           // Get gauss for display
 
     gStyle->SetOptStat(0);
 
@@ -86,7 +95,7 @@ void Fit()
 
     h_data->SetLineColor(1);
     h_data->SetMarkerStyle(20);
-    h_data->SetMarkerSize(0.25);
+    h_data->SetMarkerSize(0.5);
     h_data->GetXaxis()->SetRangeUser(min_range, max_range);
     h_data->SetMinimum(0);
 
@@ -94,7 +103,7 @@ void Fit()
     f5->SetLineColor(4);
     h_correct_signal->SetLineColor(1);
     h_incorrect_signal->SetLineColor(1);
-    h_correct_signal->SetFillColor(3);
+    h_correct_signal->SetFillColor(91);
     h_incorrect_signal->SetFillColor(5);
     sf4->SetLineColor(2);
     sf5->SetLineColor(4);
@@ -111,6 +120,9 @@ void Fit()
     h_signal_stack->Add(h_correct_signal);
 
     pad1a->cd();
+    pad1a->SetTickx();
+    pad1a->SetTicky();
+    pad1a->SetBottomMargin(0.0);
     h_data->Draw();
     f4->Draw("same");
     f5->Draw("same");
@@ -128,6 +140,8 @@ void Fit()
     leg1->AddEntry(h_correct_signal, "t#bar{t}, correct", "f");
     leg1->AddEntry(h_incorrect_signal, "t#bar{t}, incorrect", "f");
     leg1->Draw();
+
+    text->Draw();
 
     TH1D *h_pull_f5 = new TH1D("h_pull_f5", "Pulls", h_data->GetSize()-2,
                                h_data->GetXaxis()->GetXmin(),
@@ -157,11 +171,14 @@ void Fit()
     h_pull_f5->GetXaxis()->SetLabelSize(0.14);
     h_pull_f5->GetYaxis()->SetLabelSize(0.14);
     h_pull_f5->GetXaxis()->SetTitleSize(0.2);
-    h_pull_f5->GetYaxis()->SetTitleSize(0.2);
+    h_pull_f5->GetYaxis()->SetTitleSize(0.15);
     h_pull_f5->GetXaxis()->SetTitleOffset(0.75);
     h_pull_f5->GetYaxis()->SetTitleOffset(0.2);
     h_pull_f5->GetXaxis()->SetTitle("M_{jjj} [GeV]");
-    h_pull_f5->GetYaxis()->SetTitle("pull");
+    //h_pull_f5->GetYaxis()->SetTitle("pull");
+    h_pull_f5->GetYaxis()->SetTitle("#frac{data - fit}{#sigma_{data}}");
+    h_pull_f5->GetXaxis()->SetTickLength(0.1);
+    h_pull_f5->GetYaxis()->SetNdivisions(210);
     h_pull_f5->GetXaxis()->SetRange(h_data->GetXaxis()->GetFirst(),
                                     h_data->GetXaxis()->GetLast());
     h_pull_f5->SetLineColor(1);
@@ -169,8 +186,10 @@ void Fit()
     h_pull_f4->SetLineColor(2);
 
     pad1b->cd();
+    pad1b->SetTickx();
+    pad1b->SetTicky();
     pad1b->SetGridy();
-    pad1b->SetTopMargin(0.05);
+    pad1b->SetTopMargin(0.0);
     pad1b->SetBottomMargin(0.4);
     h_pull_f5->Draw("hist");
     h_pull_f4->Draw("hist same");
@@ -303,11 +322,24 @@ void Fit()
     cout << "f4 " << f4->GetChisquare() << "/" << f4->GetNDF() << " = "
          << f4->GetChisquare()/f4->GetNDF() << endl;
     cout << "f5 " << h_data->Chisquare(f5, "R") << endl;
+    cout << "f4 " << h_data->Chisquare(f4, "R") << endl;
+    cout << "f7 " << f7->GetChisquare() << "/" << f7->GetNDF() << " = "
+         << f7->GetChisquare()/f7->GetNDF() << endl;
     cout << "f5 max " << f5->GetMaximumX(min, max) << endl;
     cout << "g1 " << g1->GetChisquare() << "/" << g1->GetNDF() - 5 << " = "
          << g1->GetChisquare()/(g1->GetNDF() - 5) << endl;
     cout << "g4 " << g4->GetChisquare() << "/" << g4->GetNDF() << " = "
          << g4->GetChisquare()/g4->GetNDF() << endl;
+
+    double mean = f6->GetParameter(1);
+    double sigma = f6->GetParameter(2);
+    cout << "data: mean " << mean << " sigma " << sigma << " integral "
+         << f6->Integral(mean - 4.0*sigma, mean + 4.0*sigma) << endl;
+    mean = sf6->GetParameter(1);
+    sigma = sf6->GetParameter(2);
+    cout << "ttbar: mean " << mean << " sigma " << sigma << " integral "
+         << sf6->Integral(mean - 4.0*sigma, mean + 4.0*sigma) << endl;
+    cout << h_correct_signal->Integral(0,10000) + h_incorrect_signal->Integral(0,10000) << endl;
 
     return;
 }
