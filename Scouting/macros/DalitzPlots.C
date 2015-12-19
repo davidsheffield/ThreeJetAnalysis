@@ -138,7 +138,38 @@ void DalitzPlots()
     l5->Draw();
     h_ttbar_correct->Draw("sameaxis");
 
-    //CMS_lumi(c3, 4, 33);
+    //CMS_lumi(c4, 4, 33);
+
+    TCanvas *c5 = new TCanvas("c5", "c5", 800, 800);
+    c5->cd();
+    c5->SetTickx();
+    c5->SetTicky();
+    c5->SetRightMargin(0.11);
+
+    TH2D *h_cont = h_ttbar_correct->Clone();
+    double root_one_third = 1.0/sqrt(3.0);
+    for (int i=1; i<101; ++i) {
+        for (int j=1; j<101; ++j) {
+            if (h_cont->GetBinContent(i, j) == 0.0)
+                continue;
+            double x = h_cont->GetXaxis()->GetBinCenter(i);
+            double y = h_cont->GetYaxis()->GetBinCenter(j);
+            if (1.0 - x - y <= 0) {
+                h_cont->SetBinContent(i, j, 0.0);
+                continue;
+            }
+            double d2 = pow(sqrt(x) - root_one_third, 2.0)
+                      + pow(sqrt(y) - root_one_third, 2.0)
+                      + pow(sqrt(1.0 - x - y) - root_one_third, 2.0);
+            h_cont->SetBinContent(i, j, d2);
+        }
+    }
+
+    h_ttbar_correct->Draw("colz");
+    h_cont->Draw("cont1 same");
+    h_ttbar_correct->Draw("sameaxis");
+
+    CMS_lumi(c5, 4, 33);
 
     return;
 }
