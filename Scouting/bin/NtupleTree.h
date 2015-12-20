@@ -124,6 +124,13 @@ private:
     TH1D *h_vertex_num;
     TH1D *h_rho;
     TH2D *h_Dalitz;
+    TH2D *h_NormalizedMass_lowmid;
+    TH2D *h_NormalizedMass_lowhigh;
+    TH2D *h_NormalizedMass_midhigh;
+    TH1D *h_DalitzDistance;
+    TH1D *h_DalitzDistanceSquared;
+    TH1D *h_NormalizedMassDistance;
+    TH1D *h_NormalizedMassDistanceSquared;
     TH1D *h_csv;
     static const int size_h_M_DeltaCut = 31;
     TH1D *h_M_DeltaCut[size_h_M_DeltaCut];

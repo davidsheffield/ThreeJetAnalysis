@@ -299,6 +299,29 @@ void NtupleTree::Loop()
                            triplet_dalitz_high->at(i), scale_factor);
             h_Dalitz->Fill(triplet_dalitz_low->at(i),
                            triplet_dalitz_mid->at(i), scale_factor);
+            double norm_m_low = sqrt(triplet_dalitz_low->at(i));
+            double norm_m_mid = sqrt(triplet_dalitz_mid->at(i));
+            double norm_m_high = sqrt(triplet_dalitz_high->at(i));
+            h_NormalizedMass_midhigh->Fill(norm_m_mid, norm_m_high, scale_factor);
+            h_NormalizedMass_lowhigh->Fill(norm_m_low, norm_m_high, scale_factor);
+            h_NormalizedMass_lowmid->Fill(norm_m_low, norm_m_mid, scale_factor);
+            double one_third = 1.0/3.0;
+            double root_one_third = 1.0/sqrt(3.0);
+            double dalitz_distance_squared = pow(triplet_dalitz_low->at(i)
+                                                 - one_third, 2.0)
+                                           + pow(triplet_dalitz_mid->at(i)
+                                                 - one_third, 2.0)
+                                           + pow(triplet_dalitz_high->at(i)
+                                                 - one_third, 2.0);
+            double normmass_distance_squared = pow(norm_m_low - root_one_third, 2.0)
+                                             + pow(norm_m_mid - root_one_third, 2.0)
+                                             + pow(norm_m_high - root_one_third, 2.0);
+            h_DalitzDistance->Fill(sqrt(dalitz_distance_squared), scale_factor);
+            h_DalitzDistanceSquared->Fill(dalitz_distance_squared, scale_factor);
+            h_NormalizedMassDistance->Fill(sqrt(normmass_distance_squared),
+                                           scale_factor);
+            h_NormalizedMassDistanceSquared->Fill(normmass_distance_squared,
+                                                  scale_factor);
             for (int j=0; j<number_of_Dalitz_cuts; ++j) {
                 if (triplet_dalitz_low->at(i) > cut_Dalitz_low[j]) {
                     h_Dalitz_after_cut[j]->Fill(triplet_dalitz_mid->at(i),
@@ -378,6 +401,36 @@ void NtupleTree::InitializeHistograms()
     h_Dalitz = TH2DInitializer("h_Dalitz", "Scouting, Dalitz", 100, 0.0, 0.5,
                                100, 0.0, 1.0, "mid, low, low",
                                "high, high, mid");
+    h_NormalizedMass_lowmid = TH2DInitializer("h_NormalizedMass_lowmid",
+                                              "Scouting",
+                                              100, 0.0, 1.0, 100, 0.0, 1.0,
+                                              "normalized m_{low}",
+                                              "normalized m_{mid}");
+    h_NormalizedMass_lowhigh = TH2DInitializer("h_NormalizedMass_lowhigh",
+                                               "Scouting",
+                                               100, 0.0, 1.0, 100, 0.0, 1.0,
+                                               "normalized m_{low}",
+                                               "normalized m_{high}");
+    h_NormalizedMass_midhigh = TH2DInitializer("h_NormalizedMass_midhigh",
+                                               "Scouting",
+                                               100, 0.0, 1.0, 100, 0.0, 1.0,
+                                               "normalized m_{mid}",
+                                               "normalized m_{high}");
+    h_DalitzDistance = TH1DInitializer("h_DalitzDistance", "Scouting",
+                                       200, 0.0, 1.0, "Dalitz distance",
+                                       "triplets");
+    h_DalitzDistanceSquared = TH1DInitializer("h_DalitzDistanceSquared",
+                                              "Scouting", 200, 0.0, 1.0,
+                                              "(Dalitz distance)^{2}",
+                                              "triplets");
+    h_NormalizedMassDistance = TH1DInitializer("h_NormalizedMassDistance",
+                                               "Scouting", 200, 0.0, 1.0,
+                                               "Normalized mass distance",
+                                               "triplets");
+    h_NormalizedMassDistanceSquared = TH1DInitializer("h_NormalizedMassDistanceSquared",
+                                                      "Scouting", 200, 0.0, 1.0,
+                                                      "(Normalized mass distance)^{2}",
+                                                      "triplets");
     h_csv = TH1DInitializer("h_csv", "Scouting", 200, 0.0, 2.0, "CSV", "jets");
     for (int i=0; i<size_h_M_DeltaCut; ++i) {
 	int delta = 10*i;
@@ -465,6 +518,13 @@ void NtupleTree::WriteHistograms()
     h_vertex_num->Write();
     h_rho->Write();
     h_Dalitz->Write();
+    h_NormalizedMass_lowmid->Write();
+    h_NormalizedMass_lowhigh->Write();
+    h_NormalizedMass_midhigh->Write();
+    h_DalitzDistance->Write();
+    h_DalitzDistanceSquared->Write();
+    h_NormalizedMassDistance->Write();
+    h_NormalizedMassDistanceSquared->Write();
     h_csv->Write();
 
     TDirectory *dir_DeltaCuts = out_file->mkdir("Delta_Cuts");
