@@ -19,8 +19,8 @@ public:
     TF1* GetLandGauss();
     TF1* GetGauss();
 
-    double landgauss_function(double*, double*);
-    double landgauss_gauss_function(double*, double*);
+    static double landgauss_function(double*, double*);
+    static double landgauss_gauss_function(double*, double*);
 
 private:
     TH1D *h_data_;

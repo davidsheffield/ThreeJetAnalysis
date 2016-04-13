@@ -47,7 +47,7 @@ TF1* ScoutingFitter::FitP4(double mask_min, double mask_max)
     p4->SetParameter(2, P2);
     p4->SetParameter(3, P3);
 
-    TH1D *hist = h_data_->Clone();
+    TH1D *hist = static_cast<TH1D*>(h_data_->Clone());
     for (int i=1; i<h_data_->GetSize()-1; ++i) {
         if (h_data_->GetXaxis()->GetBinLowEdge(i) >= mask_min
             && h_data_->GetXaxis()->GetBinUpEdge(i) <= mask_max) {
@@ -94,7 +94,7 @@ TF1* ScoutingFitter::FitP4PlusGauss(int fixed)
         }
     }
 
-    TH1D *hist = h_data_->Clone();
+    TH1D *hist = static_cast<TH1D*>(h_data_->Clone());
 
     hist->Fit("p4_gauss", "R0");
 
@@ -124,7 +124,7 @@ TF1* ScoutingFitter::FitLandGauss(double mask_min, double mask_max)
     landgauss->SetParameter(2, area);
     landgauss->SetParameter(3, gsigma);
 
-    TH1D *hist = h_data_->Clone();
+    TH1D *hist = static_cast<TH1D*>(h_data_->Clone());
     for (int i=1; i<h_data_->GetSize()-1; ++i) {
         if (h_data_->GetXaxis()->GetBinLowEdge(i) >= mask_min
             && h_data_->GetXaxis()->GetBinUpEdge(i) <= mask_max) {
@@ -169,7 +169,7 @@ TF1* ScoutingFitter::FitLandGaussPlusGauss(int fixed)
         }
     }
 
-    TH1D *hist = h_data_->Clone();
+    TH1D *hist = static_cast<TH1D*>(h_data_->Clone());
 
     hist->Fit("landgauss_gauss", "R0");
 
